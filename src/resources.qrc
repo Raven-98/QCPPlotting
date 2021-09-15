@@ -1,0 +1,28 @@
+<RCC>
+    <qresource prefix="/">
+        <file>img/about_program.png</file>
+        <file>img/exit.png</file>
+        <file>img/file.png</file>
+        <file>img/FishX-SS.png</file>
+        <file>img/FishX.png</file>
+        <file>img/full_screen.png</file>
+        <file>img/open_file.png</file>
+        <file>img/open_path.png</file>
+        <file>img/open_table.png</file>
+        <file>img/plot.png</file>
+        <file>img/save_graph.png</file>
+        <file>img/save_graphs.png</file>
+        <file>img/save_table.png</file>
+        <file>img/save_tables.png</file>
+        <file>img/subcharts.png</file>
+        <file>img/subplots.png</file>
+        <file>img/table.png</file>
+        <file>img/import_csv.png</file>
+        <file>img/graph.png</file>
+        <file>img/Russia.png</file>
+        <file>img/remove.png</file>
+        <file>img/United-Kingdom.png</file>
+        <file>img/save.png</file>
+        <file>img/add_column.png</file>
+    </qresource>
+</RCC>

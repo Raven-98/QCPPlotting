@@ -1,0 +1,70 @@
+===================================================
+*.h
+---------------------------------------------------
+private:
+    bool draggingLegend;
+    QPointF dragLegendOrigin;
+
+private slots:
+    void mouseMoveSignal(QMouseEvent *event);
+    void mousePressSignal(QMouseEvent *event);
+    void mouseReleaseSignal(QMouseEvent *event);
+    void beforeReplot();
+
+===================================================
+*.cpp
+---------------------------------------------------
+
+    connect(customPlot,&QCustomPlot::mouseMove,this,&ChartWidget::mouseMoveSignal);
+    connect(customPlot,&QCustomPlot::mousePress,this,&ChartWidget::mousePressSignal);
+    connect(customPlot,&QCustomPlot::mouseRelease,this,&ChartWidget::mouseReleaseSignal);
+    connect(customPlot,&QCustomPlot::beforeReplot,this,&ChartWidget::beforeReplot);
+    
+{
+    customPlot->legend->setVisible(true);
+    // set the placement of the legend (index 0 in the axis rect's inset layout) to not be
+    // border-aligned (default), but freely, so we can reposition it anywhere:
+    customPlot->axisRect()->insetLayout()->setInsetPlacement(0, QCPLayoutInset::ipFree);
+    draggingLegend = false;
+}
+
+void ChartWidget::mouseMoveSignal(QMouseEvent *event)
+{
+    if (draggingLegend)
+    {
+        QRectF rect = customPlot->axisRect()->insetLayout()->insetRect(0);
+        // since insetRect is in axisRect coordinates (0..1), we transform the mouse position:
+        QPointF mousePoint((event->pos().x() - customPlot->axisRect()->left()) / (double)customPlot->axisRect()->width(),
+                           (event->pos().y() - customPlot->axisRect()->top()) / (double)customPlot->axisRect()->height());
+        rect.moveTopLeft(mousePoint - dragLegendOrigin);
+        customPlot->axisRect()->insetLayout()->setInsetRect(0, rect);
+        customPlot->replot();
+    }
+}
+
+void ChartWidget::mousePressSignal(QMouseEvent *event)
+{
+    if (customPlot->legend->selectTest(event->pos(), false) > 0)
+    {
+        draggingLegend = true;
+        // since insetRect is in axisRect coordinates (0..1), we transform the mouse position:
+        QPointF mousePoint((event->pos().x() - customPlot->axisRect()->left()) / (double)customPlot->axisRect()->width(),
+                           (event->pos().y() - customPlot->axisRect()->top()) / (double)customPlot->axisRect()->height());
+        dragLegendOrigin = mousePoint - customPlot->axisRect()->insetLayout()->insetRect(0).topLeft();
+    }
+}
+
+void ChartWidget::mouseReleaseSignal(QMouseEvent *event)
+{
+    Q_UNUSED(event)
+    draggingLegend = false;
+}
+
+void ChartWidget::beforeReplot()
+{
+    // this is to prevent the legend from stretching if the plot is stretched.
+    // Since we've set the inset placement to be ipFree, the width/height of the legend
+    // is also defined in axisRect coordinates (0..1) and thus would stretch.
+    // This is due to change in a future release (probably QCP 2.0) since it's basically a design mistake.
+    customPlot->legend->setMaximumSize(customPlot->legend->minimumOuterSizeHint());
+}

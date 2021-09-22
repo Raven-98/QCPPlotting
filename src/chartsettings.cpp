@@ -744,17 +744,6 @@ void AxisSettings::slot_TicksLabelWidgetsEnabled(int state)
     }
 }
 
-Spacer::Spacer(QSizePolicy::Policy hPolicy, QSizePolicy::Policy vPolicy, QWidget *parent)
-    : QVBoxLayout(parent)
-{
-    addSpacerItem(new QSpacerItem(0,0,hPolicy,vPolicy));
-}
-
-Spacer::~Spacer()
-{
-    delete this->spacerItem();
-}
-
 GraphSettings::GraphSettings(QCPAbstractPlottable &plottable, QWidget *parent)
     : QWidget(parent),
       Plottable(plottable)

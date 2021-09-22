@@ -43,6 +43,8 @@ set(PROJECT_SOURCES
         src/chartwidget.h
         src/chartsettings.cpp
         src/chartsettings.h
+        src/spacer.cpp
+        src/spacer.h
         ${TS_FILES}
 )
 

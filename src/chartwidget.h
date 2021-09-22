@@ -29,12 +29,12 @@ public:
     void addDataGraph(QVector<QVector<double>> &data);
 
     QAction *action_Save;
+    QCustomPlot *customPlot;
 
     static int SumCharts;
     static int ResChartWidgetID;
 
 private:
-    QCustomPlot *customPlot;
     QGridLayout *gridLayout;
     QMenu *customContexMenu;
     QAction *action_Properties;

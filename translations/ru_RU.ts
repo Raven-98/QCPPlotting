@@ -170,16 +170,21 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/chartwidget.cpp" line="155"/>
-        <location filename="../src/chartwidget.cpp" line="175"/>
-        <location filename="../src/chartwidget.cpp" line="200"/>
+        <location filename="../src/chartwidget.cpp" line="80"/>
+        <source>Save</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/chartwidget.cpp" line="160"/>
+        <location filename="../src/chartwidget.cpp" line="180"/>
+        <location filename="../src/chartwidget.cpp" line="205"/>
         <source>Error</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/chartwidget.cpp" line="155"/>
-        <location filename="../src/chartwidget.cpp" line="175"/>
-        <location filename="../src/chartwidget.cpp" line="200"/>
+        <location filename="../src/chartwidget.cpp" line="160"/>
+        <location filename="../src/chartwidget.cpp" line="180"/>
+        <location filename="../src/chartwidget.cpp" line="205"/>
         <source>Unexpected result</source>
         <translation type="unfinished"></translation>
     </message>
@@ -187,322 +192,279 @@
 <context>
     <name>DialodAddPlot</name>
     <message>
-        <location filename="../src/dialogs.cpp" line="95"/>
+        <location filename="../src/dialogs.cpp" line="98"/>
         <source>Add to</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>DialogSavePlot</name>
+    <message>
+        <location filename="../src/dialogs.cpp" line="157"/>
+        <source>Save</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/dialogs.cpp" line="159"/>
+        <source>Width</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/dialogs.cpp" line="164"/>
+        <source>Height</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/dialogs.cpp" line="169"/>
+        <source>Scale</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
     <name>FileDialogSetDetails</name>
     <message>
-        <location filename="../src/dialogs.cpp" line="26"/>
+        <location filename="../src/dialogs.cpp" line="28"/>
         <source>Set details</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/dialogs.cpp" line="30"/>
+        <location filename="../src/dialogs.cpp" line="32"/>
         <source>Read zero row</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/dialogs.cpp" line="32"/>
+        <location filename="../src/dialogs.cpp" line="34"/>
         <source>Read zero column</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/dialogs.cpp" line="39"/>
+        <location filename="../src/dialogs.cpp" line="41"/>
         <source>Delimiter</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/dialogs.cpp" line="42"/>
+        <location filename="../src/dialogs.cpp" line="44"/>
         <source>Comma</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/dialogs.cpp" line="43"/>
+        <location filename="../src/dialogs.cpp" line="45"/>
         <source>Tab step</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/dialogs.cpp" line="44"/>
+        <location filename="../src/dialogs.cpp" line="46"/>
         <source>Semicolon</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/dialogs.cpp" line="45"/>
+        <location filename="../src/dialogs.cpp" line="47"/>
         <source>Space</source>
-        <translation type="unfinished"></translation>
-    </message>
-</context>
-<context>
-    <name>Form</name>
-    <message>
-        <location filename="../untitled.ui" line="14"/>
-        <source>Form</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../untitled.ui" line="338"/>
-        <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Horizontal&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../untitled.ui" line="246"/>
-        <location filename="../untitled.ui" line="388"/>
-        <source>Line color</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../untitled.ui" line="210"/>
-        <location filename="../untitled.ui" line="305"/>
-        <source>Line width</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../untitled.ui" line="253"/>
-        <location filename="../untitled.ui" line="298"/>
-        <source>Major</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../untitled.ui" line="181"/>
-        <location filename="../untitled.ui" line="434"/>
-        <source>Line type</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../untitled.ui" line="39"/>
-        <location filename="../untitled.ui" line="124"/>
-        <location filename="../untitled.ui" line="131"/>
-        <location filename="../untitled.ui" line="158"/>
-        <location filename="../untitled.ui" line="325"/>
-        <location filename="../untitled.ui" line="364"/>
-        <location filename="../untitled.ui" line="371"/>
-        <location filename="../untitled.ui" line="441"/>
-        <source>PushButton</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../untitled.ui" line="95"/>
-        <location filename="../untitled.ui" line="408"/>
-        <source>Minor</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../untitled.ui" line="151"/>
-        <location filename="../untitled.ui" line="378"/>
-        <source>Axis</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../untitled.ui" line="75"/>
-        <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Vertical&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
     <name>GraphSettings</name>
     <message>
-        <location filename="../src/chartsettings.cpp" line="763"/>
+        <location filename="../src/chartsettings.cpp" line="752"/>
         <source>Name</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/chartsettings.cpp" line="777"/>
-        <location filename="../src/chartsettings.cpp" line="785"/>
+        <location filename="../src/chartsettings.cpp" line="766"/>
+        <location filename="../src/chartsettings.cpp" line="774"/>
         <source>Line</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/chartsettings.cpp" line="781"/>
+        <location filename="../src/chartsettings.cpp" line="770"/>
         <source>Connect</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/chartsettings.cpp" line="784"/>
-        <location filename="../src/chartsettings.cpp" line="847"/>
+        <location filename="../src/chartsettings.cpp" line="773"/>
+        <location filename="../src/chartsettings.cpp" line="836"/>
         <source>None</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/chartsettings.cpp" line="786"/>
+        <location filename="../src/chartsettings.cpp" line="775"/>
         <source>Step left</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/chartsettings.cpp" line="787"/>
+        <location filename="../src/chartsettings.cpp" line="776"/>
         <source>Step right</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/chartsettings.cpp" line="788"/>
+        <location filename="../src/chartsettings.cpp" line="777"/>
         <source>Step center</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/chartsettings.cpp" line="789"/>
+        <location filename="../src/chartsettings.cpp" line="778"/>
         <source>Impulse</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/chartsettings.cpp" line="795"/>
+        <location filename="../src/chartsettings.cpp" line="784"/>
         <source>Style</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/chartsettings.cpp" line="798"/>
+        <location filename="../src/chartsettings.cpp" line="787"/>
         <source>Solid</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/chartsettings.cpp" line="799"/>
+        <location filename="../src/chartsettings.cpp" line="788"/>
         <source>Dash</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/chartsettings.cpp" line="800"/>
-        <location filename="../src/chartsettings.cpp" line="848"/>
+        <location filename="../src/chartsettings.cpp" line="789"/>
+        <location filename="../src/chartsettings.cpp" line="837"/>
         <source>Dot</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/chartsettings.cpp" line="801"/>
+        <location filename="../src/chartsettings.cpp" line="790"/>
         <source>Dash dot</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/chartsettings.cpp" line="802"/>
+        <location filename="../src/chartsettings.cpp" line="791"/>
         <source>Dash dot dot</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/chartsettings.cpp" line="807"/>
+        <location filename="../src/chartsettings.cpp" line="796"/>
         <source>Width</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/chartsettings.cpp" line="813"/>
+        <location filename="../src/chartsettings.cpp" line="802"/>
         <source>Color</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/chartsettings.cpp" line="840"/>
+        <location filename="../src/chartsettings.cpp" line="829"/>
         <source>Scatter</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/chartsettings.cpp" line="844"/>
+        <location filename="../src/chartsettings.cpp" line="833"/>
         <source>Shape</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/chartsettings.cpp" line="849"/>
+        <location filename="../src/chartsettings.cpp" line="838"/>
         <source>Cross</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/chartsettings.cpp" line="850"/>
+        <location filename="../src/chartsettings.cpp" line="839"/>
         <source>Plus</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/chartsettings.cpp" line="851"/>
+        <location filename="../src/chartsettings.cpp" line="840"/>
         <source>Circle</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/chartsettings.cpp" line="852"/>
+        <location filename="../src/chartsettings.cpp" line="841"/>
         <source>Disc</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/chartsettings.cpp" line="853"/>
+        <location filename="../src/chartsettings.cpp" line="842"/>
         <source>Square</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/chartsettings.cpp" line="854"/>
+        <location filename="../src/chartsettings.cpp" line="843"/>
         <source>Diamond</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/chartsettings.cpp" line="855"/>
+        <location filename="../src/chartsettings.cpp" line="844"/>
         <source>Star</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/chartsettings.cpp" line="856"/>
+        <location filename="../src/chartsettings.cpp" line="845"/>
         <source>Triangle</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/chartsettings.cpp" line="857"/>
+        <location filename="../src/chartsettings.cpp" line="846"/>
         <source>Triangle inverted</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/chartsettings.cpp" line="858"/>
+        <location filename="../src/chartsettings.cpp" line="847"/>
         <source>Cross square</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/chartsettings.cpp" line="859"/>
+        <location filename="../src/chartsettings.cpp" line="848"/>
         <source>Plus square</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/chartsettings.cpp" line="860"/>
+        <location filename="../src/chartsettings.cpp" line="849"/>
         <source>Cross circle</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/chartsettings.cpp" line="861"/>
+        <location filename="../src/chartsettings.cpp" line="850"/>
         <source>Plus circle</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/chartsettings.cpp" line="862"/>
+        <location filename="../src/chartsettings.cpp" line="851"/>
         <source>Peace</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/chartsettings.cpp" line="868"/>
+        <location filename="../src/chartsettings.cpp" line="857"/>
         <source>Size</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/chartsettings.cpp" line="874"/>
+        <location filename="../src/chartsettings.cpp" line="863"/>
         <source>Edge color</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/chartsettings.cpp" line="882"/>
+        <location filename="../src/chartsettings.cpp" line="871"/>
         <source>Fill color</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/chartsettings.cpp" line="911"/>
+        <location filename="../src/chartsettings.cpp" line="900"/>
         <source>Axes</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/chartsettings.cpp" line="914"/>
+        <location filename="../src/chartsettings.cpp" line="903"/>
         <source>Bottom</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/chartsettings.cpp" line="915"/>
+        <location filename="../src/chartsettings.cpp" line="904"/>
         <source>Top</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/chartsettings.cpp" line="929"/>
+        <location filename="../src/chartsettings.cpp" line="918"/>
         <source>Left</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/chartsettings.cpp" line="930"/>
+        <location filename="../src/chartsettings.cpp" line="919"/>
         <source>Right</source>
         <translation type="unfinished"></translation>
     </message>
@@ -510,92 +472,92 @@
 <context>
     <name>GridSettingsBox</name>
     <message>
-        <location filename="../src/chartsettings.cpp" line="1285"/>
+        <location filename="../src/chartsettings.cpp" line="1274"/>
         <source>Major grid</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/chartsettings.cpp" line="1289"/>
+        <location filename="../src/chartsettings.cpp" line="1278"/>
         <source>Minor grid</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/chartsettings.cpp" line="1293"/>
+        <location filename="../src/chartsettings.cpp" line="1282"/>
         <source>Line style</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/chartsettings.cpp" line="1296"/>
-        <location filename="../src/chartsettings.cpp" line="1304"/>
+        <location filename="../src/chartsettings.cpp" line="1285"/>
+        <location filename="../src/chartsettings.cpp" line="1293"/>
         <source>Solid</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/chartsettings.cpp" line="1297"/>
-        <location filename="../src/chartsettings.cpp" line="1305"/>
+        <location filename="../src/chartsettings.cpp" line="1286"/>
+        <location filename="../src/chartsettings.cpp" line="1294"/>
         <source>Dash</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/chartsettings.cpp" line="1298"/>
-        <location filename="../src/chartsettings.cpp" line="1306"/>
+        <location filename="../src/chartsettings.cpp" line="1287"/>
+        <location filename="../src/chartsettings.cpp" line="1295"/>
         <source>Dot</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/chartsettings.cpp" line="1299"/>
-        <location filename="../src/chartsettings.cpp" line="1307"/>
+        <location filename="../src/chartsettings.cpp" line="1288"/>
+        <location filename="../src/chartsettings.cpp" line="1296"/>
         <source>Dash dot</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/chartsettings.cpp" line="1300"/>
-        <location filename="../src/chartsettings.cpp" line="1308"/>
+        <location filename="../src/chartsettings.cpp" line="1289"/>
+        <location filename="../src/chartsettings.cpp" line="1297"/>
         <source>Dash dot dot</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/chartsettings.cpp" line="1312"/>
+        <location filename="../src/chartsettings.cpp" line="1301"/>
         <source>Line width</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/chartsettings.cpp" line="1319"/>
+        <location filename="../src/chartsettings.cpp" line="1308"/>
         <source>Line color</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/chartsettings.cpp" line="1328"/>
+        <location filename="../src/chartsettings.cpp" line="1317"/>
         <source>Axis</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/chartsettings.cpp" line="1359"/>
+        <location filename="../src/chartsettings.cpp" line="1348"/>
         <source>Horizontal</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/chartsettings.cpp" line="1390"/>
+        <location filename="../src/chartsettings.cpp" line="1379"/>
         <source>Left</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/chartsettings.cpp" line="1391"/>
+        <location filename="../src/chartsettings.cpp" line="1380"/>
         <source>Right</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/chartsettings.cpp" line="1399"/>
+        <location filename="../src/chartsettings.cpp" line="1388"/>
         <source>Vertical</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/chartsettings.cpp" line="1432"/>
+        <location filename="../src/chartsettings.cpp" line="1421"/>
         <source>Bottom</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/chartsettings.cpp" line="1433"/>
+        <location filename="../src/chartsettings.cpp" line="1422"/>
         <source>Top</source>
         <translation type="unfinished"></translation>
     </message>
@@ -603,7 +565,7 @@
 <context>
     <name>LegendSettings</name>
     <message>
-        <location filename="../src/chartsettings.cpp" line="1256"/>
+        <location filename="../src/chartsettings.cpp" line="1245"/>
         <source>Visible</source>
         <translation type="unfinished"></translation>
     </message>
@@ -691,67 +653,85 @@ p, li { white-space: pre-wrap; }
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.cpp" line="57"/>
-        <source>&amp;File</source>
+        <location filename="../src/mainwindow.cpp" line="47"/>
+        <source>New table</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../src/mainwindow.cpp" line="63"/>
+        <source>&amp;File</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/mainwindow.cpp" line="69"/>
+        <source>Table</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/mainwindow.cpp" line="73"/>
         <source>&amp;Window</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.cpp" line="131"/>
-        <location filename="../src/mainwindow.cpp" line="137"/>
-        <location filename="../src/mainwindow.cpp" line="214"/>
-        <location filename="../src/mainwindow.cpp" line="222"/>
-        <location filename="../src/mainwindow.cpp" line="231"/>
-        <location filename="../src/mainwindow.cpp" line="262"/>
-        <location filename="../src/mainwindow.cpp" line="304"/>
-        <location filename="../src/mainwindow.cpp" line="313"/>
-        <location filename="../src/mainwindow.cpp" line="352"/>
-        <location filename="../src/mainwindow.cpp" line="361"/>
-        <location filename="../src/mainwindow.cpp" line="413"/>
+        <location filename="../src/mainwindow.cpp" line="143"/>
+        <location filename="../src/mainwindow.cpp" line="149"/>
+        <location filename="../src/mainwindow.cpp" line="228"/>
+        <location filename="../src/mainwindow.cpp" line="236"/>
+        <location filename="../src/mainwindow.cpp" line="245"/>
+        <location filename="../src/mainwindow.cpp" line="276"/>
+        <location filename="../src/mainwindow.cpp" line="318"/>
+        <location filename="../src/mainwindow.cpp" line="327"/>
+        <location filename="../src/mainwindow.cpp" line="364"/>
+        <location filename="../src/mainwindow.cpp" line="373"/>
+        <location filename="../src/mainwindow.cpp" line="412"/>
+        <location filename="../src/mainwindow.cpp" line="421"/>
+        <location filename="../src/mainwindow.cpp" line="485"/>
         <source>Error</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.cpp" line="131"/>
+        <location filename="../src/mainwindow.cpp" line="143"/>
         <source>No file name specified</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.cpp" line="137"/>
+        <location filename="../src/mainwindow.cpp" line="149"/>
         <source>File not exists</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.cpp" line="214"/>
+        <location filename="../src/mainwindow.cpp" line="228"/>
         <source>The selected table is empty</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.cpp" line="222"/>
+        <location filename="../src/mainwindow.cpp" line="236"/>
         <source>Zero column size</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.cpp" line="231"/>
+        <location filename="../src/mainwindow.cpp" line="245"/>
         <source>Table columns have different sizes</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.cpp" line="296"/>
+        <location filename="../src/mainwindow.cpp" line="310"/>
         <source>Saving was successful</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.cpp" line="304"/>
-        <location filename="../src/mainwindow.cpp" line="313"/>
-        <location filename="../src/mainwindow.cpp" line="352"/>
-        <location filename="../src/mainwindow.cpp" line="361"/>
-        <location filename="../src/mainwindow.cpp" line="413"/>
+        <location filename="../src/mainwindow.cpp" line="318"/>
+        <location filename="../src/mainwindow.cpp" line="327"/>
+        <location filename="../src/mainwindow.cpp" line="373"/>
+        <location filename="../src/mainwindow.cpp" line="412"/>
+        <location filename="../src/mainwindow.cpp" line="421"/>
+        <location filename="../src/mainwindow.cpp" line="485"/>
         <source>QDialog: Unexpected result</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/mainwindow.cpp" line="364"/>
+        <source>Unexpected result</source>
         <translation type="unfinished"></translation>
     </message>
 </context>

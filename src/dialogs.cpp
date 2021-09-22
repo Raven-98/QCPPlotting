@@ -1,5 +1,7 @@
 #include "dialogs.h"
 
+#include <QDebug>
+
 Dialogs::Dialogs(QWidget *parent)
     : QDialog(parent)
 {
@@ -153,9 +155,59 @@ DialogSavePlot::DialogSavePlot(QWidget *parent)
     : Dialogs(parent)
 {
     setWindowTitle(tr("Save"));
+
+    label_Width = new QLabel(tr("Width"));
+
+    spinBox_Width = new QSpinBox;
+    spinBox_Width->setRange(0, INT_MAX);
+
+    label_Height = new QLabel(tr("Height"));
+
+    spinBox_Height = new QSpinBox;
+    spinBox_Height->setRange(0, INT_MAX);
+
+    label_Scale = new QLabel(tr("Scale"));
+
+    doubleSpinBox_Scale = new QDoubleSpinBox;
+    doubleSpinBox_Scale->setRange(0, INT_MAX);
+
+    gridLayout = new QGridLayout;
+    gridLayout->addWidget(label_Width,0,0);
+    gridLayout->addWidget(spinBox_Width,0,1);
+    gridLayout->addWidget(label_Height,1,0);
+    gridLayout->addWidget(spinBox_Height,1,1);
+    gridLayout->addWidget(label_Scale, 2, 0);
+    gridLayout->addWidget(doubleSpinBox_Scale, 2, 1);
+    gridLayout->addLayout(new Spacer(1, 0),3,1);
+
+    BoxLayout->addLayout(gridLayout);
 }
 
 DialogSavePlot::~DialogSavePlot()
 {
+    delete label_Width;
+    delete spinBox_Width;
+    delete label_Height;
+    delete spinBox_Height;
+    delete label_Scale;
+    delete doubleSpinBox_Scale;
+    delete gridLayout;
+}
 
+DSP::Data DialogSavePlot::getData()
+{
+    DSP::Data data;
+
+    data.Width = spinBox_Width->value();
+    data.Height = spinBox_Height->value();
+    data.Scale = doubleSpinBox_Scale->value();
+
+    return data;
+}
+
+void DialogSavePlot::setData(DSP::Data data)
+{
+    spinBox_Width->setValue(data.Width);
+    spinBox_Height->setValue(data.Height);
+    doubleSpinBox_Scale->setValue(data.Scale);
 }

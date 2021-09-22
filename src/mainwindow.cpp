@@ -334,16 +334,34 @@ void MainWindow::savePlot()
 {
     QFileDialog *fileDialog = new QFileDialog(this);
     fileDialog->setAcceptMode(QFileDialog::AcceptSave);
-    fileDialog->setMimeTypeFilters({"image/png", "image/jpeg", "application/pdf", "application/octet-stream"});
+    fileDialog->setMimeTypeFilters({"image/png",
+                                    "image/jpeg",
+//                                    "application/pdf"
+                                   });
     switch (fileDialog->exec())
     {
     case QDialog::Accepted:
     {
         DialogSavePlot *dialogSavePlot = new DialogSavePlot(this);
+        DSP::Data data;
+        data.Width = qobject_cast<ChartWidget *>(mdiArea->activeSubWindow()->widget())->customPlot->width();
+        data.Height = qobject_cast<ChartWidget *>(mdiArea->activeSubWindow()->widget())->customPlot->height();
+        data.Scale = 1.0;
+        dialogSavePlot->setData(data);
         switch (dialogSavePlot->exec())
         {
         case DialogSavePlot::Accepted:
+        {
+            QString format =  fileDialog->selectedFiles().at(0).split(".").takeLast();
+            data = dialogSavePlot->getData();
+            if (format == "png")
+                qobject_cast<ChartWidget *>(mdiArea->activeSubWindow()->widget())->customPlot->savePng(fileDialog->selectedFiles().at(0), data.Width, data.Height, data.Scale);
+            else if (format == "jpg")
+                qobject_cast<ChartWidget *>(mdiArea->activeSubWindow()->widget())->customPlot->saveJpg(fileDialog->selectedFiles().at(0), data.Width, data.Height, data.Scale);
+//            else if (format == "pdf")
+//                qobject_cast<ChartWidget *>(mdiArea->activeSubWindow()->widget())->customPlot->savePdf(fileDialog->selectedFiles().at(0), data.Width, data.Height, data.Scale);
             break;
+        }
         case DialogSavePlot::Rejected:
             break;
         default:

@@ -78,7 +78,7 @@ ChartWidget::ChartWidget(QWidget *parent)
 
     action_Save = new QAction;
     action_Save->setText(tr("Save"));
-    action_Save->setEnabled(false);
+//    action_Save->setEnabled(false);
 
     customContexMenu = new QMenu;
     customContexMenu->addAction(action_Properties);

@@ -6,6 +6,7 @@
 #include <QBoxLayout>
 #include <QVBoxLayout>
 #include <QHBoxLayout>
+#include <QGridLayout>
 #include <QCheckBox>
 #include <QLabel>
 #include <QComboBox>
@@ -13,8 +14,12 @@
 #include <QGroupBox>
 #include <QScrollArea>
 #include <QCheckBox>
+#include <QSpinBox>
+#include <QSpacerItem>
+#include <QDoubleSpinBox>
 
 //#include "chartwidget.h"
+#include "spacer.h"
 
 namespace FDSD
 {
@@ -93,12 +98,34 @@ private:
     QCheckBox *checkBox_NewCoordinateSystem;
 };
 
+namespace DSP
+{
+    struct Data
+    {
+        int Width;
+        int Height;
+        double Scale;
+    };
+}
+
 class DialogSavePlot : public Dialogs
 {
     Q_OBJECT
 public:
     DialogSavePlot(QWidget *parent = nullptr);
     ~DialogSavePlot();
+
+    DSP::Data getData();
+    void setData(DSP::Data data);
+
+private:
+    QSpinBox *spinBox_Width;
+    QSpinBox *spinBox_Height;
+    QLabel *label_Width;
+    QLabel *label_Height;
+    QGridLayout *gridLayout;
+    QLabel *label_Scale;
+    QDoubleSpinBox *doubleSpinBox_Scale;
 };
 
 #endif // DIALOGS_H

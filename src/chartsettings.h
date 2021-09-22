@@ -16,6 +16,8 @@
 #include <QTabWidget>
 #include "qcustomplot.h"
 
+#include "spacer.h"
+
 class AxisSettings;
 class GraphSettings;
 class GridSettings;
@@ -269,14 +271,6 @@ private:
     QCPLegend &Legend;
     QGridLayout *gridLayout;
     QCheckBox *checkBox_Visible;
-};
-
-class Spacer : public QVBoxLayout
-{
-    Q_OBJECT
-public:
-    Spacer(QSizePolicy::Policy hPolicy = QSizePolicy::Expanding, QSizePolicy::Policy vPolicy = QSizePolicy::Expanding, QWidget *parent = nullptr);
-    ~Spacer();
 };
 
 #endif // CHARTSETTINGS_H

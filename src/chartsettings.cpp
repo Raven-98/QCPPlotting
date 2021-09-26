@@ -106,7 +106,7 @@ ChartSettings::ChartSettings(QCustomPlot &qcp, QWidget *parent)
     tab_Legend->setLayout(gridLayout_Legend);
 //
     tabWidget = new QTabWidget;
-    tabWidget->addTab(tab_Global, tr("Glibal"));
+//    tabWidget->addTab(tab_Global, tr("Global"));
     tabWidget->addTab(tab_Axis, tr("Axes"));
     tabWidget->addTab(tab_Graph, tr("Graph"));
     tabWidget->addTab(tab_Grid, tr("Grid"));
@@ -287,6 +287,11 @@ AxisSettings::AxisSettings(QCPAxis &axis, QWidget *parent)
     lineEdit_Title->setText(Axis.label());
     connect(lineEdit_Title,&QLineEdit::textEdited,this,&AxisSettings::slot_TitleWidgetsEnabled);
 
+    label_TitleFont = new QLabel;
+    label_TitleFont->setText(tr("Font"));
+
+    fontComboBox_TitleFont = new QFontComboBox;
+
     label_TitleColor = new QLabel;
     label_TitleColor->setText(tr("Color"));
 
@@ -300,9 +305,12 @@ AxisSettings::AxisSettings(QCPAxis &axis, QWidget *parent)
     gridLayout_Title->addLayout(new Spacer(QSizePolicy::Minimum), 1, 0);
     gridLayout_Title->addWidget(lineEdit_Title,2,0, 1, 2);
     gridLayout_Title->addLayout(new Spacer(QSizePolicy::Minimum), 3, 0);
-    gridLayout_Title->addWidget(label_TitleColor,4,0);
-    gridLayout_Title->addWidget(pushButton_TitleColor,4,1);
+    gridLayout_Title->addWidget(label_TitleFont,4,0);
+    gridLayout_Title->addWidget(fontComboBox_TitleFont,4,1);
     gridLayout_Title->addLayout(new Spacer(),5,1);
+    gridLayout_Title->addWidget(label_TitleColor,6,0);
+    gridLayout_Title->addWidget(pushButton_TitleColor,6,1);
+    gridLayout_Title->addLayout(new Spacer(),7,1);
 
     groupBox_Title = new QGroupBox;
     groupBox_Title->setLayout(gridLayout_Title);
@@ -501,6 +509,8 @@ AxisSettings::AxisSettings(QCPAxis &axis, QWidget *parent)
 AxisSettings::~AxisSettings()
 {
 //    delete label_AxisTitle;
+    delete label_TitleFont;
+    delete fontComboBox_TitleFont;
     delete checkBox_AxisTitle;
     delete label_Title;
     delete label_TitleColor;

@@ -347,6 +347,9 @@ void MainWindow::savePlot()
         data.Width = qobject_cast<ChartWidget *>(mdiArea->activeSubWindow()->widget())->customPlot->width();
         data.Height = qobject_cast<ChartWidget *>(mdiArea->activeSubWindow()->widget())->customPlot->height();
         data.Scale = 1.0;
+        data.Quality = 90;
+        data.Resolution = 96;
+        data.ResolutionUnit = 2;
         dialogSavePlot->setData(data);
         switch (dialogSavePlot->exec())
         {
@@ -355,9 +358,21 @@ void MainWindow::savePlot()
             QString format =  fileDialog->selectedFiles().at(0).split(".").takeLast();
             data = dialogSavePlot->getData();
             if (format == "png")
-                qobject_cast<ChartWidget *>(mdiArea->activeSubWindow()->widget())->customPlot->savePng(fileDialog->selectedFiles().at(0), data.Width, data.Height, data.Scale);
+                qobject_cast<ChartWidget *>(mdiArea->activeSubWindow()->widget())->customPlot->savePng(fileDialog->selectedFiles().at(0),
+                                                                                                       data.Width,
+                                                                                                       data.Height,
+                                                                                                       data.Scale,
+                                                                                                       data.Quality,
+                                                                                                       data.Resolution,
+                                                                                                       static_cast<QCP::ResolutionUnit>(data.ResolutionUnit));
             else if (format == "jpg")
-                qobject_cast<ChartWidget *>(mdiArea->activeSubWindow()->widget())->customPlot->saveJpg(fileDialog->selectedFiles().at(0), data.Width, data.Height, data.Scale);
+                qobject_cast<ChartWidget *>(mdiArea->activeSubWindow()->widget())->customPlot->saveJpg(fileDialog->selectedFiles().at(0),
+                                                                                                       data.Width,
+                                                                                                       data.Height,
+                                                                                                       data.Scale,
+                                                                                                       data.Quality,
+                                                                                                       data.Resolution,
+                                                                                                       static_cast<QCP::ResolutionUnit>(data.ResolutionUnit));
 //            else if (format == "pdf")
 //                qobject_cast<ChartWidget *>(mdiArea->activeSubWindow()->widget())->customPlot->savePdf(fileDialog->selectedFiles().at(0), data.Width, data.Height, data.Scale);
             break;
@@ -368,6 +383,7 @@ void MainWindow::savePlot()
             QMessageBox::critical(dialogSavePlot,tr("Error"),tr("Unexpected result"));
             break;
         }
+        QMessageBox::information(dialogSavePlot, "", tr("Saving was successful"));
         delete dialogSavePlot;
         break;
     }

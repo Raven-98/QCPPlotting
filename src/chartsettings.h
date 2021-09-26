@@ -14,6 +14,8 @@
 #include <QSpacerItem>
 #include <QDoubleSpinBox>
 #include <QTabWidget>
+#include <QFont>
+#include <QFontComboBox>
 #include "qcustomplot.h"
 
 #include "spacer.h"
@@ -131,6 +133,8 @@ private:
     QGridLayout *gridLayout_MajorTicks;
     QGridLayout *gridLayout_MinorTicks;
     QGridLayout *gridLayout_TicksLabel;
+    QLabel *label_TitleFont;
+    QFontComboBox *fontComboBox_TitleFont;
 
 private slots:
     void slot_TitleColor();

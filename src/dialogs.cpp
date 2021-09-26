@@ -161,24 +161,51 @@ DialogSavePlot::DialogSavePlot(QWidget *parent)
     spinBox_Width = new QSpinBox;
     spinBox_Width->setRange(0, INT_MAX);
 
+    label_WidthUnit = new QLabel("px");
+
     label_Height = new QLabel(tr("Height"));
 
     spinBox_Height = new QSpinBox;
     spinBox_Height->setRange(0, INT_MAX);
+
+    label_HeightUnit = new QLabel("px");
 
     label_Scale = new QLabel(tr("Scale"));
 
     doubleSpinBox_Scale = new QDoubleSpinBox;
     doubleSpinBox_Scale->setRange(0, INT_MAX);
 
+    label_Quality = new QLabel(tr("Quality"));
+
+    spinBox_Quality = new QSpinBox;
+    spinBox_Quality->setRange(0, 100);
+
+    label_Resolution = new QLabel(tr("Resolution"));
+
+    spinBox_Resolution = new QSpinBox;
+    spinBox_Resolution->setRange(0, INT_MAX);
+
+    comboBox_ResolutionUnit = new QComboBox;
+    comboBox_ResolutionUnit->addItems({"dpm",
+                                       "dpcm",
+                                       "ppi"
+                                      });
+
     gridLayout = new QGridLayout;
-    gridLayout->addWidget(label_Width,0,0);
-    gridLayout->addWidget(spinBox_Width,0,1);
-    gridLayout->addWidget(label_Height,1,0);
-    gridLayout->addWidget(spinBox_Height,1,1);
+    gridLayout->addWidget(label_Width, 0, 0);
+    gridLayout->addWidget(spinBox_Width, 0, 1, 1, 2);
+    gridLayout->addWidget(label_WidthUnit, 0, 3);
+    gridLayout->addWidget(label_Height, 1, 0);
+    gridLayout->addWidget(spinBox_Height, 1, 1, 1, 2);
+    gridLayout->addWidget(label_HeightUnit, 1, 3);
     gridLayout->addWidget(label_Scale, 2, 0);
-    gridLayout->addWidget(doubleSpinBox_Scale, 2, 1);
-    gridLayout->addLayout(new Spacer(1, 0),3,1);
+    gridLayout->addWidget(doubleSpinBox_Scale, 2, 1, 1, 3);
+    gridLayout->addWidget(label_Quality, 3, 0);
+    gridLayout->addWidget(spinBox_Quality, 3, 1, 1, 3);
+    gridLayout->addWidget(label_Resolution, 4, 0);
+    gridLayout->addWidget(spinBox_Resolution, 4, 1);
+    gridLayout->addWidget(comboBox_ResolutionUnit, 4, 2, 1, 2);
+    gridLayout->addLayout(new Spacer(1, 0), 5, 1);
 
     BoxLayout->addLayout(gridLayout);
 }
@@ -187,10 +214,17 @@ DialogSavePlot::~DialogSavePlot()
 {
     delete label_Width;
     delete spinBox_Width;
+    delete label_WidthUnit;
     delete label_Height;
     delete spinBox_Height;
+    delete label_HeightUnit;
     delete label_Scale;
     delete doubleSpinBox_Scale;
+    delete label_Quality;
+    delete spinBox_Quality;
+    delete label_Resolution;
+    delete spinBox_Resolution;
+    delete comboBox_ResolutionUnit;
     delete gridLayout;
 }
 
@@ -201,6 +235,9 @@ DSP::Data DialogSavePlot::getData()
     data.Width = spinBox_Width->value();
     data.Height = spinBox_Height->value();
     data.Scale = doubleSpinBox_Scale->value();
+    data.Quality = spinBox_Quality->value();
+    data.Resolution = spinBox_Resolution->value();
+    data.ResolutionUnit = comboBox_ResolutionUnit->currentIndex();
 
     return data;
 }
@@ -210,4 +247,7 @@ void DialogSavePlot::setData(DSP::Data data)
     spinBox_Width->setValue(data.Width);
     spinBox_Height->setValue(data.Height);
     doubleSpinBox_Scale->setValue(data.Scale);
+    spinBox_Quality->setValue(data.Quality);
+    spinBox_Resolution->setValue(data.Resolution);
+    comboBox_ResolutionUnit->setCurrentIndex(data.ResolutionUnit);
 }

@@ -105,6 +105,9 @@ namespace DSP
         int Width;
         int Height;
         double Scale;
+        short Quality;
+        int Resolution;
+        short ResolutionUnit;
     };
 }
 
@@ -123,9 +126,16 @@ private:
     QSpinBox *spinBox_Height;
     QLabel *label_Width;
     QLabel *label_Height;
+    QLabel *label_WidthUnit;
+    QLabel *label_HeightUnit;
     QGridLayout *gridLayout;
     QLabel *label_Scale;
     QDoubleSpinBox *doubleSpinBox_Scale;
+    QLabel *label_Quality;
+    QSpinBox *spinBox_Quality;
+    QLabel *label_Resolution;
+    QSpinBox *spinBox_Resolution;
+    QComboBox *comboBox_ResolutionUnit;
 };
 
 #endif // DIALOGS_H

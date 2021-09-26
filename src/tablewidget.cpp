@@ -326,6 +326,16 @@ void TableWidget::slot_NexCell()
     }
 }
 
+void TableWidget::slot_NexCell_Column()
+{
+
+}
+
+void TableWidget::slot_NexCell_Row()
+{
+
+}
+
 void TableWidget::slot_AddColumn()
 {
     tableWidget->model()->insertColumn(tableWidget->model()->columnCount());

@@ -115,7 +115,7 @@ class DialogSavePlot : public Dialogs
 {
     Q_OBJECT
 public:
-    DialogSavePlot(QWidget *parent = nullptr);
+    DialogSavePlot(QString format, QWidget *parent = nullptr);
     ~DialogSavePlot();
 
     DSP::Data getData();
@@ -131,8 +131,8 @@ private:
     QGridLayout *gridLayout;
     QLabel *label_Scale;
     QDoubleSpinBox *doubleSpinBox_Scale;
-    QLabel *label_Quality;
-    QSpinBox *spinBox_Quality;
+    QLabel *label_Quality = nullptr;
+    QSpinBox *spinBox_Quality = nullptr;
     QLabel *label_Resolution;
     QSpinBox *spinBox_Resolution;
     QComboBox *comboBox_ResolutionUnit;

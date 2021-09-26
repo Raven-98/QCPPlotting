@@ -59,6 +59,8 @@ private:
 
 private slots:
     void slot_NexCell();
+    void slot_NexCell_Column();
+    void slot_NexCell_Row();
     void slot_AddColumn();
     void customHeaderMenuRequested_table(const QPoint &pos);
     void customHeaderMenuRequested_header(const QPoint &pos);

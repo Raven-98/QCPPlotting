@@ -151,7 +151,7 @@ QStringList DialodAddPlot::getData()
     return lst;
 }
 
-DialogSavePlot::DialogSavePlot(QWidget *parent)
+DialogSavePlot::DialogSavePlot(QString format, QWidget *parent)
     : Dialogs(parent)
 {
     setWindowTitle(tr("Save"));
@@ -175,10 +175,13 @@ DialogSavePlot::DialogSavePlot(QWidget *parent)
     doubleSpinBox_Scale = new QDoubleSpinBox;
     doubleSpinBox_Scale->setRange(0, INT_MAX);
 
-    label_Quality = new QLabel(tr("Quality"));
+    if (format == "png" or format == "jpg")
+    {
+        label_Quality = new QLabel(tr("Quality"));
 
-    spinBox_Quality = new QSpinBox;
-    spinBox_Quality->setRange(0, 100);
+        spinBox_Quality = new QSpinBox;
+        spinBox_Quality->setRange(0, 100);
+    }
 
     label_Resolution = new QLabel(tr("Resolution"));
 
@@ -200,8 +203,11 @@ DialogSavePlot::DialogSavePlot(QWidget *parent)
     gridLayout->addWidget(label_HeightUnit, 1, 3);
     gridLayout->addWidget(label_Scale, 2, 0);
     gridLayout->addWidget(doubleSpinBox_Scale, 2, 1, 1, 3);
-    gridLayout->addWidget(label_Quality, 3, 0);
-    gridLayout->addWidget(spinBox_Quality, 3, 1, 1, 3);
+    if (format == "png" or format == "jpg")
+    {
+        gridLayout->addWidget(label_Quality, 3, 0);
+        gridLayout->addWidget(spinBox_Quality, 3, 1, 1, 3);
+    }
     gridLayout->addWidget(label_Resolution, 4, 0);
     gridLayout->addWidget(spinBox_Resolution, 4, 1);
     gridLayout->addWidget(comboBox_ResolutionUnit, 4, 2, 1, 2);
@@ -220,8 +226,10 @@ DialogSavePlot::~DialogSavePlot()
     delete label_HeightUnit;
     delete label_Scale;
     delete doubleSpinBox_Scale;
-    delete label_Quality;
-    delete spinBox_Quality;
+    if (label_Quality)
+        delete label_Quality;
+    if (spinBox_Quality)
+        delete spinBox_Quality;
     delete label_Resolution;
     delete spinBox_Resolution;
     delete comboBox_ResolutionUnit;
@@ -235,7 +243,8 @@ DSP::Data DialogSavePlot::getData()
     data.Width = spinBox_Width->value();
     data.Height = spinBox_Height->value();
     data.Scale = doubleSpinBox_Scale->value();
-    data.Quality = spinBox_Quality->value();
+    if (spinBox_Quality)
+        data.Quality = spinBox_Quality->value();
     data.Resolution = spinBox_Resolution->value();
     data.ResolutionUnit = comboBox_ResolutionUnit->currentIndex();
 
@@ -247,7 +256,8 @@ void DialogSavePlot::setData(DSP::Data data)
     spinBox_Width->setValue(data.Width);
     spinBox_Height->setValue(data.Height);
     doubleSpinBox_Scale->setValue(data.Scale);
-    spinBox_Quality->setValue(data.Quality);
+    if (spinBox_Quality)
+        spinBox_Quality->setValue(data.Quality);
     spinBox_Resolution->setValue(data.Resolution);
     comboBox_ResolutionUnit->setCurrentIndex(data.ResolutionUnit);
 }

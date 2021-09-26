@@ -336,13 +336,15 @@ void MainWindow::savePlot()
     fileDialog->setAcceptMode(QFileDialog::AcceptSave);
     fileDialog->setMimeTypeFilters({"image/png",
                                     "image/jpeg",
+                                    "image/bmp",
 //                                    "application/pdf"
                                    });
     switch (fileDialog->exec())
     {
     case QDialog::Accepted:
     {
-        DialogSavePlot *dialogSavePlot = new DialogSavePlot(this);
+        QString format =  fileDialog->selectedFiles().at(0).split(".").takeLast();
+        DialogSavePlot *dialogSavePlot = new DialogSavePlot(format, this);
         DSP::Data data;
         data.Width = qobject_cast<ChartWidget *>(mdiArea->activeSubWindow()->widget())->customPlot->width();
         data.Height = qobject_cast<ChartWidget *>(mdiArea->activeSubWindow()->widget())->customPlot->height();
@@ -355,7 +357,6 @@ void MainWindow::savePlot()
         {
         case DialogSavePlot::Accepted:
         {
-            QString format =  fileDialog->selectedFiles().at(0).split(".").takeLast();
             data = dialogSavePlot->getData();
             if (format == "png")
                 qobject_cast<ChartWidget *>(mdiArea->activeSubWindow()->widget())->customPlot->savePng(fileDialog->selectedFiles().at(0),
@@ -371,6 +372,13 @@ void MainWindow::savePlot()
                                                                                                        data.Height,
                                                                                                        data.Scale,
                                                                                                        data.Quality,
+                                                                                                       data.Resolution,
+                                                                                                       static_cast<QCP::ResolutionUnit>(data.ResolutionUnit));
+            else if (format == "bmp")
+                qobject_cast<ChartWidget *>(mdiArea->activeSubWindow()->widget())->customPlot->saveBmp(fileDialog->selectedFiles().at(0),
+                                                                                                       data.Width,
+                                                                                                       data.Height,
+                                                                                                       data.Scale,
                                                                                                        data.Resolution,
                                                                                                        static_cast<QCP::ResolutionUnit>(data.ResolutionUnit));
 //            else if (format == "pdf")

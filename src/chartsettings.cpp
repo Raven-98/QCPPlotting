@@ -5,6 +5,8 @@
 ChartSettings::ChartSettings(QCustomPlot &qcp, QWidget *parent)
     : QDialog(parent)
 {
+    resize(800, 600);
+
     csdt = csDialodType::Global;
 
     setWindowTitle(tr("Chart settings"));
@@ -86,15 +88,7 @@ ChartSettings::ChartSettings(QCustomPlot &qcp, QWidget *parent)
 
     tab_Graph = new QWidget;
     tab_Graph->setLayout(gridLayout_Graph);
-// Grid
-    gridSettings = new GridSettings(qcp);
 
-    gridLayout_Grid = new QGridLayout;
-    gridLayout_Grid->setContentsMargins(0, 0, 0, 0);
-    gridLayout_Grid->addWidget(gridSettings);
-
-    tab_Grid = new QWidget;
-    tab_Grid->setLayout(gridLayout_Grid);
 // Legend
     legendSettings = new LegendSettings(*(qcp.legend));
 
@@ -109,7 +103,6 @@ ChartSettings::ChartSettings(QCustomPlot &qcp, QWidget *parent)
 //    tabWidget->addTab(tab_Global, tr("Global"));
     tabWidget->addTab(tab_Axis, tr("Axes"));
     tabWidget->addTab(tab_Graph, tr("Graph"));
-    tabWidget->addTab(tab_Grid, tr("Grid"));
     tabWidget->addTab(tab_Legend, tr("Legend"));
 
     vBoxLayout->insertWidget(0, tabWidget);
@@ -118,6 +111,8 @@ ChartSettings::ChartSettings(QCustomPlot &qcp, QWidget *parent)
 ChartSettings::ChartSettings(QCPAxis &axis, QWidget *parent)
     : QDialog(parent)
 {
+    resize(800, 600);
+
     csdt = csDialodType::Axis;
 
     setWindowTitle(tr("Axis settings"));
@@ -189,8 +184,6 @@ ChartSettings::~ChartSettings()
     if (tab_Graph)
         delete tab_Graph;
 
-    if (gridSettings)
-        delete gridSettings;
     if (gridLayout_Grid)
         delete gridLayout_Grid;
     if (tab_Grid)
@@ -219,7 +212,6 @@ void ChartSettings::set()
         {
             graphSettings->set();
         }
-        gridSettings->set();
         legendSettings->set();
         break;
     case csDialodType::Axis:
@@ -250,31 +242,24 @@ AxisSettings::AxisSettings(QCPAxis &axis, QWidget *parent)
     : QWidget(parent),
       Axis(axis)
 {
-//    label_AxisTitle = new QLabel;
     checkBox_AxisTitle = new QCheckBox;
     switch (Axis.axisType()) {
     case QCPAxis::atLeft:
-//        label_AxisTitle->setText(tr("Left axis"));
         checkBox_AxisTitle->setText(tr("Left axis"));
         break;
     case QCPAxis::atBottom:
-//        label_AxisTitle->setText(tr("Bottom axis"));
         checkBox_AxisTitle->setText(tr("Bottom axis"));
         break;
     case QCPAxis::atRight:
-//        label_AxisTitle->setText(tr("Right axis"));
         checkBox_AxisTitle->setText(tr("Right axis"));
         break;
     case QCPAxis::atTop:
-//        label_AxisTitle->setText(tr("Top axis"));
         checkBox_AxisTitle->setText(tr("Top axis"));
         break;
     default:
         break;
     }
-//    label_AxisTitle->setStyleSheet("QLabel{ font: bold;"
-//                                        "   qproperty-alignment: AlignCenter;"
-//                                        "}");
+
     checkBox_AxisTitle->setStyleSheet("QCheckBox{ font: bold;}");
     checkBox_AxisTitle->setChecked(Axis.visible());
     connect(checkBox_AxisTitle,&QCheckBox::stateChanged,this,&AxisSettings::slot_AxisWidgetsEnabled);
@@ -486,18 +471,32 @@ AxisSettings::AxisSettings(QCPAxis &axis, QWidget *parent)
 
     delete color;
 
+    gridSettingsBox = new GridSettingsBox(Axis);
+
+    gridLayout_ScrollArea = new QGridLayout;
+    gridLayout_ScrollArea->setContentsMargins(0, 0, 0, 0);
+    gridLayout_ScrollArea->addWidget(checkBox_AxisTitle, 0, 0, 1, 6);
+    gridLayout_ScrollArea->addWidget(groupBox_Title, 1, 0, 1, 6);
+    gridLayout_ScrollArea->addWidget(groupBox_RangeAxis, 2, 0, 1, 3);
+    gridLayout_ScrollArea->addWidget(groupBox_AxisColor, 2, 3, 1, 3);
+    gridLayout_ScrollArea->addWidget(groupBox_MajorTicks, 3, 0, 1, 2);
+    gridLayout_ScrollArea->addWidget(groupBox_MinorTicks, 3, 2, 1, 2);
+    gridLayout_ScrollArea->addWidget(groupBox_TicksLabel, 3, 4, 1, 2);
+    gridLayout_ScrollArea->addWidget(gridSettingsBox, 4, 0, 1, 6);
+
+    scrollContainer = new QWidget;
+    scrollContainer->setLayout(gridLayout_ScrollArea);
+
+    scrollArea = new QScrollArea;
+    scrollArea->setWidgetResizable(true);
+    scrollArea->setWidget(scrollContainer);
+
     gridLayout = new QGridLayout;
     gridLayout->setContentsMargins(0, 0, 0, 0);
-//    gridLayout->addWidget(label_AxisTitle, 0, 0, 1, 6);
-    gridLayout->addWidget(checkBox_AxisTitle, 0, 0, 1, 6);
-    gridLayout->addWidget(groupBox_Title, 1, 0, 1, 6);
-    gridLayout->addWidget(groupBox_RangeAxis, 2, 0, 1, 3);
-    gridLayout->addWidget(groupBox_AxisColor, 2, 3, 1, 3);
-    gridLayout->addWidget(groupBox_MajorTicks, 3, 0, 1, 2);
-    gridLayout->addWidget(groupBox_MinorTicks, 3, 2, 1, 2);
-    gridLayout->addWidget(groupBox_TicksLabel, 3, 4, 1, 2);
+    gridLayout->addWidget(scrollArea, 0, 0);
 
     setLayout(gridLayout);
+
 
     slot_AxisWidgetsEnabled(checkBox_AxisTitle->checkState());
     slot_TitleWidgetsEnabled(lineEdit_Title->text());
@@ -508,7 +507,6 @@ AxisSettings::AxisSettings(QCPAxis &axis, QWidget *parent)
 
 AxisSettings::~AxisSettings()
 {
-//    delete label_AxisTitle;
     delete label_TitleFont;
     delete fontComboBox_TitleFont;
     delete checkBox_AxisTitle;
@@ -550,6 +548,10 @@ AxisSettings::~AxisSettings()
     delete groupBox_MajorTicks;
     delete groupBox_MinorTicks;
     delete groupBox_TicksLabel;
+    delete gridSettingsBox;
+    delete gridLayout_ScrollArea;
+    delete scrollContainer;
+    delete scrollArea;
     delete gridLayout;
 }
 
@@ -611,6 +613,7 @@ void AxisSettings::set()
         }
         Axis.setTickLabelColor(pushButton_TicksLabelColor->text());
     }
+    gridSettingsBox->set();
 }
 
 void AxisSettings::setPushButtonStyleSheet(QPushButton *button)
@@ -1220,33 +1223,6 @@ void GraphSettings::slot_LineWidgetsEnabled(int index)
     }
 }
 
-GridSettings::GridSettings(QCustomPlot &qcp, QWidget *parent)
-    : QWidget(parent)
-{
-    gridSettingsBox_Horizontal = new GridSettingsBox(qcp, GridSettingsBox::Horizontal);
-
-    gridSettingsBox_Vertical = new GridSettingsBox(qcp, GridSettingsBox::Vertical);
-
-    gridLayout = new QGridLayout;
-    gridLayout->addWidget(gridSettingsBox_Horizontal);
-    gridLayout->addWidget(gridSettingsBox_Vertical);
-
-    setLayout(gridLayout);
-}
-
-GridSettings::~GridSettings()
-{
-    delete gridSettingsBox_Horizontal;
-    delete gridSettingsBox_Vertical;
-    delete gridLayout;
-}
-
-void GridSettings::set()
-{
-    gridSettingsBox_Horizontal->set();
-    gridSettingsBox_Vertical->set();
-}
-
 LegendSettings::LegendSettings(QCPLegend &legend, QWidget *parent)
     : QWidget(parent),
       Legend(legend)
@@ -1272,13 +1248,13 @@ void LegendSettings::set()
     Legend.setVisible(checkBox_Visible->isChecked());
 }
 
-GridSettingsBox::GridSettingsBox(QCustomPlot &qcp_, Grid g, QWidget *parent)
+GridSettingsBox::GridSettingsBox(QCPAxis &axis, QWidget *parent)
     : QGroupBox(parent),
-      G(g),
-      qcp(qcp_)
+      A(axis)
 {
     label = new QLabel;
     label->setStyleSheet("QLabel{ font: bold;}");
+    label->setText(tr("Grid"));
 
     checkBoxMajor = new QCheckBox;
     checkBoxMajor->setText(tr("Major grid"));
@@ -1287,6 +1263,7 @@ GridSettingsBox::GridSettingsBox(QCustomPlot &qcp_, Grid g, QWidget *parent)
     checkBoxMinor = new QCheckBox;
     checkBoxMinor->setText(tr("Minor grid"));
     connect(checkBoxMinor,&QCheckBox::stateChanged,this,&GridSettingsBox::slot_MinorWidgetsEnabled);
+
 
     label_LineStyle = new QLabel;
     label_LineStyle->setText(tr("Line style"));
@@ -1323,11 +1300,6 @@ GridSettingsBox::GridSettingsBox(QCustomPlot &qcp_, Grid g, QWidget *parent)
     pushButtonMinor_LineColor = new QPushButton;
     connect(pushButtonMinor_LineColor,&QPushButton::clicked,this,&GridSettingsBox::slot_MinorLineColor);
 
-    label_Axis = new QLabel;
-    label_Axis->setText(tr("Axis"));
-
-    comboBox_Axis = new QComboBox;
-
     gridLayout = new QGridLayout;
     gridLayout->addWidget(label, 0, 0, 1, 3);
     gridLayout->addLayout(new Spacer(QSizePolicy::Minimum), 1, 0);
@@ -1347,98 +1319,29 @@ GridSettingsBox::GridSettingsBox(QCustomPlot &qcp_, Grid g, QWidget *parent)
     gridLayout->addWidget(pushButtonMinor_LineColor, 8, 2);
     gridLayout->addLayout(new Spacer(), 9, 1);
     gridLayout->addLayout(new Spacer(), 9, 2);
-    gridLayout->addWidget(label_Axis, 10, 0);
-    gridLayout->addWidget(comboBox_Axis, 10, 1, 1, 2);
 
     setLayout(gridLayout);
 
     QColor *color = new QColor;
-    switch (G) {
-    case Horizontal:
-        label->setText(tr("Horizontal"));
-        if (qcp.yAxis->grid()->visible())
-        {
-            checkBoxMajor->setChecked(true);
-            comboBoxMajor_LineStyle->setCurrentIndex(qcp.yAxis->grid()->pen().style() - 1);
-            doubleSpinBoxMajor_LineWidth->setValue(qcp.yAxis->grid()->pen().widthF());
-            *color = qcp.yAxis->grid()->pen().color();
-        }
-        else if (qcp.yAxis2->grid()->visible())
-        {
-            checkBoxMajor->setChecked(true);
-            comboBoxMajor_LineStyle->setCurrentIndex(qcp.yAxis2->grid()->pen().style() - 1);
-            doubleSpinBoxMajor_LineWidth->setValue(qcp.yAxis2->grid()->pen().widthF());
-            *color = qcp.yAxis2->grid()->pen().color();
-        }
-        setPushButtonStyleSheet(pushButtonMajor_LineColor, color);
-        if (qcp.yAxis->grid()->subGridVisible())
-        {
-            checkBoxMinor->setChecked(true);
-            comboBoxMinor_LineStyle->setCurrentIndex(qcp.yAxis->grid()->subGridPen().style() - 1);
-            doubleSpinBoxMinor_LineWidth->setValue(qcp.yAxis->grid()->subGridPen().widthF());
-            *color = qcp.yAxis->grid()->subGridPen().color();
-        }
-        else if (qcp.yAxis2->grid()->subGridVisible())
-        {
-            checkBoxMinor->setChecked(true);
-            comboBoxMinor_LineStyle->setCurrentIndex(qcp.yAxis2->grid()->subGridPen().style() - 1);
-            doubleSpinBoxMinor_LineWidth->setValue(qcp.yAxis2->grid()->subGridPen().widthF());
-            *color = qcp.yAxis2->grid()->subGridPen().color();
-        }
-        setPushButtonStyleSheet(pushButtonMinor_LineColor, color);
-        comboBox_Axis->addItems({tr("Left"),
-                                 tr("Right")
-                                });
-        if (qcp.yAxis->grid()->visible() || qcp.yAxis->grid()->subGridVisible())
-            comboBox_Axis->setCurrentIndex(0);
-        else if (qcp.yAxis2->grid()->visible() || qcp.yAxis2->grid()->subGridVisible())
-            comboBox_Axis->setCurrentIndex(1);
-        break;
-    case Vertical:
-        label->setText(tr("Vertical"));
-        if (qcp.xAxis->grid()->visible())
-        {
-            checkBoxMajor->setChecked(true);
-            comboBoxMajor_LineStyle->setCurrentIndex(qcp.xAxis->grid()->pen().style() - 1);
-            doubleSpinBoxMajor_LineWidth->setValue(qcp.xAxis->grid()->pen().widthF());
-            *color = qcp.xAxis->grid()->pen().color();
-        }
-        else if (qcp.xAxis2->grid()->visible())
-        {
-            checkBoxMajor->setChecked(true);
-            comboBoxMajor_LineStyle->setCurrentIndex(qcp.xAxis2->grid()->pen().style() - 1);
-            doubleSpinBoxMajor_LineWidth->setValue(qcp.xAxis2->grid()->pen().widthF());
-            *color = qcp.xAxis2->grid()->pen().color();
-        }
-        setPushButtonStyleSheet(pushButtonMajor_LineColor, color);
 
-        if (qcp.xAxis->grid()->subGridVisible())
-        {
-            checkBoxMinor->setChecked(true);
-            comboBoxMinor_LineStyle->setCurrentIndex(qcp.xAxis->grid()->subGridPen().style() - 1);
-            doubleSpinBoxMinor_LineWidth->setValue(qcp.xAxis->grid()->subGridPen().widthF());
-            *color = qcp.xAxis->grid()->subGridPen().color();
-        }
-        else if (qcp.xAxis2->grid()->subGridVisible())
-        {
-            checkBoxMinor->setChecked(true);
-            comboBoxMinor_LineStyle->setCurrentIndex(qcp.xAxis2->grid()->subGridPen().style() - 1);
-            doubleSpinBoxMinor_LineWidth->setValue(qcp.xAxis2->grid()->subGridPen().widthF());
-            *color = qcp.xAxis2->grid()->subGridPen().color();
-        }
-        setPushButtonStyleSheet(pushButtonMinor_LineColor, color);
-
-        comboBox_Axis->addItems({tr("Bottom"),
-                                 tr("Top")
-                                });
-        if (qcp.xAxis->grid()->visible() || qcp.xAxis->grid()->subGridVisible())
-            comboBox_Axis->setCurrentIndex(0);
-        else if (qcp.xAxis2->grid()->visible() || qcp.xAxis2->grid()->subGridVisible())
-            comboBox_Axis->setCurrentIndex(1);
-        break;
-    default:
-        break;
+    if (A.grid()->visible())
+    {
+        checkBoxMajor->setChecked(true);
+        comboBoxMajor_LineStyle->setCurrentIndex(A.grid()->pen().style() - 1);
+        doubleSpinBoxMajor_LineWidth->setValue(A.grid()->pen().widthF());
+        *color = A.grid()->pen().color();
     }
+    setPushButtonStyleSheet(pushButtonMajor_LineColor, color);
+
+    if (A.grid()->subGridVisible())
+    {
+        checkBoxMinor->setChecked(true);
+        comboBoxMinor_LineStyle->setCurrentIndex(A.grid()->subGridPen().style() - 1);
+        doubleSpinBoxMinor_LineWidth->setValue(A.grid()->subGridPen().widthF());
+        *color = A.grid()->subGridPen().color();
+    }
+    setPushButtonStyleSheet(pushButtonMinor_LineColor, color);
+
     delete color;
 
     slot_MajorWidgetsEnabled(checkBoxMajor->checkState());
@@ -1451,7 +1354,6 @@ GridSettingsBox::~GridSettingsBox()
     delete label_LineStyle;
     delete label_LineWidth;
     delete label_LineColor;
-    delete label_Axis;
     delete checkBoxMajor;
     delete checkBoxMinor;
     delete comboBoxMajor_LineStyle;
@@ -1460,45 +1362,12 @@ GridSettingsBox::~GridSettingsBox()
     delete doubleSpinBoxMinor_LineWidth;
     delete pushButtonMajor_LineColor;
     delete pushButtonMinor_LineColor;
-    delete comboBox_Axis;
     delete gridLayout;
 }
 
 void GridSettingsBox::set()
 {
-    QCPGrid *grid = nullptr;
-    if (G == Horizontal && comboBox_Axis->currentIndex() == 0)
-    {
-        qcp.yAxis->grid()->setVisible(true);
-        qcp.yAxis2->grid()->setVisible(false);
-        qcp.yAxis->grid()->setSubGridVisible(true);
-        qcp.yAxis2->grid()->setSubGridVisible(false);
-        grid = qcp.yAxis->grid();
-    }
-    else if (G == Horizontal && comboBox_Axis->currentIndex() == 1)
-    {
-        qcp.yAxis->grid()->setVisible(false);
-        qcp.yAxis2->grid()->setVisible(true);
-        qcp.yAxis->grid()->setSubGridVisible(false);
-        qcp.yAxis2->grid()->setSubGridVisible(true);
-        grid = qcp.yAxis2->grid();
-    }
-    else if (G == Vertical && comboBox_Axis->currentIndex() == 0)
-    {
-        qcp.xAxis->grid()->setVisible(true);
-        qcp.xAxis2->grid()->setVisible(false);
-        qcp.xAxis->grid()->setSubGridVisible(true);
-        qcp.xAxis2->grid()->setSubGridVisible(false);
-        grid = qcp.xAxis->grid();
-    }
-    else if (G == Vertical && comboBox_Axis->currentIndex() == 1)
-    {
-        qcp.xAxis->grid()->setVisible(false);
-        qcp.xAxis2->grid()->setVisible(true);
-        qcp.xAxis->grid()->setSubGridVisible(false);
-        qcp.xAxis2->grid()->setSubGridVisible(true);
-        grid = qcp.xAxis2->grid();
-    }
+    QCPGrid *grid = A.grid();
     if (!grid)
         return;
 
@@ -1527,6 +1396,7 @@ void GridSettingsBox::set()
         pen->setWidthF(doubleSpinBoxMajor_LineWidth->value());
         pen->setColor(pushButtonMajor_LineColor->text());
         grid->setPen(*pen);
+        grid->setVisible(true);
     }
     else
     {
@@ -1557,6 +1427,7 @@ void GridSettingsBox::set()
         pen->setWidthF(doubleSpinBoxMinor_LineWidth->value());
         pen->setColor(pushButtonMinor_LineColor->text());
         grid->setSubGridPen(*pen);
+        grid->setSubGridVisible(true);
     }
     else
     {

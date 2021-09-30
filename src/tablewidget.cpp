@@ -184,22 +184,52 @@ QVector<QVector<double> > TableWidget::getData()
 
 void TableWidget::keyPressEvent(QKeyEvent *event)
 {
-    if (event->key() == Qt::Key_Enter || event->key() == Qt::Key_Return)
+    switch (event->modifiers())
     {
-        slot_NexCell();
+    case Qt::CTRL:
+        switch (event->key())
+        {
+        case Qt::Key_V:
+            PasteFromClipboard();
+            break;
+        case Qt::Key_C:
+            CopyToClipboard();
+            break;
+        }
+        break;
+    default:
+        switch (event->key())
+        {
+        case Qt::Key_Enter:
+            slot_NexCell();
+            break;
+        case Qt::Key_Return:
+            slot_NexCell();
+            break;
+        case Qt::Key_Tab:
+            slot_NexCell();
+            break;
+        case Qt::Key_Delete:
+            DeleteDataKey();
+            break;
+        }
     }
-    if (event->modifiers() == Qt::CTRL && event->key() == Qt::Key_V)
-    {
-        PasteFromClipboard();
-    }
-    if (event->modifiers() == Qt::CTRL && event->key() == Qt::Key_C)
-    {
-        CopyToClipboard();
-    }
-    if (event->key() == Qt::Key_Delete)
-    {
-        DeleteDataKey();
-    }
+//    if (event->key() == Qt::Key_Enter || event->key() == Qt::Key_Return || event->key() == Qt::Key_Tab)
+//    {
+//        slot_NexCell();
+//    }
+//    if (event->modifiers() == Qt::CTRL && event->key() == Qt::Key_V)
+//    {
+//        PasteFromClipboard();
+//    }
+//    if (event->modifiers() == Qt::CTRL && event->key() == Qt::Key_C)
+//    {
+//        CopyToClipboard();
+//    }
+//    if (event->key() == Qt::Key_Delete)
+//    {
+//        DeleteDataKey();
+//    }
 }
 
 void TableWidget::PasteFromClipboard()
@@ -324,16 +354,6 @@ void TableWidget::slot_NexCell()
         delete current_row;
         delete current_column;
     }
-}
-
-void TableWidget::slot_NexCell_Column()
-{
-
-}
-
-void TableWidget::slot_NexCell_Row()
-{
-
 }
 
 void TableWidget::slot_AddColumn()

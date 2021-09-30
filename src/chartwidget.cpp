@@ -23,6 +23,10 @@ ChartWidget::ChartWidget(QWidget *parent)
                                 QCP::iSelectPlottables |
                                 QCP::iSelectAxes |
                                 QCP::iSelectLegend);
+    customPlot->axisRect()->setRangeDragAxes({customPlot->xAxis, customPlot->xAxis2},
+                                             {customPlot->yAxis, customPlot->yAxis2});
+    customPlot->axisRect()->setRangeZoomAxes({customPlot->xAxis, customPlot->xAxis2},
+                                             {customPlot->yAxis, customPlot->yAxis2});
 
     customPlot->setContextMenuPolicy(Qt::CustomContextMenu);
 

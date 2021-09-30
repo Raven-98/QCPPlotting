@@ -16,13 +16,13 @@
 #include <QTabWidget>
 #include <QFont>
 #include <QFontComboBox>
+#include <QScrollArea>
 #include "qcustomplot.h"
 
 #include "spacer.h"
 
 class AxisSettings;
 class GraphSettings;
-class GridSettings;
 class GridSettingsBox;
 class LegendSettings;
 
@@ -73,7 +73,6 @@ private:
     QGridLayout *gridLayout_Graph = nullptr;
     QGridLayout *gridLayout_Grid = nullptr;
     QGridLayout *gridLayout_Legend = nullptr;
-    GridSettings *gridSettings = nullptr;
     LegendSettings *legendSettings = nullptr;
     QWidget *tab_Global = nullptr;
 };
@@ -135,6 +134,10 @@ private:
     QGridLayout *gridLayout_TicksLabel;
     QLabel *label_TitleFont;
     QFontComboBox *fontComboBox_TitleFont;
+    GridSettingsBox *gridSettingsBox;
+    QWidget *scrollContainer;
+    QScrollArea *scrollArea;
+    QGridLayout *gridLayout_ScrollArea;
 
 private slots:
     void slot_TitleColor();
@@ -204,21 +207,6 @@ private slots:
     void slot_LineWidgetsEnabled(int index);
 };
 
-class GridSettings : public QWidget
-{
-    Q_OBJECT
-
-public:
-    GridSettings(QCustomPlot &qcp, QWidget *parent = nullptr);
-    ~GridSettings();
-    void set();
-
-private:
-    QGridLayout *gridLayout;
-    GridSettingsBox *gridSettingsBox_Horizontal;
-    GridSettingsBox *gridSettingsBox_Vertical;
-};
-
 class GridSettingsBox : public QGroupBox
 {
     Q_OBJECT
@@ -229,7 +217,7 @@ public:
         Vertical,
     };
 
-    GridSettingsBox(QCustomPlot &qcp_, Grid g, QWidget *parent = nullptr);
+    GridSettingsBox(QCPAxis &axis, QWidget *parent = nullptr);
     ~GridSettingsBox();
     void set();
 
@@ -237,19 +225,16 @@ private:
     void setPushButtonStyleSheet(QPushButton *button);
     void setPushButtonStyleSheet(QPushButton *button, QColor *color);
 
-    Grid G;
-    QCustomPlot &qcp;
+    QCPAxis &A;
     QGridLayout *gridLayout;
     QLabel *label;
     QLabel *label_LineStyle;
     QLabel *label_LineWidth;
     QLabel *label_LineColor;
-    QLabel *label_Axis;
     QCheckBox *checkBoxMajor;
     QCheckBox *checkBoxMinor;
     QComboBox *comboBoxMajor_LineStyle;
     QComboBox *comboBoxMinor_LineStyle;
-    QComboBox *comboBox_Axis;
     QDoubleSpinBox *doubleSpinBoxMajor_LineWidth;
     QDoubleSpinBox *doubleSpinBoxMinor_LineWidth;
     QPushButton *pushButtonMajor_LineColor;

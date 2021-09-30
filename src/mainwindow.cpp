@@ -383,6 +383,7 @@ void MainWindow::savePlot()
                                                                                                        static_cast<QCP::ResolutionUnit>(data.ResolutionUnit));
 //            else if (format == "pdf")
 //                qobject_cast<ChartWidget *>(mdiArea->activeSubWindow()->widget())->customPlot->savePdf(fileDialog->selectedFiles().at(0), data.Width, data.Height, data.Scale);
+            QMessageBox::information(dialogSavePlot, "", tr("Saving was successful"));
             break;
         }
         case DialogSavePlot::Rejected:
@@ -391,7 +392,6 @@ void MainWindow::savePlot()
             QMessageBox::critical(dialogSavePlot,tr("Error"),tr("Unexpected result"));
             break;
         }
-        QMessageBox::information(dialogSavePlot, "", tr("Saving was successful"));
         delete dialogSavePlot;
         break;
     }

@@ -15,7 +15,26 @@ TableWidget::TableWidget(QWidget *parent)
     setWindowIcon(QIcon(":/img/table.png"));
     setWindowTitle(tr("Table ")+QString::number(ResTableWidgetID));
 
-    tableWidget = new QTableView;
+    tableWidget = new TableView;
+    tableWidget->setItemDelegate(new TableStyledItemDelegate(this));
+    tableWidget->setEditTriggers(QAbstractItemView::AllEditTriggers);
+    connect(tableWidget,
+            &TableView::keyEnterReleased,
+            this,
+            &TableWidget::slot_NexCellInColumn);
+//    connect(tableWidget,
+//            &TableView::keyTabReleased,
+//            this,
+//            &TableWidget::slot_NexCellInRow);
+//    connect(qobject_cast<TableStyledItemDelegate *>(tableWidget->itemDelegate()),
+//            &TableStyledItemDelegate::keyEnterReleased,
+//            this,
+//            &TableWidget::slot_NexCellInColumn);
+//            [=](){tableWidget->edit(tableWidget->selectionModel()->currentIndex());});
+    connect(qobject_cast<TableStyledItemDelegate *>(tableWidget->itemDelegate()),
+            &TableStyledItemDelegate::keyTabReleased,
+            this,
+            &TableWidget::slot_NexCellInRow);
 
     horizontalHeaderView = new HeaderView(Qt::Horizontal,this);
     tableWidget->setHorizontalHeader(horizontalHeaderView);
@@ -68,7 +87,10 @@ TableWidget::TableWidget(QWidget *parent)
 
     action_AddColumn = new QAction(tr("Add column"));
     action_AddColumn->setIcon(QIcon(":/img/add_column.png"));
-    connect(action_AddColumn,&QAction::triggered,this,&TableWidget::slot_AddColumn);
+    connect(action_AddColumn,
+            &QAction::triggered,
+            this,
+            &TableWidget::slot_AddColumn);
 
     action_SaveTable = new QAction(tr("Save Table"));
     action_SaveTable->setIcon(QIcon(":/img/save.png"));
@@ -86,10 +108,16 @@ TableWidget::TableWidget(QWidget *parent)
     tableMenu->addAction(action_SaveTable);
 
     tableWidget->setContextMenuPolicy(Qt::CustomContextMenu);
-    connect(tableWidget,&QTableView::customContextMenuRequested,this,&TableWidget::customHeaderMenuRequested_table);
+    connect(tableWidget,
+            &QTableView::customContextMenuRequested,
+            this,
+            &TableWidget::customHeaderMenuRequested_table);
 
     tableWidget->horizontalHeader()->setContextMenuPolicy(Qt::CustomContextMenu);
-    connect(tableWidget->horizontalHeader(),&QTableView::customContextMenuRequested,this,&TableWidget::customHeaderMenuRequested_header);
+    connect(tableWidget->horizontalHeader(),
+            &QTableView::customContextMenuRequested,
+            this,
+            &TableWidget::customHeaderMenuRequested_header);
 }
 
 TableWidget::~TableWidget()
@@ -122,7 +150,10 @@ TableWidget::~TableWidget()
 void TableWidget::setModel(QStandardItemModel *item_model)
 {
     tableWidget->setModel(item_model);
-    connect(item_model,&QStandardItemModel::itemChanged,this,&TableWidget::slot_NexCell);
+    connect(item_model,
+            &QStandardItemModel::itemChanged,
+            this,
+            &TableWidget::slot_Changed);
 }
 
 QVector<QVector<double> > TableWidget::getData()
@@ -200,36 +231,11 @@ void TableWidget::keyPressEvent(QKeyEvent *event)
     default:
         switch (event->key())
         {
-        case Qt::Key_Enter:
-            slot_NexCell();
-            break;
-        case Qt::Key_Return:
-            slot_NexCell();
-            break;
-        case Qt::Key_Tab:
-            slot_NexCell();
-            break;
         case Qt::Key_Delete:
             DeleteDataKey();
             break;
         }
     }
-//    if (event->key() == Qt::Key_Enter || event->key() == Qt::Key_Return || event->key() == Qt::Key_Tab)
-//    {
-//        slot_NexCell();
-//    }
-//    if (event->modifiers() == Qt::CTRL && event->key() == Qt::Key_V)
-//    {
-//        PasteFromClipboard();
-//    }
-//    if (event->modifiers() == Qt::CTRL && event->key() == Qt::Key_C)
-//    {
-//        CopyToClipboard();
-//    }
-//    if (event->key() == Qt::Key_Delete)
-//    {
-//        DeleteDataKey();
-//    }
 }
 
 void TableWidget::PasteFromClipboard()
@@ -245,7 +251,7 @@ void TableWidget::PasteFromClipboard()
         for( int j = 0; j < cols.size(); j++ )
         {
             QStandardItem *item = new QStandardItem(cols.at(j));
-            item->setTextAlignment(Qt::AlignCenter);
+//            item->setTextAlignment(Qt::AlignCenter);
             qobject_cast<QStandardItemModel *>(tableWidget->model())->setItem(*current_row + i, *current_column + j, item);
         }
     }
@@ -309,14 +315,11 @@ void TableWidget::DeleteDataKey()
     delete selectedIndexes;
 }
 
-void TableWidget::slot_NexCell()
+void TableWidget::slot_Changed()
 {
     if (Changed)
     {
-        int *current_row = new int(tableWidget->selectionModel()->currentIndex().row());
-        int *current_column = new int(tableWidget->selectionModel()->currentIndex().column());
-        QModelIndex *index = new QModelIndex(tableWidget->model()->index(*current_row,*current_column));
-
+        QModelIndex *index = new QModelIndex(tableWidget->selectionModel()->currentIndex());
 
         tableWidget->model()->setData(*index,tableWidget->model()->data(*index).toString().replace(",","."));
 
@@ -324,36 +327,63 @@ void TableWidget::slot_NexCell()
         tableWidget->model()->data(*index).toDouble(&ok);
         if (!ok)
         {
-            tableWidget->model()->setData(*index,QColor(Qt::red),Qt::BackgroundRole);
-            tableWidget->model()->setData(*index,QColor(Qt::white),Qt::ForegroundRole);
+            tableWidget->model()->setData(*index,QColor(Qt::red),Qt::ForegroundRole);
         }
         else
         {
-            tableWidget->model()->setData(*index,QColor(Qt::white),Qt::BackgroundRole);
             tableWidget->model()->setData(*index,QColor(Qt::black),Qt::ForegroundRole);
         }
 
         delete index;
-
-        *current_column = tableWidget->horizontalHeader()->visualIndex(*current_column);
-
-        if (*current_column == tableWidget->model()->columnCount()-1)
-        {
-            *current_column = 0;
-            if (++*current_row == tableWidget->model()->rowCount())
-            {
-                tableWidget->model()->insertRow(*current_row);
-            }
-        }
-        else
-        {
-            ++*current_column;
-        }
-        tableWidget->selectionModel()->setCurrentIndex(tableWidget->model()->index(*current_row,tableWidget->horizontalHeader()->logicalIndex(*current_column)),QItemSelectionModel::Deselect | QItemSelectionModel::SelectCurrent);
-
-        delete current_row;
-        delete current_column;
     }
+}
+
+void TableWidget::slot_NexCellInColumn()
+{
+    QModelIndex *index = new QModelIndex(tableWidget->selectionModel()->currentIndex());
+
+    int *current_row = new int(index->row());
+    int *current_column = new int(index->column());
+
+    if (*current_row == tableWidget->model()->rowCount() - 1)
+    {
+        tableWidget->model()->insertRow(*current_row + 1);
+    }
+    tableWidget->selectionModel()->setCurrentIndex(tableWidget->model()->index(*current_row + 1,
+                                                                               tableWidget->horizontalHeader()->logicalIndex(*current_column)),
+                                                                                    QItemSelectionModel::Deselect | QItemSelectionModel::SelectCurrent);
+
+    delete current_row;
+    delete current_column;
+    delete index;
+}
+
+void TableWidget::slot_NexCellInRow()
+{
+    QModelIndex *index = new QModelIndex(tableWidget->selectionModel()->currentIndex());
+
+    int *current_row = new int(index->row());
+    int *current_column = new int(index->column());
+
+    *current_column = tableWidget->horizontalHeader()->visualIndex(*current_column);
+
+    if (*current_column == tableWidget->model()->columnCount()-1)
+    {
+        *current_column = 0;
+        if (++*current_row == tableWidget->model()->rowCount())
+        {
+            tableWidget->model()->insertRow(*current_row);
+        }
+    }
+    else
+    {
+        ++*current_column;
+    }
+
+    delete current_row;
+    delete current_column;
+
+    delete index;
 }
 
 void TableWidget::slot_AddColumn()
@@ -371,6 +401,21 @@ void TableWidget::customHeaderMenuRequested_header(const QPoint &pos)
     hHeaderMenu->popup(tableWidget->horizontalHeader()->viewport()->mapToGlobal(pos));
 }
 
+void TableView::keyReleaseEvent(QKeyEvent *event)
+{
+    switch (event->key())
+    {
+    case Qt::Key_Tab:
+        emit keyTabReleased();
+        break;
+    case Qt::Key_Enter:
+    case Qt::Key_Return:
+        emit keyEnterReleased();
+        break;
+    }
+    QTableView::keyReleaseEvent(event);
+}
+
 HeaderView::HeaderView(Qt::Orientation orientation,QWidget *parent) :
     QHeaderView(orientation,parent)
 //  , ort (orientation)
@@ -381,9 +426,7 @@ HeaderView::HeaderView(Qt::Orientation orientation,QWidget *parent) :
 }
 
 HeaderView::~HeaderView()
-{
-
-}
+{}
 
 void HeaderView::mousePressEvent(QMouseEvent *event)
 {
@@ -391,7 +434,7 @@ void HeaderView::mousePressEvent(QMouseEvent *event)
     {
         pressMiddleButton = 1;
         firstPos = event->pos().x();
-        this->sectionPressed(this->logicalIndexAt(event->pos()));
+        emit sectionPressed(logicalIndexAt(event->pos()));
 //
         if (!sectionIndicator)
             sectionIndicator = new QLabel(this->viewport());
@@ -470,3 +513,30 @@ void HeaderView::mouseReleaseEvent(QMouseEvent *event)
     QHeaderView::mouseReleaseEvent(event);
 }
 
+void TableLineEdit::keyReleaseEvent(QKeyEvent *event)
+{
+    switch (event->key())
+    {
+    case Qt::Key_Tab:
+        emit keyTabReleased();
+        break;
+    case Qt::Key_Enter:
+    case Qt::Key_Return:
+        emit keyEnterReleased();
+        break;
+    }
+}
+
+QWidget *TableStyledItemDelegate::createEditor(QWidget *parent, const QStyleOptionViewItem &, const QModelIndex &) const
+{
+    TableLineEdit *editor = new TableLineEdit(parent);
+    connect(editor,
+            SIGNAL(keyTabReleased()),
+            this,
+            SIGNAL(keyTabReleased()));
+    connect(editor,
+            SIGNAL(keyEnterReleased()),
+            this,
+            SIGNAL(keyEnterReleased()));
+    return editor;
+}

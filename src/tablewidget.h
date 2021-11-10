@@ -17,6 +17,15 @@
 #include <QMouseEvent>
 #include <QKeyEvent>
 
+#include <QLineEdit>
+#include <QStyledItemDelegate>
+
+class TableWidget;
+class TableView;
+class TableLineEdit;
+class TableStyledItemDelegate;
+class HeaderView;
+
 class TableWidget : public QWidget
 {
     Q_OBJECT
@@ -29,6 +38,7 @@ public:
     static int SumTables;
     static int ResTableWidgetID;
 
+//    TableView *tableWidget;
     QAction *actionBuild_Graph;
     QAction *actionBuild_Curve;
     QAction *actionBuild_Bars;
@@ -43,7 +53,7 @@ private:
     void CopyToClipboard();
     void DeleteDataKey();
 
-    QTableView *tableWidget;
+    TableView *tableWidget;
     QGridLayout *gridLayout;
     QMenu *hHeaderMenu;
     QMenu *tableMenu;
@@ -58,10 +68,49 @@ private:
     bool Changed = true;
 
 private slots:
-    void slot_NexCell();
+    void slot_Changed();
+    void slot_NexCellInColumn();
+    void slot_NexCellInRow();
     void slot_AddColumn();
     void customHeaderMenuRequested_table(const QPoint &pos);
     void customHeaderMenuRequested_header(const QPoint &pos);
+};
+
+class TableView : public QTableView
+{
+    Q_OBJECT
+public:
+    using QTableView::QTableView;
+
+signals:
+    void keyEnterReleased();
+    void keyTabReleased();
+
+protected:
+    void keyReleaseEvent(QKeyEvent *event);
+};
+
+class TableLineEdit: public QLineEdit
+{
+    Q_OBJECT
+public:
+    using QLineEdit::QLineEdit;
+signals:
+    void keyTabReleased();
+    void keyEnterReleased();
+protected:
+    void keyReleaseEvent(QKeyEvent *event);
+};
+
+class TableStyledItemDelegate: public QStyledItemDelegate
+{
+    Q_OBJECT
+public:
+    using QStyledItemDelegate::QStyledItemDelegate;
+    QWidget *createEditor(QWidget *parent, const QStyleOptionViewItem &, const QModelIndex &) const;
+signals:
+    void keyTabReleased();
+    void keyEnterReleased();
 };
 
 class HeaderView : public QHeaderView
@@ -70,6 +119,7 @@ class HeaderView : public QHeaderView
 public:
     explicit HeaderView(Qt::Orientation orientation,QWidget *parent = nullptr);
     ~HeaderView();
+
 private:
 //    Qt::Orientation ort;
     bool pressMiddleButton = 0;
@@ -77,6 +127,7 @@ private:
     int lastPos;
     QLabel *sectionIndicator = nullptr;
     int sectionIndicatorOffset;
+
 protected:
     void mousePressEvent(QMouseEvent *event) override;
     void mouseMoveEvent(QMouseEvent *event) override;

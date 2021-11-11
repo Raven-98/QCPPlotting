@@ -66,6 +66,7 @@ private:
     QHeaderView *horizontalHeaderView;
     QAction *action_AddColumn;
     bool Changed = true;
+    bool Edited = false;
 
 private slots:
     void slot_Changed();
@@ -84,7 +85,6 @@ public:
 
 signals:
     void keyEnterReleased();
-    void keyTabReleased();
 
 protected:
     void keyReleaseEvent(QKeyEvent *event);
@@ -95,9 +95,10 @@ class TableLineEdit: public QLineEdit
     Q_OBJECT
 public:
     using QLineEdit::QLineEdit;
+
 signals:
     void keyTabReleased();
-    void keyEnterReleased();
+
 protected:
     void keyReleaseEvent(QKeyEvent *event);
 };
@@ -108,9 +109,9 @@ class TableStyledItemDelegate: public QStyledItemDelegate
 public:
     using QStyledItemDelegate::QStyledItemDelegate;
     QWidget *createEditor(QWidget *parent, const QStyleOptionViewItem &, const QModelIndex &) const;
+
 signals:
     void keyTabReleased();
-    void keyEnterReleased();
 };
 
 class HeaderView : public QHeaderView

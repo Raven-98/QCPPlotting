@@ -719,56 +719,56 @@ p, li { white-space: pre-wrap; }
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/tablewidget.cpp" line="36"/>
-        <location filename="../src/tablewidget.cpp" line="37"/>
-        <location filename="../src/tablewidget.cpp" line="38"/>
-        <location filename="../src/tablewidget.cpp" line="39"/>
-        <location filename="../src/tablewidget.cpp" line="40"/>
+        <location filename="../src/tablewidget.cpp" line="56"/>
+        <location filename="../src/tablewidget.cpp" line="57"/>
+        <location filename="../src/tablewidget.cpp" line="58"/>
+        <location filename="../src/tablewidget.cpp" line="59"/>
+        <location filename="../src/tablewidget.cpp" line="60"/>
         <source>Build</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/tablewidget.cpp" line="42"/>
+        <location filename="../src/tablewidget.cpp" line="62"/>
         <source>Add to</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/tablewidget.cpp" line="44"/>
+        <location filename="../src/tablewidget.cpp" line="64"/>
         <source>Graph</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/tablewidget.cpp" line="48"/>
+        <location filename="../src/tablewidget.cpp" line="68"/>
         <source>Curve</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/tablewidget.cpp" line="53"/>
+        <location filename="../src/tablewidget.cpp" line="73"/>
         <source>Bars</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/tablewidget.cpp" line="58"/>
+        <location filename="../src/tablewidget.cpp" line="78"/>
         <source>Financial</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/tablewidget.cpp" line="63"/>
+        <location filename="../src/tablewidget.cpp" line="83"/>
         <source>Statistacal box</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/tablewidget.cpp" line="69"/>
+        <location filename="../src/tablewidget.cpp" line="89"/>
         <source>Plot</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/tablewidget.cpp" line="76"/>
+        <location filename="../src/tablewidget.cpp" line="96"/>
         <source>Add column</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/tablewidget.cpp" line="83"/>
+        <location filename="../src/tablewidget.cpp" line="103"/>
         <source>Save Table</source>
         <translation type="unfinished"></translation>
     </message>

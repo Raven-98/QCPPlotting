@@ -17,24 +17,18 @@ TableWidget::TableWidget(QWidget *parent)
 
     tableWidget = new TableView;
     tableWidget->setItemDelegate(new TableStyledItemDelegate(this));
-    tableWidget->setEditTriggers(QAbstractItemView::AllEditTriggers);
     connect(tableWidget,
             &TableView::keyEnterReleased,
             this,
             &TableWidget::slot_NexCellInColumn);
-//    connect(tableWidget,
-//            &TableView::keyTabReleased,
-//            this,
-//            &TableWidget::slot_NexCellInRow);
-//    connect(qobject_cast<TableStyledItemDelegate *>(tableWidget->itemDelegate()),
-//            &TableStyledItemDelegate::keyEnterReleased,
-//            this,
-//            &TableWidget::slot_NexCellInColumn);
-//            [=](){tableWidget->edit(tableWidget->selectionModel()->currentIndex());});
     connect(qobject_cast<TableStyledItemDelegate *>(tableWidget->itemDelegate()),
             &TableStyledItemDelegate::keyTabReleased,
             this,
             &TableWidget::slot_NexCellInRow);
+    connect(tableWidget->itemDelegate(),
+            &QAbstractItemDelegate::closeEditor,
+            this,
+            [=](){Edited = true;});
 
     horizontalHeaderView = new HeaderView(Qt::Horizontal,this);
     tableWidget->setHorizontalHeader(horizontalHeaderView);
@@ -349,9 +343,17 @@ void TableWidget::slot_NexCellInColumn()
     {
         tableWidget->model()->insertRow(*current_row + 1);
     }
-    tableWidget->selectionModel()->setCurrentIndex(tableWidget->model()->index(*current_row + 1,
-                                                                               tableWidget->horizontalHeader()->logicalIndex(*current_column)),
-                                                                                    QItemSelectionModel::Deselect | QItemSelectionModel::SelectCurrent);
+
+    *index = tableWidget->model()->index(*current_row + 1,
+                                        tableWidget->horizontalHeader()->logicalIndex(*current_column));
+
+    tableWidget->selectionModel()->setCurrentIndex(*index, QItemSelectionModel::Deselect | QItemSelectionModel::SelectCurrent);
+
+    if (Edited)
+    {
+        tableWidget->edit(*index);
+        Edited = false;
+    }
 
     delete current_row;
     delete current_column;
@@ -405,9 +407,6 @@ void TableView::keyReleaseEvent(QKeyEvent *event)
 {
     switch (event->key())
     {
-    case Qt::Key_Tab:
-        emit keyTabReleased();
-        break;
     case Qt::Key_Enter:
     case Qt::Key_Return:
         emit keyEnterReleased();
@@ -520,10 +519,6 @@ void TableLineEdit::keyReleaseEvent(QKeyEvent *event)
     case Qt::Key_Tab:
         emit keyTabReleased();
         break;
-    case Qt::Key_Enter:
-    case Qt::Key_Return:
-        emit keyEnterReleased();
-        break;
     }
 }
 
@@ -534,9 +529,5 @@ QWidget *TableStyledItemDelegate::createEditor(QWidget *parent, const QStyleOpti
             SIGNAL(keyTabReleased()),
             this,
             SIGNAL(keyTabReleased()));
-    connect(editor,
-            SIGNAL(keyEnterReleased()),
-            this,
-            SIGNAL(keyEnterReleased()));
     return editor;
 }

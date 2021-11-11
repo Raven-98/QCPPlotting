@@ -21,6 +21,11 @@
 //#include "chartwidget.h"
 #include "spacer.h"
 
+class Dialogs;
+class FileDialogSetDetails;
+class DialodAddPlot;
+class DialogSavePlot;
+
 namespace FDSD
 {
     enum Delimiter

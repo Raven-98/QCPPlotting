@@ -58,6 +58,7 @@ AboutProgram::AboutProgram(QWidget *parent)
     labelLibraries_QCP->setText(QString("QCustomPlot ") + QCUSTOMPLOT_VERSION_STR);
     boxLayoutLibraries = new QVBoxLayout;
     boxLayoutLibraries->addWidget(labelLibraries_Qt);
+    boxLayoutLibraries->addWidget(labelLibraries_QCP);
     tabLibraries->setLayout(boxLayoutLibraries);
     tabsWidget->addTab(tabLibraries, tr("Platforms and libraries"));
 

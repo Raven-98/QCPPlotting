@@ -66,6 +66,13 @@ void MainWindow::initActions()
             &QAction::triggered,
             this,
             &MainWindow::slot_AnalyzeDiffractionDataDRON2);
+
+    actionAboutProgram = new QAction;
+    actionAboutProgram->setText(tr("About program"));
+    connect(actionAboutProgram,
+            &QAction::triggered,
+            this,
+            &MainWindow::slot_AboutProgram);
 }
 
 void MainWindow::deleteActions()
@@ -75,6 +82,7 @@ void MainWindow::deleteActions()
     delete actionImportCSV;
     delete actionNewTable;
     delete actionAnalyzeDiffractionData_DRON2;
+    delete actionAboutProgram;
 }
 
 void MainWindow::initMenus()
@@ -96,6 +104,10 @@ void MainWindow::initMenus()
     menuExtra = new QMenu;
     menuExtra->setTitle(tr("&Extra"));
     menuExtra->addAction(actionAnalyzeDiffractionData_DRON2);
+
+    menuHelp = new QMenu;
+    menuHelp->setTitle(tr("&Help"));
+    menuHelp->addAction(actionAboutProgram);
 }
 
 void MainWindow::deleteMenus()
@@ -104,6 +116,7 @@ void MainWindow::deleteMenus()
     delete menuTable;
     delete menuWindow;
     delete menuExtra;
+    delete menuHelp;
 }
 
 void MainWindow::initMenuBar()
@@ -114,6 +127,7 @@ void MainWindow::initMenuBar()
     menuBar->addMenu(menuTable);
     menuBar->addMenu(menuWindow);
     menuBar->addMenu(menuExtra);
+    menuBar->addMenu(menuHelp);
 
     setMenuBar(menuBar);
 }
@@ -596,6 +610,13 @@ void MainWindow::slot_AnalyzeDiffractionDataDRON2()
         break;
     }
     delete daddDRON;
+}
+
+void MainWindow::slot_AboutProgram()
+{
+    AboutProgram *aboutProgram = new AboutProgram(this);
+    aboutProgram->exec();
+    delete aboutProgram;
 }
 
 void MainWindow::closeEvent(QCloseEvent *event)

@@ -17,6 +17,7 @@
 #include "tablewidget.h"
 #include "chartwidget.h"
 #include "analyzediffractiondatadron2.h"
+#include "aboutprogram.h"
 
 class MainWindow : public QMainWindow
 {
@@ -58,6 +59,8 @@ private:
     QMenu *menuExtra;
     // Analyze diffraction data (DRON-2, V. N. Karazin Kharkiv National University, Department of Solid State Physics)
     QAction *actionAnalyzeDiffractionData_DRON2;
+    QMenu *menuHelp;
+    QAction *actionAboutProgram;
 
 private slots:
     void slot_FullScreen();
@@ -72,6 +75,7 @@ private slots:
     void slot_newTable();
     void slot_savePlot();
     void slot_AnalyzeDiffractionDataDRON2();
+    void slot_AboutProgram();
 
 protected:
     void closeEvent(QCloseEvent *event) override;

@@ -2,44 +2,6 @@
 <!DOCTYPE TS>
 <TS version="2.1" language="ru_RU">
 <context>
-    <name>AboutProgram</name>
-    <message>
-        <location filename="../src/aboutprogram.cpp" line="7"/>
-        <source>About program</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../src/aboutprogram.cpp" line="19"/>
-        <source>Version</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../src/aboutprogram.cpp" line="38"/>
-        <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;License: GNU General Public License v3.0&lt;/p&gt;&lt;p&gt;&lt;a href=&quot;http://www.gnu.org/licenses/gpl-3.0.html&quot;&gt;&lt;span style=&quot; text-decoration: underline; color:#2980b9;&quot;&gt;http://www.gnu.org/licenses/gpl-3.0.html&lt;/span&gt;&lt;/a&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../src/aboutprogram.cpp" line="50"/>
-        <source>About</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../src/aboutprogram.cpp" line="58"/>
-        <source>Platforms and libraries</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../src/aboutprogram.cpp" line="62"/>
-        <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Raven-98&lt;/span&gt;&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; font-style:italic;&quot;&gt;Developer&lt;/span&gt;&lt;/p&gt;&lt;p&gt;E-mail: &lt;a href=&quot;andriy1898k@hotmail.com&quot;&gt;&lt;span style=&quot; text-decoration: underline; color:#2980b9;&quot;&gt;andriy1898k@hotmail.com&lt;/span&gt;&lt;/a&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../src/aboutprogram.cpp" line="75"/>
-        <source>Authors</source>
-        <translation type="unfinished"></translation>
-    </message>
-</context>
-<context>
     <name>AnalyzeDiffractionDataDRON2</name>
     <message>
         <location filename="../src/analyzediffractiondatadron2.cpp" line="15"/>

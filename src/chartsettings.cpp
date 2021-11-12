@@ -1,13 +1,11 @@
 #include "chartsettings.h"
 
-#include <QDebug>
-
 ChartSettings::ChartSettings(QCustomPlot &qcp, QWidget *parent)
     : QDialog(parent)
 {
     resize(800, 600);
 
-    csdt = csDialodType::Global;
+    csdt = GBS::CS::Global;
 
     setWindowTitle(tr("Chart settings"));
 
@@ -113,7 +111,7 @@ ChartSettings::ChartSettings(QCPAxis &axis, QWidget *parent)
 {
     resize(800, 600);
 
-    csdt = csDialodType::Axis;
+    csdt = GBS::CS::Axis;
 
     setWindowTitle(tr("Axis settings"));
 
@@ -126,7 +124,7 @@ ChartSettings::ChartSettings(QCPAxis &axis, QWidget *parent)
 ChartSettings::ChartSettings(QCPAbstractPlottable &plottable, QWidget *parent)
     : QDialog(parent)
 {
-    csdt = csDialodType::Graph;
+    csdt = GBS::CS::Graph;
 
     setWindowTitle(tr("Graph settings"));
 
@@ -203,7 +201,7 @@ ChartSettings::~ChartSettings()
 void ChartSettings::set()
 {
     switch (csdt) {
-    case csDialodType::Global:
+    case GBS::CS::Global:
         axisLeftSettings->set();
         axisRightSettings->set();
         axisTopSettings->set();
@@ -214,10 +212,10 @@ void ChartSettings::set()
         }
         legendSettings->set();
         break;
-    case csDialodType::Axis:
+    case GBS::CS::Axis:
         axisSettings->set();
         break;
-    case csDialodType::Graph:
+    case GBS::CS::Graph:
         graphSettings->set();
         break;
     default:

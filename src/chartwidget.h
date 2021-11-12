@@ -1,28 +1,15 @@
 #ifndef CHARTWIDGET_H
 #define CHARTWIDGET_H
 
-#include <QWidget>
-#include <QGridLayout>
-#include <QMenu>
-#include <QAction>
-#include <QLabel>
-#include "qcustomplot.h"
-
+#include "global.h"
 #include "chartsettings.h"
 #include "dialogs.h"
+
 
 class ChartWidget : public QWidget
 {
     Q_OBJECT
 public:
-    enum ChartStyle{
-        Graph,
-        Bars,
-        Curve,
-        Financial,
-        StatisticalBox,
-    };
-
     explicit ChartWidget(QWidget *parent = nullptr);
     ~ChartWidget();
     void setDataGraph(QVector<QVector<double>> &data);

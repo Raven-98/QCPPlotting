@@ -1,7 +1,5 @@
 #include "dialogs.h"
 
-#include <QDebug>
-
 Dialogs::Dialogs(QWidget *parent)
     : QDialog(parent)
 {
@@ -21,17 +19,20 @@ Dialogs::~Dialogs()
     delete BoxLayout;
 }
 
-FileDialogSetDetails::FileDialogSetDetails(FDSD::Type t, QWidget *parent)
+FileDialogSetDetails::FileDialogSetDetails(GBS::Settings &sett, GBS::FDSD::Type t, QWidget *parent)
     : Dialogs(parent),
+      settings(sett),
       T(t)
 {
     setWindowTitle(tr("Set details"));
 
-    if (T == FDSD::Open)
+    if (T == GBS::FDSD::Open)
     {
         checkBox_readZeroRow = new QCheckBox(tr("Read zero row"));
+        checkBox_readZeroRow->setChecked(settings.FileDialogSetDetails.readZeroRow);
 
         checkBox_readZeroColumn = new QCheckBox(tr("Read zero column"));
+        checkBox_readZeroColumn->setChecked(settings.FileDialogSetDetails.readZeroColumn);
 
         hBoxLayout_readZero = new QHBoxLayout;
         hBoxLayout_readZero->addWidget(checkBox_readZeroRow);
@@ -46,13 +47,14 @@ FileDialogSetDetails::FileDialogSetDetails(FDSD::Type t, QWidget *parent)
                                   tr("Semicolon"),
                                   tr("Space")
                                  });
+    comboBox_Delimiter->setCurrentIndex(settings.FileDialogSetDetails.delimiter);
 
     hBoxLayout_Delimiter = new QHBoxLayout;
     hBoxLayout_Delimiter->addWidget(label_Delimiter);
     hBoxLayout_Delimiter->addWidget(comboBox_Delimiter);
 
     BoxLayout->addLayout(hBoxLayout_Delimiter);
-    if (T == FDSD::Open)
+    if (T == GBS::FDSD::Open)
     {
         BoxLayout->addLayout(hBoxLayout_readZero);
     }
@@ -60,7 +62,7 @@ FileDialogSetDetails::FileDialogSetDetails(FDSD::Type t, QWidget *parent)
 
 FileDialogSetDetails::~FileDialogSetDetails()
 {
-    if (T == FDSD::Open)
+    if (T == GBS::FDSD::Open)
     {
         delete checkBox_readZeroRow;
         delete  checkBox_readZeroColumn;
@@ -71,22 +73,25 @@ FileDialogSetDetails::~FileDialogSetDetails()
     delete hBoxLayout_Delimiter;
 }
 
-void FileDialogSetDetails::setData(FDSD::Data *data)
+void FileDialogSetDetails::setData(GBS::FDSD::Data *data)
 {
     checkBox_readZeroRow->setChecked(data->readZeroRow);
     checkBox_readZeroColumn->setChecked(data->readZeroColumn);
     comboBox_Delimiter->setCurrentIndex(data->delimiter);
 }
 
-FDSD::Data *FileDialogSetDetails::getData()
+GBS::FDSD::Data *FileDialogSetDetails::getData()
 {
-    FDSD::Data *data = new FDSD::Data;
-    if (T == FDSD::Open)
+    GBS::FDSD::Data *data = new GBS::FDSD::Data;
+    if (T == GBS::FDSD::Open)
     {
         data->readZeroRow = checkBox_readZeroRow->isChecked();
         data->readZeroColumn = checkBox_readZeroColumn->isChecked();
     }
     data->delimiter = comboBox_Delimiter->currentIndex();
+
+    settings.FileDialogSetDetails << *data;
+
     return data;
 }
 
@@ -236,9 +241,9 @@ DialogSavePlot::~DialogSavePlot()
     delete gridLayout;
 }
 
-DSP::Data DialogSavePlot::getData()
+GBS::DSP::Data DialogSavePlot::getData()
 {
-    DSP::Data data;
+    GBS::DSP::Data data;
 
     data.Width = spinBox_Width->value();
     data.Height = spinBox_Height->value();
@@ -251,7 +256,7 @@ DSP::Data DialogSavePlot::getData()
     return data;
 }
 
-void DialogSavePlot::setData(DSP::Data data)
+void DialogSavePlot::setData(GBS::DSP::Data data)
 {
     spinBox_Width->setValue(data.Width);
     spinBox_Height->setValue(data.Height);
@@ -262,8 +267,9 @@ void DialogSavePlot::setData(DSP::Data data)
     comboBox_ResolutionUnit->setCurrentIndex(data.ResolutionUnit);
 }
 
-DialogAnalyzeDiffractionDataDRON2::DialogAnalyzeDiffractionDataDRON2(QWidget *parent)
-    : Dialogs(parent)
+DialogAnalyzeDiffractionDataDRON2::DialogAnalyzeDiffractionDataDRON2(GBS::Settings &sett, QWidget *parent)
+    : Dialogs(parent),
+      settings(sett)
 {
     setWindowTitle(tr("Analyze diffraction data (DRON-2)"));
     setMinimumSize(400,200);
@@ -293,6 +299,7 @@ DialogAnalyzeDiffractionDataDRON2::DialogAnalyzeDiffractionDataDRON2(QWidget *pa
                             "</span></p></body></html>"));
 
     lineEditFile = new QLineEdit;
+    lineEditFile->setText(settings.DialogAnalyzeDiffractionDataDRON2.fileName);
 
     pushButtonOpen = new QPushButton;
     pushButtonOpen->setText(tr("Open"));
@@ -320,6 +327,7 @@ DialogAnalyzeDiffractionDataDRON2::DialogAnalyzeDiffractionDataDRON2(QWidget *pa
                                 "</p></body></html>");
 
     lineEditTwoThetaStart = new QLineEdit;
+    lineEditTwoThetaStart->setText(QString::number(settings.DialogAnalyzeDiffractionDataDRON2.twoThetaStart));
 
     labelTwoThetaEnd = new QLabel;
     labelTwoThetaEnd->setText("<html><head/><body><p align=\"right\">"
@@ -327,6 +335,7 @@ DialogAnalyzeDiffractionDataDRON2::DialogAnalyzeDiffractionDataDRON2(QWidget *pa
                                 "</p></body></html>");
 
     lineEditTwoThetaEnd = new QLineEdit;
+    lineEditTwoThetaEnd->setText(QString::number(settings.DialogAnalyzeDiffractionDataDRON2.twoThetaEnd));
 
     gridLayoutShootingAngles = new QGridLayout;
     gridLayoutShootingAngles->addWidget(labelBoxTitleShootingAngles, 0, 0, 1, 4);
@@ -345,6 +354,7 @@ DialogAnalyzeDiffractionDataDRON2::DialogAnalyzeDiffractionDataDRON2(QWidget *pa
 
     comboBoxDelimiter = new QComboBox;
     comboBoxDelimiter->addItems({"Comma", "Tab step", "Semicolon", "Space"});
+    comboBoxDelimiter->setCurrentIndex(settings.DialogAnalyzeDiffractionDataDRON2.delimiter);
 
     gridLayotDelimiter = new QGridLayout;
     gridLayotDelimiter->addWidget(labelDelimiter, 0, 0);
@@ -387,14 +397,16 @@ DialogAnalyzeDiffractionDataDRON2::~DialogAnalyzeDiffractionDataDRON2()
     delete groupBoxDelimiter;
 }
 
-DADDDRON2::Data DialogAnalyzeDiffractionDataDRON2::getData()
+GBS::DADDDRON2::Data DialogAnalyzeDiffractionDataDRON2::getData()
 {
-    DADDDRON2::Data data;
+    GBS::DADDDRON2::Data data;
 
     data.fileName = lineEditFile->text();
     data.twoThetaStart = lineEditTwoThetaStart->text().toFloat();
     data.twoThetaEnd = lineEditTwoThetaEnd->text().toFloat();
     data.delimiter = comboBoxDelimiter->currentIndex();
+
+    settings.DialogAnalyzeDiffractionDataDRON2 << data;
 
     return data;
 }
@@ -404,6 +416,7 @@ void DialogAnalyzeDiffractionDataDRON2::slot_pushButtonOpen()
     QFileDialog *fileDialog = new QFileDialog(this);
     fileDialog->setAcceptMode(QFileDialog::AcceptOpen);
     fileDialog->setFileMode(QFileDialog::ExistingFile);
+    fileDialog->setDirectory(settings.DialogAnalyzeDiffractionDataDRON2.fileName.section("/",0,-2));
     fileDialog->setMimeTypeFilters({"text/plain", "text/csv", "application/octet-stream"});
     switch (fileDialog->exec())
     {

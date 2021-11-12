@@ -1,7 +1,5 @@
 #include "tablewidget.h"
 
-#include <QDebug>
-
 int TableWidget::SumTables = 0;
 int TableWidget::ResTableWidgetID = 0;
 

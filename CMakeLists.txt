@@ -37,6 +37,7 @@ set(PROJECT_SOURCES
         src/analyzediffractiondatadron2.h
         src/aboutprogram.cpp
         src/aboutprogram.h
+        src/global.h
         ${TS_FILES}
 )
 

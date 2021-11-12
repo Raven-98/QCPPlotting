@@ -1,6 +1,6 @@
 #include "analyzediffractiondatadron2.h"
 
-AnalyzeDiffractionDataDRON2::AnalyzeDiffractionDataDRON2(DADDDRON2::Data data, QObject *parent)
+AnalyzeDiffractionDataDRON2::AnalyzeDiffractionDataDRON2(GBS::DADDDRON2::Data data, QObject *parent)
     : QObject(parent),
       data(data)
 {}
@@ -35,16 +35,16 @@ void AnalyzeDiffractionDataDRON2::run()
 
     char *delimiter;
     switch (data.delimiter){
-    case FDSD::Delimiter::Comma:
+    case GBS::FDSD::Delimiter::Comma:
         delimiter = new char(',');
         break;
-    case FDSD::Delimiter::Tab_step:
+    case GBS::FDSD::Delimiter::Tab_step:
         delimiter = new char('\t');
         break;
-    case FDSD::Delimiter::Semicolon:
+    case GBS::FDSD::Delimiter::Semicolon:
         delimiter = new char(';');
         break;
-    case FDSD::Delimiter::Space:
+    case GBS::FDSD::Delimiter::Space:
         delimiter = new char(' ');
         break;
     default:

@@ -1,7 +1,5 @@
 #include "chartwidget.h"
 
-#include <QDebug>
-
 int ChartWidget::SumCharts = 0;
 int ChartWidget::ResChartWidgetID = 0;
 

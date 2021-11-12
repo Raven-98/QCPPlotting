@@ -1,16 +1,7 @@
 #ifndef ABOUTPROGRAM_H
 #define ABOUTPROGRAM_H
 
-#include <QDialog>
-#include <QGridLayout>
-#include <QVBoxLayout>
-#include <QLabel>
-#include <QTabWidget>
-#include <QWidget>
-#include <QCoreApplication>
-#include <QDialogButtonBox>
-
-#include "qcustomplot.h"
+#include "global.h"
 
 class AboutProgram : public QDialog
 {

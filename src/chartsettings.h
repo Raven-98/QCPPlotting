@@ -1,36 +1,13 @@
 #ifndef CHARTSETTINGS_H
 #define CHARTSETTINGS_H
 
-#include <QDialog>
-#include <QWidget>
-#include <QVBoxLayout>
-#include <QDialogButtonBox>
-#include <QGroupBox>
-#include <QLabel>
-#include <QCheckBox>
-#include <QLineEdit>
-#include <QPushButton>
-#include <QComboBox>
-#include <QSpacerItem>
-#include <QDoubleSpinBox>
-#include <QTabWidget>
-#include <QFont>
-#include <QFontComboBox>
-#include <QScrollArea>
-#include "qcustomplot.h"
-
+#include "global.h"
 #include "spacer.h"
 
 class AxisSettings;
 class GraphSettings;
 class GridSettingsBox;
 class LegendSettings;
-
-enum csDialodType {
-    Global,
-    Axis,
-    Graph,
-};
 
 class ChartSettings : public QDialog
 {
@@ -47,7 +24,7 @@ private:
 
     QVBoxLayout *vBoxLayout;
     QDialogButtonBox *dialogButtonBox;
-    csDialodType csdt;
+    GBS::CS::csDialodType csdt;
     AxisSettings *axisSettings = nullptr;
     AxisSettings *axisLeftSettings = nullptr;
     AxisSettings *axisRightSettings = nullptr;
@@ -212,11 +189,6 @@ class GridSettingsBox : public QGroupBox
     Q_OBJECT
 
 public:
-    enum Grid {
-        Horizontal,
-        Vertical,
-    };
-
     GridSettingsBox(QCPAxis &axis, QWidget *parent = nullptr);
     ~GridSettingsBox();
     void set();

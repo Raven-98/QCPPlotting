@@ -1,7 +1,5 @@
 #include "aboutprogram.h"
 
-#include <QDebug>
-
 AboutProgram::AboutProgram(QWidget *parent)
     : QDialog(parent)
 {

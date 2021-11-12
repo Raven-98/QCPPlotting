@@ -1,9 +1,21 @@
 #include "mainwindow.h"
 
-#include <QDebug>
-
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
+{
+}
+
+MainWindow::~MainWindow()
+{
+    saveSettings();
+
+    deleteActions();
+    deleteMenus();
+    deleteMenuBar();
+    delete mdiArea;
+}
+
+void MainWindow::init()
 {
     setMinimumSize(800,600);
 
@@ -16,12 +28,19 @@ MainWindow::MainWindow(QWidget *parent)
     initMenuBar();
 }
 
-MainWindow::~MainWindow()
+void MainWindow::loadSettings()
 {
-    deleteActions();
-    deleteMenus();
-    deleteMenuBar();
-    delete mdiArea;
+    settings.loadSettings(new QString("/sett.ini"));
+
+    resize(settings.MainWindow.width, settings.MainWindow.heidht);
+}
+
+void MainWindow::saveSettings()
+{
+    settings.MainWindow.width = width();
+    settings.MainWindow.heidht = height();
+
+    settings.saveSettings(new QString("/sett.ini"));
 }
 
 void MainWindow::initActions()
@@ -176,7 +195,7 @@ void MainWindow::addTable(QStandardItemModel *item_model)
     loadSubWindow(tableWidget);
 }
 
-void MainWindow::readCSV(QString file, FDSD::Data *r_data)
+void MainWindow::readCSV(QString file, GBS::FDSD::Data *r_data)
 {
     if (file.data()->isNull())
     {
@@ -196,16 +215,16 @@ void MainWindow::readCSV(QString file, FDSD::Data *r_data)
     QList<QStandardItem *> standardItemsList;
     char delimiter;
     switch (r_data->delimiter) {
-    case FDSD::Delimiter::Comma:
+    case GBS::FDSD::Delimiter::Comma:
         delimiter = ',';
         break;
-    case FDSD::Delimiter::Tab_step:
+    case GBS::FDSD::Delimiter::Tab_step:
         delimiter = '\t';
         break;
-    case FDSD::Delimiter::Semicolon:
+    case GBS::FDSD::Delimiter::Semicolon:
         delimiter = ';';
         break;
-    case FDSD::Delimiter::Space:
+    case GBS::FDSD::Delimiter::Space:
         delimiter = ' ';
         break;
     default:
@@ -215,7 +234,7 @@ void MainWindow::readCSV(QString file, FDSD::Data *r_data)
     while (!in->atEnd())
     {
         *line = in->readLine();
-        for (auto item : line->split(delimiter))
+        for (const auto &item : line->split(delimiter))
         {
             standardItemsList.append(new QStandardItem(item));
         }
@@ -233,7 +252,7 @@ void MainWindow::readCSV(QString file, FDSD::Data *r_data)
     addTable(item_model);
 }
 
-void MainWindow::buildChart(QVector<QVector<double> > data, ChartWidget::ChartStyle chartStyle)
+void MainWindow::buildChart(QVector<QVector<double> > data, GBS::CW::ChartStyle chartStyle)
 {
     if (!checkTableData(data))
         return;
@@ -241,21 +260,21 @@ void MainWindow::buildChart(QVector<QVector<double> > data, ChartWidget::ChartSt
     ChartWidget *chartWidget = new ChartWidget;
     if (!chartWidget)
         return;
-    if (chartStyle == ChartWidget::Graph)
+    if (chartStyle == GBS::CW::Graph)
         chartWidget->setDataGraph(data);
 
     connect(chartWidget->action_Save,&QAction::triggered,this,&MainWindow::slot_savePlot);
     loadSubWindow(chartWidget);
 }
 
-void MainWindow::addChart(QList<ChartWidget *> widgetsList, QVector<QVector<double> > data, ChartWidget::ChartStyle chartStyle)
+void MainWindow::addChart(QList<ChartWidget *> widgetsList, QVector<QVector<double> > data, GBS::CW::ChartStyle chartStyle)
 {
     if (!checkTableData(data))
         return;
 
     for (auto &widget : widgetsList)
     {
-        if (chartStyle == ChartWidget::Graph)
+        if (chartStyle == GBS::CW::Graph)
             widget->addDataGraph(data);
     }
 }
@@ -304,7 +323,7 @@ void MainWindow::saveTable(QVector<QVector<double> > data)
     {
     case QDialog::Accepted:
     {
-        FileDialogSetDetails *fpd = new FileDialogSetDetails(FDSD::Save, this);
+        FileDialogSetDetails *fpd = new FileDialogSetDetails(settings, GBS::FDSD::Save, this);
         switch(fpd->exec())
         {
         case QDialog::Accepted:
@@ -320,16 +339,16 @@ void MainWindow::saveTable(QVector<QVector<double> > data)
                 QTextStream *ts = new QTextStream(fil);
                 char delimiter;
                 switch (fpd->getData()->delimiter) {
-                case FDSD::Delimiter::Comma:
+                case GBS::FDSD::Delimiter::Comma:
                     delimiter = ',';
                     break;
-                case FDSD::Delimiter::Tab_step:
+                case GBS::FDSD::Delimiter::Tab_step:
                     delimiter = '\t';
                     break;
-                case FDSD::Delimiter::Semicolon:
+                case GBS::FDSD::Delimiter::Semicolon:
                     delimiter = ';';
                     break;
-                case FDSD::Delimiter::Space:
+                case GBS::FDSD::Delimiter::Space:
                     delimiter = ' ';
                     break;
                 default:
@@ -379,13 +398,14 @@ void MainWindow::savePlot()
                                     "image/bmp",
 //                                    "application/pdf"
                                    });
+    fileDialog->setDirectory(settings.DialogSavePlot.filePaht);
     switch (fileDialog->exec())
     {
     case QDialog::Accepted:
     {
         QString format =  fileDialog->selectedFiles().at(0).split(".").takeLast();
         DialogSavePlot *dialogSavePlot = new DialogSavePlot(format, this);
-        DSP::Data data;
+        GBS::DSP::Data data;
         data.Width = qobject_cast<ChartWidget *>(mdiArea->activeSubWindow()->widget())->customPlot->width();
         data.Height = qobject_cast<ChartWidget *>(mdiArea->activeSubWindow()->widget())->customPlot->height();
         data.Scale = 1.0;
@@ -423,6 +443,8 @@ void MainWindow::savePlot()
                                                                                                        static_cast<QCP::ResolutionUnit>(data.ResolutionUnit));
 //            else if (format == "pdf")
 //                qobject_cast<ChartWidget *>(mdiArea->activeSubWindow()->widget())->customPlot->savePdf(fileDialog->selectedFiles().at(0), data.Width, data.Height, data.Scale);
+
+            settings.DialogSavePlot.filePaht = fileDialog->selectedFiles().at(0).section("/",0,-2);
             QMessageBox::information(dialogSavePlot, "", tr("Saving was successful"));
             break;
         }
@@ -462,17 +484,19 @@ void MainWindow::slot_ImportCSV()
     QFileDialog *fileDialog = new QFileDialog(this);
     fileDialog->setAcceptMode(QFileDialog::AcceptOpen);
     fileDialog->setFileMode(QFileDialog::ExistingFile);
+    fileDialog->setDirectory(settings.FileDialogSetDetails.filePaht);
     fileDialog->setMimeTypeFilters({"text/csv", "application/octet-stream"});
     switch (fileDialog->exec())
     {
     case QDialog::Accepted:
     {
-        FileDialogSetDetails *fpd = new FileDialogSetDetails(FDSD::Open, this);
+        FileDialogSetDetails *fpd = new FileDialogSetDetails(settings, GBS::FDSD::Open, this);
 //        fpd->setData(data);
         switch(fpd->exec())
         {
         case QDialog::Accepted:
             readCSV(fileDialog->selectedFiles().at(0), fpd->getData());
+            settings.FileDialogSetDetails.filePaht = fileDialog->selectedFiles().at(0).section("/",0,-2);
             break;
         case QDialog::Rejected:
             break;
@@ -494,27 +518,27 @@ void MainWindow::slot_ImportCSV()
 
 void MainWindow::slot_PlotGraph()
 {
-    buildChart(qobject_cast<TableWidget *>(mdiArea->activeSubWindow()->widget())->getData(), ChartWidget::Graph);
+    buildChart(qobject_cast<TableWidget *>(mdiArea->activeSubWindow()->widget())->getData(), GBS::CW::Graph);
 }
 
 void MainWindow::slot_PlotCurve()
 {
-    buildChart(qobject_cast<TableWidget *>(mdiArea->activeSubWindow()->widget())->getData(), ChartWidget::Curve);
+    buildChart(qobject_cast<TableWidget *>(mdiArea->activeSubWindow()->widget())->getData(), GBS::CW::Curve);
 }
 
 void MainWindow::slot_PlotBars()
 {
-    buildChart(qobject_cast<TableWidget *>(mdiArea->activeSubWindow()->widget())->getData(), ChartWidget::Bars);
+    buildChart(qobject_cast<TableWidget *>(mdiArea->activeSubWindow()->widget())->getData(), GBS::CW::Bars);
 }
 
 void MainWindow::slot_PlotFinancial()
 {
-    buildChart(qobject_cast<TableWidget *>(mdiArea->activeSubWindow()->widget())->getData(), ChartWidget::Financial);
+    buildChart(qobject_cast<TableWidget *>(mdiArea->activeSubWindow()->widget())->getData(), GBS::CW::Financial);
 }
 
 void MainWindow::slot_PlotStatistacalBox()
 {
-    buildChart(qobject_cast<TableWidget *>(mdiArea->activeSubWindow()->widget())->getData(), ChartWidget::StatisticalBox);
+    buildChart(qobject_cast<TableWidget *>(mdiArea->activeSubWindow()->widget())->getData(), GBS::CW::StatisticalBox);
 }
 
 void MainWindow::slot_addGraphs()
@@ -543,7 +567,7 @@ void MainWindow::slot_addGraphs()
                 wList.append(qobject_cast<ChartWidget *>(it_lst->widget()));
         }
         list.clear();
-        addChart(wList, qobject_cast<TableWidget *>(mdiArea->activeSubWindow()->widget())->getData(), ChartWidget::Graph);
+        addChart(wList, qobject_cast<TableWidget *>(mdiArea->activeSubWindow()->widget())->getData(), GBS::CW::Graph);
         wList.clear();
         break;
     }
@@ -574,12 +598,12 @@ void MainWindow::slot_savePlot()
 
 void MainWindow::slot_AnalyzeDiffractionDataDRON2()
 {
-    DialogAnalyzeDiffractionDataDRON2 *daddDRON = new DialogAnalyzeDiffractionDataDRON2(this);
+    DialogAnalyzeDiffractionDataDRON2 *daddDRON = new DialogAnalyzeDiffractionDataDRON2(settings, this);
     switch (daddDRON->exec())
     {
     case QDialog::Accepted:
     {
-        DADDDRON2::Data data;
+        GBS::DADDDRON2::Data data;
         data = daddDRON->getData();
         QThread* thread = new QThread;
         AnalyzeDiffractionDataDRON2 *worker = new AnalyzeDiffractionDataDRON2(data);
@@ -622,12 +646,12 @@ void MainWindow::slot_AboutProgram()
 void MainWindow::closeEvent(QCloseEvent *event)
 {
     event->ignore();
-    if (QMessageBox::Yes == QMessageBox::question(this,
-                                                  tr("Close Confirmation"),
-                                                  tr("Exit?"),
-                                                  QMessageBox::Yes | QMessageBox::No))
-    {
+//    if (QMessageBox::Yes == QMessageBox::question(this,
+//                                                  tr("Close Confirmation"),
+//                                                  tr("Exit?"),
+//                                                  QMessageBox::Yes | QMessageBox::No))
+//    {
         mdiArea->closeAllSubWindows();
         event->accept();
-    }
+//    }
 }

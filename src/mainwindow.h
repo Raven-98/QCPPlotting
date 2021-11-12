@@ -1,23 +1,13 @@
 #ifndef MAINWINDOW_H
 #define MAINWINDOW_H
 
-#include <QMainWindow>
-#include <QMdiArea>
-#include <QMenuBar>
-#include <QToolBar>
-#include <QMenu>
-#include <QAction>
-#include <QMdiSubWindow>
-#include <QStandardItemModel>
-#include <QFileDialog>
-#include <QMessageBox>
-#include <QThread>
-
 #include "dialogs.h"
 #include "tablewidget.h"
 #include "chartwidget.h"
 #include "analyzediffractiondatadron2.h"
 #include "aboutprogram.h"
+
+#include "global.h"
 
 class MainWindow : public QMainWindow
 {
@@ -26,6 +16,9 @@ class MainWindow : public QMainWindow
 public:
     MainWindow(QWidget *parent = nullptr);
     ~MainWindow();
+    void init();
+    void loadSettings();
+    void saveSettings();
     void initTable();
 
 private:
@@ -39,13 +32,14 @@ private:
     void deleteToolBar();
     void loadSubWindow(QWidget *widget);
     void addTable(QStandardItemModel *item_model);
-    void readCSV(QString file, FDSD::Data *r_data);
-    void buildChart(QVector<QVector<double> > data, ChartWidget::ChartStyle chartStyle);
-    void addChart(QList<ChartWidget *> widgetsList, QVector<QVector<double> > data, ChartWidget::ChartStyle chartStyle);
+    void readCSV(QString file, GBS::FDSD::Data *r_data);
+    void buildChart(QVector<QVector<double> > data, GBS::CW::ChartStyle chartStyle);
+    void addChart(QList<ChartWidget *> widgetsList, QVector<QVector<double> > data, GBS::CW::ChartStyle chartStyle);
     bool checkTableData(QVector<QVector<double> > data);
     void saveTable(QVector<QVector<double> > data);
     void savePlot();
 
+    GBS::Settings settings;
     QMdiArea *mdiArea;
     QMenuBar *menuBar;
     QToolBar *toolBar;

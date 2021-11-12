@@ -1,24 +1,7 @@
 #ifndef TABLEWIDGET_H
 #define TABLEWIDGET_H
 
-#include <QApplication>
-#include <QClipboard>
-#include <QWidget>
-#include <QTableView>
-#include <QStandardItemModel>
-#include <QGridLayout>
-#include <QMenu>
-#include <QAction>
-#include <QHeaderView>
-#include <QKeyEvent>
-#include <QLabel>
-#include <QHeaderView>
-#include <QPainter>
-#include <QMouseEvent>
-#include <QKeyEvent>
-
-#include <QLineEdit>
-#include <QStyledItemDelegate>
+#include "global.h"
 
 class TableWidget;
 class TableView;

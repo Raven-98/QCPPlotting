@@ -15,8 +15,12 @@
 #include <QScrollArea>
 #include <QCheckBox>
 #include <QSpinBox>
-#include <QSpacerItem>
+//#include <QSpacerItem>
 #include <QDoubleSpinBox>
+#include <QLineEdit>
+#include <QPushButton>
+#include <QComboBox>
+#include <QFileDialog>
 
 //#include "chartwidget.h"
 #include "spacer.h"
@@ -25,6 +29,7 @@ class Dialogs;
 class FileDialogSetDetails;
 class DialodAddPlot;
 class DialogSavePlot;
+class DialogAnalyzeDiffractionDataDRON2;
 
 namespace FDSD
 {
@@ -141,6 +146,53 @@ private:
     QLabel *label_Resolution;
     QSpinBox *spinBox_Resolution;
     QComboBox *comboBox_ResolutionUnit;
+};
+
+namespace DADDDRON2
+{
+    struct Data
+    {
+        QString fileName;
+        float twoThetaStart;
+        float twoThetaEnd;
+        short delimiter;
+    };
+}
+
+class DialogAnalyzeDiffractionDataDRON2 : public Dialogs
+{
+    Q_OBJECT
+
+public:
+    DialogAnalyzeDiffractionDataDRON2(QWidget *parent = nullptr);
+    ~DialogAnalyzeDiffractionDataDRON2();
+
+    DADDDRON2::Data getData();
+
+private:
+    QLabel *labelInfo;
+    QLabel *labelBoxTitleInfo;
+    QLabel *labelFile;
+    QLabel *labelBoxTitleShootingAngles;
+    QLabel *labelTwoThetaStart;
+    QLabel *labelTwoThetaEnd;
+    QLabel *labelDelimiter;
+    QLineEdit *lineEditFile;
+    QLineEdit *lineEditTwoThetaStart;
+    QLineEdit *lineEditTwoThetaEnd;
+    QPushButton *pushButtonOpen;
+    QComboBox *comboBoxDelimiter;
+    QGroupBox *groupBoxInfo;
+    QGroupBox *groupBoxFile;
+    QGroupBox *groupBoxShootingAngles;
+    QGroupBox *groupBoxDelimiter;
+    QVBoxLayout *vBoxLayoutInfo;
+    QHBoxLayout *hBoxLayoutFile;
+    QGridLayout *gridLayoutShootingAngles;
+    QGridLayout *gridLayotDelimiter;
+
+private slots:
+    void slot_pushButtonOpen();
 };
 
 #endif // DIALOGS_H

@@ -47,7 +47,7 @@ ChartWidget::ChartWidget(QWidget *parent)
     customPlot->yAxis2->setTickLabels(false);
 
     QPen *pen = new QPen;
-    pen->setColor("#C8C8C8");
+    pen->setColor(QColor(200, 200, 200));
     pen->setWidthF(1);
     pen->setStyle(Qt::DotLine);
 

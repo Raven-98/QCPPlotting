@@ -261,3 +261,157 @@ void DialogSavePlot::setData(DSP::Data data)
     spinBox_Resolution->setValue(data.Resolution);
     comboBox_ResolutionUnit->setCurrentIndex(data.ResolutionUnit);
 }
+
+DialogAnalyzeDiffractionDataDRON2::DialogAnalyzeDiffractionDataDRON2(QWidget *parent)
+    : Dialogs(parent)
+{
+    setWindowTitle(tr("Analyze diffraction data (DRON-2)"));
+    setMinimumSize(400,200);
+
+    labelBoxTitleInfo = new QLabel;
+    labelBoxTitleInfo->setText(tr("<html><head/><body><p><b>Info</b></span></p></body></html>"));
+
+    labelInfo = new QLabel;
+    labelInfo->setWordWrap(true);
+    labelInfo->setText(tr("<html><head/><body><p>"
+                            "Analysis of diffraction data from digital multimeter data<br>"
+                            "<i>(DRON-2, Department of Solid State Physics, V. N. Karazin Kharkiv National University)</i>"
+                            "</span></p></body></html>"));
+
+    vBoxLayoutInfo = new QVBoxLayout;
+    vBoxLayoutInfo->addWidget(labelBoxTitleInfo);
+    vBoxLayoutInfo->addLayout(new Spacer(0, 1));
+    vBoxLayoutInfo->addWidget(labelInfo);
+    vBoxLayoutInfo->addLayout(new Spacer(0, 1));
+
+    groupBoxInfo = new QGroupBox;
+    groupBoxInfo->setLayout(vBoxLayoutInfo);
+
+    labelFile = new QLabel;
+    labelFile->setText(tr("<html><head/><body><p>"
+                            "<b>File</b>"
+                            "</span></p></body></html>"));
+
+    lineEditFile = new QLineEdit;
+
+    pushButtonOpen = new QPushButton;
+    pushButtonOpen->setText(tr("Open"));
+    connect(pushButtonOpen,
+            &QPushButton::clicked,
+            this,
+            &DialogAnalyzeDiffractionDataDRON2::slot_pushButtonOpen);
+
+    hBoxLayoutFile = new QHBoxLayout;
+    hBoxLayoutFile->addWidget(labelFile);
+    hBoxLayoutFile->addWidget(lineEditFile);
+    hBoxLayoutFile->addWidget(pushButtonOpen);
+
+    groupBoxFile = new QGroupBox;
+    groupBoxFile->setLayout(hBoxLayoutFile);
+
+    labelBoxTitleShootingAngles = new QLabel;
+    labelBoxTitleShootingAngles->setText(tr("<html><head/><body><p>"
+                                            "<b>Shooting angles</b>"
+                                            "</span></p></body></html>"));
+
+    labelTwoThetaStart = new QLabel;
+    labelTwoThetaStart->setText("<html><head/><body><p align=\"right\">"
+                                "2θ<span style=\" vertical-align:sub;\">start</span>"
+                                "</p></body></html>");
+
+    lineEditTwoThetaStart = new QLineEdit;
+
+    labelTwoThetaEnd = new QLabel;
+    labelTwoThetaEnd->setText("<html><head/><body><p align=\"right\">"
+                                "2θ<span style=\" vertical-align:sub;\">end</span>"
+                                "</p></body></html>");
+
+    lineEditTwoThetaEnd = new QLineEdit;
+
+    gridLayoutShootingAngles = new QGridLayout;
+    gridLayoutShootingAngles->addWidget(labelBoxTitleShootingAngles, 0, 0, 1, 4);
+    gridLayoutShootingAngles->addWidget(labelTwoThetaStart, 1, 0);
+    gridLayoutShootingAngles->addWidget(lineEditTwoThetaStart, 1, 1);
+    gridLayoutShootingAngles->addWidget(labelTwoThetaEnd, 1, 2);
+    gridLayoutShootingAngles->addWidget(lineEditTwoThetaEnd, 1, 3);
+
+    groupBoxShootingAngles = new QGroupBox;
+    groupBoxShootingAngles->setLayout(gridLayoutShootingAngles);
+
+    labelDelimiter = new QLabel;
+    labelDelimiter->setText(tr("<html><head/><body><p>"
+                                "<b>Delimiter</b>"
+                                "</span></p></body></html>"));
+
+    comboBoxDelimiter = new QComboBox;
+    comboBoxDelimiter->addItems({"Comma", "Tab step", "Semicolon", "Space"});
+
+    gridLayotDelimiter = new QGridLayout;
+    gridLayotDelimiter->addWidget(labelDelimiter, 0, 0);
+    gridLayotDelimiter->addWidget(comboBoxDelimiter, 0, 1);
+    gridLayotDelimiter->addLayout(new Spacer(1,0), 1, 1);
+
+    groupBoxDelimiter = new QGroupBox;
+    groupBoxDelimiter->setLayout(gridLayotDelimiter);
+
+    BoxLayout->addWidget(groupBoxDelimiter);
+    BoxLayout->addWidget(groupBoxShootingAngles);
+    BoxLayout->addWidget(groupBoxFile);
+    BoxLayout->addWidget(groupBoxInfo);
+}
+
+DialogAnalyzeDiffractionDataDRON2::~DialogAnalyzeDiffractionDataDRON2()
+{
+    delete labelBoxTitleInfo;
+    delete labelInfo;
+    delete vBoxLayoutInfo;
+    delete groupBoxInfo;
+
+    delete labelFile;
+    delete lineEditFile;
+    delete pushButtonOpen;
+    delete hBoxLayoutFile;
+    delete groupBoxFile;
+
+    delete labelBoxTitleShootingAngles;
+    delete labelTwoThetaStart;
+    delete labelTwoThetaEnd;
+    delete lineEditTwoThetaStart;
+    delete lineEditTwoThetaEnd;
+    delete gridLayoutShootingAngles;
+    delete groupBoxShootingAngles;
+
+    delete labelDelimiter;
+    delete comboBoxDelimiter;
+    delete gridLayotDelimiter;
+    delete groupBoxDelimiter;
+}
+
+DADDDRON2::Data DialogAnalyzeDiffractionDataDRON2::getData()
+{
+    DADDDRON2::Data data;
+
+    data.fileName = lineEditFile->text();
+    data.twoThetaStart = lineEditTwoThetaStart->text().toFloat();
+    data.twoThetaEnd = lineEditTwoThetaEnd->text().toFloat();
+    data.delimiter = comboBoxDelimiter->currentIndex();
+
+    return data;
+}
+
+void DialogAnalyzeDiffractionDataDRON2::slot_pushButtonOpen()
+{
+    QFileDialog *fileDialog = new QFileDialog(this);
+    fileDialog->setAcceptMode(QFileDialog::AcceptOpen);
+    fileDialog->setFileMode(QFileDialog::ExistingFile);
+    fileDialog->setMimeTypeFilters({"text/plain", "text/csv", "application/octet-stream"});
+    switch (fileDialog->exec())
+    {
+    case QDialog::Accepted:
+        lineEditFile->setText(fileDialog->selectedFiles().at(0));
+        break;
+    case QDialog::Rejected:
+        break;
+    }
+    delete fileDialog;
+}

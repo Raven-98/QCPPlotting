@@ -45,6 +45,8 @@ set(PROJECT_SOURCES
         src/chartsettings.h
         src/spacer.cpp
         src/spacer.h
+        src/analyzediffractiondatadron2.cpp
+        src/analyzediffractiondatadron2.h
         ${TS_FILES}
 )
 

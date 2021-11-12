@@ -2,6 +2,29 @@
 <!DOCTYPE TS>
 <TS version="2.1" language="ru_RU">
 <context>
+    <name>AnalyzeDiffractionDataDRON2</name>
+    <message>
+        <location filename="../src/analyzediffractiondatadron2.cpp" line="15"/>
+        <source>No file name specified</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/analyzediffractiondatadron2.cpp" line="25"/>
+        <source>File not exists</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/analyzediffractiondatadron2.cpp" line="71"/>
+        <source>Column &quot;Value&quot; not found</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/analyzediffractiondatadron2.cpp" line="79"/>
+        <source>Intensity</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
     <name>AxisSettings</name>
     <message>
         <location filename="../src/chartsettings.cpp" line="248"/>
@@ -189,6 +212,44 @@
     <message>
         <location filename="../src/dialogs.cpp" line="98"/>
         <source>Add to</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>DialogAnalyzeDiffractionDataDRON2</name>
+    <message>
+        <location filename="../src/dialogs.cpp" line="268"/>
+        <source>Analyze diffraction data (DRON-2)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/dialogs.cpp" line="272"/>
+        <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;b&gt;Info&lt;/b&gt;&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/dialogs.cpp" line="276"/>
+        <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Analysis of diffraction data from digital multimeter data&lt;br&gt;&lt;i&gt;(DRON-2, Department of Solid State Physics, V. N. Karazin Kharkiv National University)&lt;/i&gt;&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/dialogs.cpp" line="291"/>
+        <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;b&gt;File&lt;/b&gt;&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/dialogs.cpp" line="298"/>
+        <source>Open</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/dialogs.cpp" line="313"/>
+        <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;b&gt;Shooting angles&lt;/b&gt;&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/dialogs.cpp" line="342"/>
+        <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;b&gt;Delimiter&lt;/b&gt;&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -618,96 +679,119 @@ p, li { white-space: pre-wrap; }
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.cpp" line="36"/>
+        <location filename="../src/mainwindow.cpp" line="39"/>
         <source>Full screen</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.cpp" line="42"/>
+        <location filename="../src/mainwindow.cpp" line="48"/>
         <source>Import CSV</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.cpp" line="47"/>
+        <location filename="../src/mainwindow.cpp" line="56"/>
         <source>New table</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.cpp" line="63"/>
+        <location filename="../src/mainwindow.cpp" line="64"/>
+        <source>Analyze diffraction data (DRON-2)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/mainwindow.cpp" line="83"/>
         <source>&amp;File</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.cpp" line="69"/>
+        <location filename="../src/mainwindow.cpp" line="89"/>
         <source>Table</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.cpp" line="73"/>
+        <location filename="../src/mainwindow.cpp" line="93"/>
         <source>&amp;Window</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.cpp" line="143"/>
-        <location filename="../src/mainwindow.cpp" line="149"/>
-        <location filename="../src/mainwindow.cpp" line="228"/>
-        <location filename="../src/mainwindow.cpp" line="236"/>
-        <location filename="../src/mainwindow.cpp" line="245"/>
-        <location filename="../src/mainwindow.cpp" line="276"/>
-        <location filename="../src/mainwindow.cpp" line="318"/>
-        <location filename="../src/mainwindow.cpp" line="327"/>
-        <location filename="../src/mainwindow.cpp" line="392"/>
-        <location filename="../src/mainwindow.cpp" line="401"/>
-        <location filename="../src/mainwindow.cpp" line="440"/>
-        <location filename="../src/mainwindow.cpp" line="449"/>
-        <location filename="../src/mainwindow.cpp" line="513"/>
+        <location filename="../src/mainwindow.cpp" line="97"/>
+        <source>&amp;Extra</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/mainwindow.cpp" line="169"/>
+        <location filename="../src/mainwindow.cpp" line="175"/>
+        <location filename="../src/mainwindow.cpp" line="254"/>
+        <location filename="../src/mainwindow.cpp" line="262"/>
+        <location filename="../src/mainwindow.cpp" line="271"/>
+        <location filename="../src/mainwindow.cpp" line="302"/>
+        <location filename="../src/mainwindow.cpp" line="344"/>
+        <location filename="../src/mainwindow.cpp" line="353"/>
+        <location filename="../src/mainwindow.cpp" line="418"/>
+        <location filename="../src/mainwindow.cpp" line="427"/>
+        <location filename="../src/mainwindow.cpp" line="466"/>
+        <location filename="../src/mainwindow.cpp" line="475"/>
+        <location filename="../src/mainwindow.cpp" line="539"/>
+        <location filename="../src/mainwindow.cpp" line="588"/>
+        <location filename="../src/mainwindow.cpp" line="595"/>
         <source>Error</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.cpp" line="143"/>
+        <location filename="../src/mainwindow.cpp" line="169"/>
         <source>No file name specified</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.cpp" line="149"/>
+        <location filename="../src/mainwindow.cpp" line="175"/>
         <source>File not exists</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.cpp" line="228"/>
+        <location filename="../src/mainwindow.cpp" line="254"/>
         <source>The selected table is empty</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.cpp" line="236"/>
+        <location filename="../src/mainwindow.cpp" line="262"/>
         <source>Zero column size</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.cpp" line="245"/>
+        <location filename="../src/mainwindow.cpp" line="271"/>
         <source>Table columns have different sizes</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.cpp" line="310"/>
-        <location filename="../src/mainwindow.cpp" line="386"/>
+        <location filename="../src/mainwindow.cpp" line="336"/>
+        <location filename="../src/mainwindow.cpp" line="412"/>
         <source>Saving was successful</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.cpp" line="318"/>
-        <location filename="../src/mainwindow.cpp" line="327"/>
-        <location filename="../src/mainwindow.cpp" line="401"/>
-        <location filename="../src/mainwindow.cpp" line="440"/>
-        <location filename="../src/mainwindow.cpp" line="449"/>
-        <location filename="../src/mainwindow.cpp" line="513"/>
+        <location filename="../src/mainwindow.cpp" line="344"/>
+        <location filename="../src/mainwindow.cpp" line="353"/>
+        <location filename="../src/mainwindow.cpp" line="427"/>
+        <location filename="../src/mainwindow.cpp" line="466"/>
+        <location filename="../src/mainwindow.cpp" line="475"/>
+        <location filename="../src/mainwindow.cpp" line="539"/>
+        <location filename="../src/mainwindow.cpp" line="595"/>
         <source>QDialog: Unexpected result</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.cpp" line="392"/>
+        <location filename="../src/mainwindow.cpp" line="418"/>
         <source>Unexpected result</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/mainwindow.cpp" line="605"/>
+        <source>Close Confirmation</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/mainwindow.cpp" line="606"/>
+        <source>Exit?</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -719,56 +803,56 @@ p, li { white-space: pre-wrap; }
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/tablewidget.cpp" line="56"/>
-        <location filename="../src/tablewidget.cpp" line="57"/>
-        <location filename="../src/tablewidget.cpp" line="58"/>
-        <location filename="../src/tablewidget.cpp" line="59"/>
-        <location filename="../src/tablewidget.cpp" line="60"/>
+        <location filename="../src/tablewidget.cpp" line="42"/>
+        <location filename="../src/tablewidget.cpp" line="43"/>
+        <location filename="../src/tablewidget.cpp" line="44"/>
+        <location filename="../src/tablewidget.cpp" line="45"/>
+        <location filename="../src/tablewidget.cpp" line="46"/>
         <source>Build</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/tablewidget.cpp" line="62"/>
+        <location filename="../src/tablewidget.cpp" line="48"/>
         <source>Add to</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/tablewidget.cpp" line="64"/>
+        <location filename="../src/tablewidget.cpp" line="50"/>
         <source>Graph</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/tablewidget.cpp" line="68"/>
+        <location filename="../src/tablewidget.cpp" line="54"/>
         <source>Curve</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/tablewidget.cpp" line="73"/>
+        <location filename="../src/tablewidget.cpp" line="59"/>
         <source>Bars</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/tablewidget.cpp" line="78"/>
+        <location filename="../src/tablewidget.cpp" line="64"/>
         <source>Financial</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/tablewidget.cpp" line="83"/>
+        <location filename="../src/tablewidget.cpp" line="69"/>
         <source>Statistacal box</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/tablewidget.cpp" line="89"/>
+        <location filename="../src/tablewidget.cpp" line="75"/>
         <source>Plot</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/tablewidget.cpp" line="96"/>
+        <location filename="../src/tablewidget.cpp" line="82"/>
         <source>Add column</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/tablewidget.cpp" line="103"/>
+        <location filename="../src/tablewidget.cpp" line="89"/>
         <source>Save Table</source>
         <translation type="unfinished"></translation>
     </message>

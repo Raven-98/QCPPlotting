@@ -30,23 +30,42 @@ void MainWindow::initActions()
     actionExit->setText(tr("Exit"));
     actionExit->setIcon(QIcon(":/img/exit.png"));
     actionExit->setShortcut(QKeySequence(Qt::CTRL | Qt::Key_Q));
-    connect(actionExit,&QAction::triggered,this,&MainWindow::close);
+    connect(actionExit,
+            &QAction::triggered,
+            this,
+            &MainWindow::close);
 
     actionFullScreen = new QAction;
     actionFullScreen->setText(tr("Full screen"));
     actionFullScreen->setIcon(QIcon(":/img/full_screen.png"));
     actionFullScreen->setShortcut(QKeySequence(Qt::Key_F11));
-    connect(actionFullScreen,&QAction::triggered,this,&MainWindow::slot_FullScreen);
+    connect(actionFullScreen,
+            &QAction::triggered,
+            this,
+            &MainWindow::slot_FullScreen);
 
     actionImportCSV = new QAction;
     actionImportCSV->setText(tr("Import CSV"));
     actionImportCSV->setIcon(QIcon(":/img/import_csv.png"));
-    connect(actionImportCSV,&QAction::triggered,this,&MainWindow::slot_ImportCSV);
+    connect(actionImportCSV,
+            &QAction::triggered,
+            this,
+            &MainWindow::slot_ImportCSV);
 
     actionNewTable = new QAction;
     actionNewTable->setText(tr("New table"));
     actionNewTable->setIcon(QIcon(":/img/table.png"));
-    connect(actionNewTable,&QAction::triggered,this,&MainWindow::slot_newTable);
+    connect(actionNewTable,
+            &QAction::triggered,
+            this,
+            &MainWindow::slot_newTable);
+
+    actionAnalyzeDiffractionData_DRON2 = new QAction;
+    actionAnalyzeDiffractionData_DRON2->setText((tr("Analyze diffraction data (DRON-2)")));
+    connect(actionAnalyzeDiffractionData_DRON2,
+            &QAction::triggered,
+            this,
+            &MainWindow::slot_AnalyzeDiffractionDataDRON2);
 }
 
 void MainWindow::deleteActions()
@@ -55,6 +74,7 @@ void MainWindow::deleteActions()
     delete actionFullScreen;
     delete actionImportCSV;
     delete actionNewTable;
+    delete actionAnalyzeDiffractionData_DRON2;
 }
 
 void MainWindow::initMenus()
@@ -72,6 +92,10 @@ void MainWindow::initMenus()
     menuWindow = new QMenu;
     menuWindow->setTitle(tr("&Window"));
     menuWindow->addAction(actionFullScreen);
+
+    menuExtra = new QMenu;
+    menuExtra->setTitle(tr("&Extra"));
+    menuExtra->addAction(actionAnalyzeDiffractionData_DRON2);
 }
 
 void MainWindow::deleteMenus()
@@ -79,6 +103,7 @@ void MainWindow::deleteMenus()
     delete menuFile;
     delete menuTable;
     delete menuWindow;
+    delete menuExtra;
 }
 
 void MainWindow::initMenuBar()
@@ -88,6 +113,7 @@ void MainWindow::initMenuBar()
     menuBar->addMenu(menuFile);
     menuBar->addMenu(menuTable);
     menuBar->addMenu(menuWindow);
+    menuBar->addMenu(menuExtra);
 
     setMenuBar(menuBar);
 }
@@ -175,7 +201,7 @@ void MainWindow::readCSV(QString file, FDSD::Data *r_data)
     while (!in->atEnd())
     {
         *line = in->readLine();
-        for (QString item : line->split(delimiter))
+        for (auto item : line->split(delimiter))
         {
             standardItemsList.append(new QStandardItem(item));
         }
@@ -530,4 +556,57 @@ void MainWindow::slot_newTable()
 void MainWindow::slot_savePlot()
 {
     savePlot();
+}
+
+void MainWindow::slot_AnalyzeDiffractionDataDRON2()
+{
+    DialogAnalyzeDiffractionDataDRON2 *daddDRON = new DialogAnalyzeDiffractionDataDRON2(this);
+    switch (daddDRON->exec())
+    {
+    case QDialog::Accepted:
+    {
+        DADDDRON2::Data data;
+        data = daddDRON->getData();
+        QThread* thread = new QThread;
+        AnalyzeDiffractionDataDRON2 *worker = new AnalyzeDiffractionDataDRON2(data);
+        worker->moveToThread(thread);
+        connect(thread,
+                &QThread::started,
+                worker,
+                &AnalyzeDiffractionDataDRON2::run);
+        connect(worker,
+                &AnalyzeDiffractionDataDRON2::quit,
+                thread,
+                &QThread::quit);
+        connect(worker,
+                &AnalyzeDiffractionDataDRON2::finished,
+                this,
+                [=](QStandardItemModel *item_model){addTable(item_model);});
+        connect(worker,
+                &AnalyzeDiffractionDataDRON2::error,
+                this,
+                [=](QString err){QMessageBox::critical(this, tr("Error"), err);});
+        thread->start();
+        break;
+    }
+    case QDialog::Rejected:
+        break;
+    default:
+        QMessageBox::critical(this,tr("Error"),tr("QDialog: Unexpected result"));
+        break;
+    }
+    delete daddDRON;
+}
+
+void MainWindow::closeEvent(QCloseEvent *event)
+{
+    event->ignore();
+    if (QMessageBox::Yes == QMessageBox::question(this,
+                                                  tr("Close Confirmation"),
+                                                  tr("Exit?"),
+                                                  QMessageBox::Yes | QMessageBox::No))
+    {
+        mdiArea->closeAllSubWindows();
+        event->accept();
+    }
 }

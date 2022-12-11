@@ -21,6 +21,10 @@ TableWidget::~TableWidget()
 
   if (actionPlotGraph)
     delete actionPlotGraph;
+  if (actionPlotBars)
+    delete actionPlotBars;
+  if (actionPlotCurve)
+    delete actionPlotCurve;
   if (menuPlot)
     delete menuPlot;
   if (actionSaveTable)
@@ -51,6 +55,8 @@ void TableWidget::init()
   connect(horizontalHeaderView, &HorizontalHeaderView::customContextMenuRequested, this, &TableWidget::checkSelectionModel);
   connect(this, &TableWidget::setEnabledActions, horizontalHeaderView, &HorizontalHeaderView::slot_setEnabledActions);
   connect(horizontalHeaderView, &HorizontalHeaderView::buildGraph, this, &TableWidget::buildGraphTrigered);
+  connect(horizontalHeaderView, &HorizontalHeaderView::buildBars, this, &TableWidget::buildBarsTrigered);
+  connect(horizontalHeaderView, &HorizontalHeaderView::buildCurve, this, &TableWidget::buildCurveTrigered);
   connect(horizontalHeaderView, &HorizontalHeaderView::saveTable, this, &TableWidget::saveTableTrigered);
   connect(horizontalHeaderView, &HorizontalHeaderView::addColumn, this, &TableWidget::addColumnTrigered);
 
@@ -69,8 +75,18 @@ void TableWidget::init()
   actionPlotGraph->setText(tr("Graph"));
   connect(actionPlotGraph, &QAction::triggered, this, &TableWidget::buildGraphTrigered);
 
+  actionPlotBars = new QAction;
+  actionPlotBars->setText(tr("Bars"));
+  connect(actionPlotBars, &QAction::triggered, this, &TableWidget::buildBarsTrigered);
+
+  actionPlotCurve = new QAction;
+  actionPlotCurve->setText(tr("Curve"));
+  connect(actionPlotCurve, &QAction::triggered, this, &TableWidget::buildCurveTrigered);
+
   menuPlot = new QMenu;
   menuPlot->setTitle(tr("Plot"));
+  menuPlot->addAction(actionPlotBars);
+  menuPlot->addAction(actionPlotCurve);
   menuPlot->addAction(actionPlotGraph);
 
   actionSaveTable = new QAction;
@@ -120,6 +136,32 @@ void TableWidget::buildGraphTrigered()
   auto data = builderData(selectedIndexes);
 
   emit buildGraph(data);
+}
+
+void TableWidget::buildBarsTrigered()
+{
+  auto selectedIndexes = tableWidget->selectionModel()->selectedIndexes();
+  if (selectedIndexes.size() < 2) {
+      emit error("selectedIndexes.size() < 2");
+      return;
+    }
+
+  auto data = builderData(selectedIndexes);
+
+  emit buildBars(data);
+}
+
+void TableWidget::buildCurveTrigered()
+{
+  auto selectedIndexes = tableWidget->selectionModel()->selectedIndexes();
+  if (selectedIndexes.size() < 2) {
+      emit error("selectedIndexes.size() < 2");
+      return;
+    }
+
+  auto data = builderNumberedData(selectedIndexes);
+
+  emit buildCurve(data);
 }
 
 void TableWidget::saveTableTrigered()
@@ -174,6 +216,19 @@ QVector<QVector<double> > TableWidget::builderData(QModelIndexList &selectedInde
   return data;
 }
 
+QVector<QVector<double>> TableWidget::builderNumberedData(QModelIndexList &selectedIndexes)
+{
+  auto data = builderData(selectedIndexes);
+
+  QVector<double> vector;
+  for (int i = 0; i < data.at(0).count(); i++) {
+      vector.push_back(i);
+    }
+  data.push_front(vector);
+
+  return data;
+}
+
 //void TableView::keyReleaseEvent(QKeyEvent *event)
 //{
 //  QTableView::keyReleaseEvent(event);
@@ -193,8 +248,18 @@ HorizontalHeaderView::HorizontalHeaderView(QWidget *parent)
   actionPlotGraph->setText(tr("Graph"));
   connect(actionPlotGraph, &QAction::triggered, this, &HorizontalHeaderView::buildGraphTrigered);
 
+  actionPlotBars = new QAction;
+  actionPlotBars->setText(tr("Bars"));
+  connect(actionPlotBars, &QAction::triggered, this, &HorizontalHeaderView::buildBarsTrigered);
+
+  actionPlotCurve = new QAction;
+  actionPlotCurve->setText(tr("Curve"));
+  connect(actionPlotCurve, &QAction::triggered, this, &HorizontalHeaderView::buildCurveTrigered);
+
   menuPlot = new QMenu;
   menuPlot->setTitle(tr("Plot"));
+  menuPlot->addAction(actionPlotBars);
+  menuPlot->addAction(actionPlotCurve);
   menuPlot->addAction(actionPlotGraph);
 
   actionSaveTable = new QAction;
@@ -222,6 +287,10 @@ HorizontalHeaderView::~HorizontalHeaderView()
 
   if (actionPlotGraph)
     delete actionPlotGraph;
+  if (actionPlotBars)
+    delete actionPlotBars;
+  if (actionPlotCurve)
+    delete actionPlotCurve;
   if (menuPlot)
     delete menuPlot;
   if (actionSaveTable)
@@ -245,6 +314,16 @@ void HorizontalHeaderView::slot_setEnabledActions(bool e)
 void HorizontalHeaderView::buildGraphTrigered()
 {
   emit buildGraph();
+}
+
+void HorizontalHeaderView::buildBarsTrigered()
+{
+  emit buildBars();
+}
+
+void HorizontalHeaderView::buildCurveTrigered()
+{
+  emit buildCurve();
 }
 
 void HorizontalHeaderView::saveTableTrigered()

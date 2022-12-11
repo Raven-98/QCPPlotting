@@ -38,6 +38,8 @@ signals:
   void warning(QString);
   void message(QString);
   void buildGraph(QVector<QVector<double>>);
+  void buildBars(QVector<QVector<double>>);
+  void buildCurve(QVector<QVector<double>>);
   void saveTable();
   void setEnabledActions(bool);
 
@@ -46,11 +48,14 @@ private slots:
   void checkSelectionModel();
   void slot_setEnabledActions(bool e);
   void buildGraphTrigered();
+  void buildBarsTrigered();
+  void buildCurveTrigered();
   void saveTableTrigered();
   void addColumnTrigered();
 
 private:
   QVector<QVector<double>> builderData(QModelIndexList &selectedIndexes);
+  QVector<QVector<double>> builderNumberedData(QModelIndexList &selectedIndexes);
 
 private:
   QTableView *tableWidget = nullptr;
@@ -59,6 +64,8 @@ private:
   QMenu *contextMenu = nullptr;
   QMenu *menuPlot= nullptr;
   QAction *actionPlotGraph = nullptr;
+  QAction *actionPlotBars = nullptr;
+  QAction *actionPlotCurve = nullptr;
   QAction *actionSaveTable = nullptr;
   QAction *actionSaveSelectedTable = nullptr;
 };
@@ -85,6 +92,8 @@ public:
 
 signals:
   void buildGraph();
+  void buildBars();
+  void buildCurve();
   void saveTable();
   void addColumn();
 
@@ -94,6 +103,8 @@ public slots:
 private slots:
   void customHeaderMenuRequested(const QPoint &pos);
   void buildGraphTrigered();
+  void buildBarsTrigered();
+  void buildCurveTrigered();
   void saveTableTrigered();
   void addColumnTrigered();
 
@@ -106,6 +117,8 @@ private:
     QMenu *hHeaderMenu = nullptr;
     QMenu *menuPlot= nullptr;
     QAction *actionPlotGraph = nullptr;
+    QAction *actionPlotBars = nullptr;
+    QAction *actionPlotCurve = nullptr;
     QAction *actionSaveTable = nullptr;
     QAction *actionAddColumn = nullptr;
 

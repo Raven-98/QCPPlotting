@@ -30,6 +30,10 @@ public:
 
   void init();
   void setGraph(QVector<double> &data_x, QVector<double> &data_y);
+  void setBars(QVector<double> &data_x, QVector<double> &data_y);
+  void setCurve(QVector<double> &data_t, QVector<double> &data_x, QVector<double> &data_y);
+//  void setFinancial(QVector<double> &keys, QVector<double> &open, QVector<double> &high, QVector<double> &low, QVector<double> &close);
+//  void setStatisticalBox();
 
   void tst();
 

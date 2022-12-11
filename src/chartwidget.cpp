@@ -124,6 +124,71 @@ void ChartWidget::setGraph(QVector<double> &data_x, QVector<double> &data_y)
   customPlot->yAxis->setLabel("Y");
 }
 
+/* ****************************************************************************** *
+ * Таблиця, що представляє гістограму на графіку.                                 *
+ * ****************************************************************************** */
+void ChartWidget::setBars(QVector<double> &data_x, QVector<double> &data_y)
+{
+  customPlot->clearGraphs();
+// * >
+  auto  *newBars = new QCPBars(customPlot->xAxis, customPlot->yAxis);
+  newBars->setData(data_x, data_y);
+  newBars->rescaleAxes();
+// * <
+  customPlot->replot();
+  customPlot->xAxis->setLabel("X");
+  customPlot->yAxis->setLabel("Y");
+}
+
+/* ****************************************************************************** *
+ * Таблиця, що представляє параметричну криву на графіку.                         *
+ *                                                                                *
+ * На відміну від QCPGraph, таблиці графіків цього типу можуть мати кілька точок  *
+ * з однаковою ключовою координатою, тому їх візуальне представлення може мати    *
+ * петлі.                                                                         *
+ *                                                                                *
+ * Це реалізується шляхом введення третьої координати t, яка визначає порядок     *
+ * точок, описаних двома іншими координатами x і y.                               *
+ * ****************************************************************************** */
+void ChartWidget::setCurve(QVector<double> &data_t, QVector<double> &data_x, QVector<double> &data_y)
+{
+  customPlot->clearGraphs();
+// * >
+  auto newCurve = new QCPCurve(customPlot->xAxis, customPlot->yAxis);
+  newCurve->setData(data_t, data_x, data_y);
+  newCurve->rescaleAxes();
+// * <
+  customPlot->replot();
+  customPlot->xAxis->setLabel("X");
+  customPlot->yAxis->setLabel("Y");
+}
+/* ****************************************************************************** *
+ * Ця таблиця графіків представляє дані часових рядів, згруповані за певними      *
+ * інтервалами, які в основному використовуються для біржових діаграм.            *
+ * ****************************************************************************** */
+//void ChartWidget::setFinancial(QVector<double> &keys, QVector<double> &open, QVector<double> &high, QVector<double> &low, QVector<double> &close)
+//{
+//  customPlot->clearGraphs();
+//// * >
+//// * <
+//  customPlot->replot();
+//  customPlot->xAxis->setLabel("X");
+//  customPlot->yAxis->setLabel("Y");
+//}
+
+/* ****************************************************************************** *
+ * Таблиця, що представляє один статистичний блок на графіку.                     *
+ * ****************************************************************************** */
+//void ChartWidget::setStatisticalBox()
+//{
+//  customPlot->clearGraphs();
+//// * >
+//// * <
+//  customPlot->replot();
+//  customPlot->xAxis->setLabel("X");
+//  customPlot->yAxis->setLabel("Y");
+//}
+
 void ChartWidget::tst()
 {
 //  emit plottableDoubleClick(customPlot->plottable(0));

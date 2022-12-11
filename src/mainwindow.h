@@ -30,6 +30,8 @@ private slots:
   void slot_newTable();
   void slot_AboutProgram();
   void buildGraphTrigered(QVector<QVector<double> > data);
+  void buildBarsTrigered(QVector<QVector<double> > data);
+  void buildCurveTrigered(QVector<QVector<double> > data);
 
 private:
   void saveSettings();

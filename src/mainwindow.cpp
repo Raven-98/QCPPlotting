@@ -222,6 +222,16 @@ void MainWindow::buildGraphTrigered(QVector<QVector<double>> data)
   addChart(data, QCPPlotting::GRAPH);
 }
 
+void MainWindow::buildBarsTrigered(QVector<QVector<double> > data)
+{
+  addChart(data, QCPPlotting::BARS);
+}
+
+void MainWindow::buildCurveTrigered(QVector<QVector<double> > data)
+{
+  addChart(data, QCPPlotting::CURVE);
+}
+
 void MainWindow::loadSubWindow(QWidget *widget)
 {
   QMdiSubWindow *window = new QMdiSubWindow;
@@ -264,6 +274,8 @@ void MainWindow::addTable(QStandardItemModel *item_model, QString *title)
   connect(tableWidget, &TableWidget::warning, this, &MainWindow::showWarning);
   connect(tableWidget, &TableWidget::message, this, &MainWindow::showMessage);
   connect(tableWidget, &TableWidget::buildGraph, this, &MainWindow::buildGraphTrigered);
+  connect(tableWidget, &TableWidget::buildBars, this, &MainWindow::buildBarsTrigered);
+  connect(tableWidget, &TableWidget::buildCurve, this, &MainWindow::buildCurveTrigered);
 
   loadSubWindow(tableWidget);
 }
@@ -300,6 +312,11 @@ void MainWindow::addChart(QVector<QVector<double>> &data, QCPPlotting::ChartType
     case QCPPlotting::GRAPH:
       chartWidget->setGraph(data[0], data[1]);
       break;
+    case QCPPlotting::BARS:
+      chartWidget->setBars(data[0], data[1]);
+      break;
+    case QCPPlotting::CURVE:
+      chartWidget->setCurve(data[0], data[1], data[2]);
     default:
       break;
     }

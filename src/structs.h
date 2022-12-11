@@ -26,6 +26,10 @@ namespace QCPPlotting {
 
   enum ChartType {
     GRAPH,
+    BARS,
+    CURVE,
+    FINANCIAl,
+    STATISTICALBOX,
   };
 
   namespace FileDialogSetDetails {

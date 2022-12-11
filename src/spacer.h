@@ -1,15 +1,13 @@
 #ifndef SPACER_H
 #define SPACER_H
 
-#include <QVBoxLayout>
+#include <QSpacerItem>
 
-class Spacer : public QVBoxLayout
+class Spacer : public QSpacerItem
 {
-    Q_OBJECT
+  Q_OBJECT
 public:
-    Spacer(QSizePolicy::Policy hPolicy = QSizePolicy::Expanding, QSizePolicy::Policy vPolicy = QSizePolicy::Expanding, QWidget *parent = nullptr);
-    Spacer(short hPolicy, short vPolicy, QWidget *parent = nullptr);
-    ~Spacer();
+  Spacer();
 };
 
 #endif // SPACER_H

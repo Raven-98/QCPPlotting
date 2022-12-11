@@ -1,89 +1,118 @@
 #ifndef TABLEWIDGET_H
 #define TABLEWIDGET_H
 
-#include "global.h"
+#include <QWidget>
+#include <QTableView>
+#include <QHeaderView>
+#include <QStyledItemDelegate>
+#include <QLineEdit>
+#include <QGridLayout>
+#include <QStandardItemModel>
+#include <QLabel>
+#include <QMouseEvent>
+#include <QMenu>
+#include <QAction>
 
 class TableWidget;
-class TableView;
-class TableLineEdit;
+//class TableView;
+class HorizontalHeaderView;
 class TableStyledItemDelegate;
-class HeaderView;
+class TableLineEdit;
 
 class TableWidget : public QWidget
 {
-    Q_OBJECT
+  Q_OBJECT
 public:
-    explicit TableWidget(QWidget *parent = nullptr);
-    ~TableWidget();
-    void setModel(QStandardItemModel *item_model);
-    QVector<QVector<double> > getData();
+  explicit TableWidget(QWidget *parent = nullptr);
+  ~TableWidget();
 
-    static int SumTables;
-    static int ResTableWidgetID;
+  void init();
+  void setModel(QStandardItemModel *item_model);
 
-//    TableView *tableWidget;
-    QAction *actionBuild_Graph;
-    QAction *actionBuild_Curve;
-    QAction *actionBuild_Bars;
-    QAction *actionBuild_Financial;
-    QAction *actionBuild_StatistacalBox;
-    QAction *action_AddTo_Graph;
-    QAction *action_SaveTable;
+public:
+  static int SumTables;
+  static int ResTableWidgetID;
 
-private:
-    void keyPressEvent(QKeyEvent *event);
-    void PasteFromClipboard();
-    void CopyToClipboard();
-    void DeleteDataKey();
-
-    TableView *tableWidget;
-    QGridLayout *gridLayout;
-    QMenu *hHeaderMenu;
-    QMenu *tableMenu;
-    QMenu *tableMenu_Plot;
-    QMenu *menu_Graph;
-    QMenu *menu_Curve;
-    QMenu *menu_Bars;
-    QMenu *menu_Financial;
-    QMenu *menu_StatistacalBox;
-    QHeaderView *horizontalHeaderView;
-    QAction *action_AddColumn;
-    bool Changed = true;
-    bool Edited = false;
+signals:
+  void error(QString);
+  void warning(QString);
+  void message(QString);
+  void buildGraph(QVector<QVector<double>>);
+  void saveTable();
+  void setEnabledActions(bool);
 
 private slots:
-    void slot_Changed();
-    void slot_NexCellInColumn();
-    void slot_NexCellInRow();
-    void slot_AddColumn();
-    void customHeaderMenuRequested_table(const QPoint &pos);
-    void customHeaderMenuRequested_header(const QPoint &pos);
+  void customHeaderMenuRequested(const QPoint &pos);
+  void checkSelectionModel();
+  void slot_setEnabledActions(bool e);
+  void buildGraphTrigered();
+  void saveTableTrigered();
+  void addColumnTrigered();
+
+private:
+  QVector<QVector<double>> builderData(QModelIndexList &selectedIndexes);
+
+private:
+  QTableView *tableWidget = nullptr;
+  HorizontalHeaderView *horizontalHeaderView = nullptr;
+  QGridLayout *gridLayout = nullptr;
+  QMenu *contextMenu = nullptr;
+  QMenu *menuPlot= nullptr;
+  QAction *actionPlotGraph = nullptr;
+  QAction *actionSaveTable = nullptr;
+  QAction *actionSaveSelectedTable = nullptr;
 };
 
-class TableView : public QTableView
+//class TableView : public QTableView
+//{
+//    Q_OBJECT
+//public:
+//    using QTableView::QTableView;
+
+//signals:
+//    void keyEnterReleased();
+
+//protected:
+//    void keyReleaseEvent(QKeyEvent *event);
+//};
+
+class HorizontalHeaderView : public QHeaderView
 {
     Q_OBJECT
 public:
-    using QTableView::QTableView;
+    explicit HorizontalHeaderView(QWidget *parent = nullptr);
+    ~HorizontalHeaderView();
 
 signals:
-    void keyEnterReleased();
+  void buildGraph();
+  void saveTable();
+  void addColumn();
+
+public slots:
+  void slot_setEnabledActions(bool e);
+
+private slots:
+  void customHeaderMenuRequested(const QPoint &pos);
+  void buildGraphTrigered();
+  void saveTableTrigered();
+  void addColumnTrigered();
+
+private:
+    bool pressMiddleButton = 0;
+    int firstPos;
+    int lastPos;
+    QLabel *sectionIndicator = nullptr;
+    int sectionIndicatorOffset;
+    QMenu *hHeaderMenu = nullptr;
+    QMenu *menuPlot= nullptr;
+    QAction *actionPlotGraph = nullptr;
+    QAction *actionSaveTable = nullptr;
+    QAction *actionAddColumn = nullptr;
 
 protected:
-    void keyReleaseEvent(QKeyEvent *event);
-};
-
-class TableLineEdit: public QLineEdit
-{
-    Q_OBJECT
-public:
-    using QLineEdit::QLineEdit;
-
-signals:
-    void keyTabReleased();
-
-protected:
-    void keyReleaseEvent(QKeyEvent *event);
+    void mousePressEvent(QMouseEvent *event) override;
+    void mouseMoveEvent(QMouseEvent *event) override;
+    void mouseReleaseEvent(QMouseEvent *event) override;
 };
 
 class TableStyledItemDelegate: public QStyledItemDelegate
@@ -97,25 +126,17 @@ signals:
     void keyTabReleased();
 };
 
-class HeaderView : public QHeaderView
+class TableLineEdit: public QLineEdit
 {
     Q_OBJECT
 public:
-    explicit HeaderView(Qt::Orientation orientation,QWidget *parent = nullptr);
-    ~HeaderView();
+    using QLineEdit::QLineEdit;
 
-private:
-//    Qt::Orientation ort;
-    bool pressMiddleButton = 0;
-    int firstPos;
-    int lastPos;
-    QLabel *sectionIndicator = nullptr;
-    int sectionIndicatorOffset;
+signals:
+    void keyTabReleased();
 
 protected:
-    void mousePressEvent(QMouseEvent *event) override;
-    void mouseMoveEvent(QMouseEvent *event) override;
-    void mouseReleaseEvent(QMouseEvent *event) override;
+    void keyReleaseEvent(QKeyEvent *event);
 };
 
 #endif // TABLEWIDGET_H

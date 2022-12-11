@@ -1,23 +1,25 @@
 #include "mainwindow.h"
+#include "consts.h"
 
+#include <QGuiApplication>
 #include <QApplication>
+#include <QIcon>
 
 int main(int argc, char *argv[])
 {
-    QApplication app(argc, argv);
+  QCoreApplication::setApplicationName(APP_NAME);
+  QCoreApplication::setApplicationVersion(APP_VERSION);
 
-    app.setApplicationName("Graphics building software");
-    app.setApplicationVersion("dev_" + QDateTime::currentDateTime().toString("yyyyMMddHHmmss"));
-    app.setWindowIcon(QIcon(":/img/plot.png"));
+  QApplication app(argc, argv);
+  app.setWindowIcon(QIcon(APP_ICON));
 
-    MainWindow win;
+  MainWindow win;
+  win.loadSettings();
+  win.init();
+  win.show();
+  win.initTable();
 
-    win.loadSettings();
+//  win.tst();
 
-    win.init();
-    win.show();
-
-    win.initTable();
-
-    return app.exec();
+  return app.exec();
 }

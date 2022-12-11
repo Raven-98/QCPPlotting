@@ -1,531 +1,355 @@
 #include "tablewidget.h"
 
+#include <QIcon>
+#include <QPainter>
+
 int TableWidget::SumTables = 0;
 int TableWidget::ResTableWidgetID = 0;
 
 TableWidget::TableWidget(QWidget *parent)
-    : QWidget(parent)
+  : QWidget{parent}
 {
-    SumTables++;
-    ResTableWidgetID++;
-
-    resize(275,400);
-    setWindowIcon(QIcon(":/img/table.png"));
-    setWindowTitle(tr("Table ")+QString::number(ResTableWidgetID));
-
-    tableWidget = new TableView;
-    tableWidget->setItemDelegate(new TableStyledItemDelegate(this));
-    connect(tableWidget,
-            &TableView::keyEnterReleased,
-            this,
-            &TableWidget::slot_NexCellInColumn);
-    connect(qobject_cast<TableStyledItemDelegate *>(tableWidget->itemDelegate()),
-            &TableStyledItemDelegate::keyTabReleased,
-            this,
-            &TableWidget::slot_NexCellInRow);
-    connect(tableWidget->itemDelegate(),
-            &QAbstractItemDelegate::closeEditor,
-            this,
-            [=](){Edited = true;});
-
-    horizontalHeaderView = new HeaderView(Qt::Horizontal,this);
-    tableWidget->setHorizontalHeader(horizontalHeaderView);
-
-    gridLayout = new QGridLayout;
-    gridLayout->addWidget(tableWidget, 0, 0);
-    gridLayout->setContentsMargins(0,0,0,0);
-
-    setLayout(gridLayout);
-
-    actionBuild_Graph = new QAction(tr("Build"));
-    actionBuild_Curve = new QAction(tr("Build"));
-    actionBuild_Bars = new QAction(tr("Build"));
-    actionBuild_Financial = new QAction(tr("Build"));
-    actionBuild_StatistacalBox = new QAction(tr("Build"));
-
-    action_AddTo_Graph = new QAction(tr("Add to"));
-
-    menu_Graph = new QMenu(tr("Graph"));
-    menu_Graph->addAction(actionBuild_Graph);
-    menu_Graph->addAction(action_AddTo_Graph);
-
-    menu_Curve = new QMenu(tr("Curve"));
-    menu_Curve->addAction(actionBuild_Curve);
-//    menu_Curve->addAction(action_AddTo);
-    menu_Curve->setEnabled(false);
-
-    menu_Bars = new QMenu(tr("Bars"));
-    menu_Bars->addAction(actionBuild_Bars);
-//    menu_Bars->addAction(action_AddTo);
-    menu_Bars->setEnabled(false);
-
-    menu_Financial = new QMenu(tr("Financial"));
-    menu_Financial->addAction(actionBuild_Financial);
-//    menu_Financial->addAction(action_AddTo);
-    menu_Financial->setEnabled(false);
-
-    menu_StatistacalBox = new QMenu(tr("Statistacal box"));
-    menu_StatistacalBox->addAction(actionBuild_StatistacalBox);
-//    menu_StatistacalBox->addAction(action_AddTo);
-    menu_StatistacalBox->setEnabled(false);
-
-    tableMenu_Plot = new QMenu;
-    tableMenu_Plot->setTitle(tr("Plot"));
-    tableMenu_Plot->addMenu(menu_Bars);
-    tableMenu_Plot->addMenu(menu_Curve);
-    tableMenu_Plot->addMenu(menu_Graph);
-    tableMenu_Plot->addMenu(menu_Financial);
-    tableMenu_Plot->addMenu(menu_StatistacalBox);
-
-    action_AddColumn = new QAction(tr("Add column"));
-    action_AddColumn->setIcon(QIcon(":/img/add_column.png"));
-    connect(action_AddColumn,
-            &QAction::triggered,
-            this,
-            &TableWidget::slot_AddColumn);
-
-    action_SaveTable = new QAction(tr("Save Table"));
-    action_SaveTable->setIcon(QIcon(":/img/save.png"));
-
-    hHeaderMenu = new QMenu;
-    hHeaderMenu->addMenu(tableMenu_Plot);
-    hHeaderMenu->addSeparator();
-    hHeaderMenu->addAction(action_AddColumn);
-    hHeaderMenu->addSeparator();
-    hHeaderMenu->addAction(action_SaveTable);
-
-    tableMenu = new QMenu;
-    tableMenu->addMenu(tableMenu_Plot);
-    tableMenu->addSeparator();
-    tableMenu->addAction(action_SaveTable);
-
-    tableWidget->setContextMenuPolicy(Qt::CustomContextMenu);
-    connect(tableWidget,
-            &QTableView::customContextMenuRequested,
-            this,
-            &TableWidget::customHeaderMenuRequested_table);
-
-    tableWidget->horizontalHeader()->setContextMenuPolicy(Qt::CustomContextMenu);
-    connect(tableWidget->horizontalHeader(),
-            &QTableView::customContextMenuRequested,
-            this,
-            &TableWidget::customHeaderMenuRequested_header);
+  SumTables++;
+  ResTableWidgetID++;
 }
 
 TableWidget::~TableWidget()
 {
-    SumTables--;
-    if (SumTables == 0)
-        ResTableWidgetID = 0;
+  SumTables--;
+  if (SumTables == 0)
+    ResTableWidgetID = 0;
 
-    delete tableMenu_Plot;
-    delete actionBuild_Graph;
-    delete actionBuild_Curve;
-    delete actionBuild_Bars;
-    delete actionBuild_Financial;
-    delete actionBuild_StatistacalBox;
-    delete action_AddTo_Graph;
-//    delete action_AddTo;
-    delete menu_Graph;
-    delete menu_Curve;
-    delete menu_Bars;
-    delete menu_Financial;
-    delete menu_StatistacalBox;
-    delete hHeaderMenu;
-    delete tableMenu;
-    delete horizontalHeaderView;
-    delete tableWidget->model();
-    delete tableWidget;
+  if (actionPlotGraph)
+    delete actionPlotGraph;
+  if (menuPlot)
+    delete menuPlot;
+  if (actionSaveTable)
+    delete actionSaveTable;
+  if (actionSaveSelectedTable)
+    delete actionSaveSelectedTable;
+  if (contextMenu)
+    delete contextMenu;
+
+  if (tableWidget) {
+      delete tableWidget->model();
+      delete tableWidget;
+    }
+  if (gridLayout)
     delete gridLayout;
+}
+
+void TableWidget::init()
+{
+  resize(300, 400);
+  setWindowIcon(QIcon(":/img/table.png"));
+  setWindowTitle(tr("Table %1").arg(ResTableWidgetID));
+
+  tableWidget = new QTableView;
+
+  horizontalHeaderView = new HorizontalHeaderView;
+  tableWidget->setHorizontalHeader(horizontalHeaderView);  
+  connect(horizontalHeaderView, &HorizontalHeaderView::customContextMenuRequested, this, &TableWidget::checkSelectionModel);
+  connect(this, &TableWidget::setEnabledActions, horizontalHeaderView, &HorizontalHeaderView::slot_setEnabledActions);
+  connect(horizontalHeaderView, &HorizontalHeaderView::buildGraph, this, &TableWidget::buildGraphTrigered);
+  connect(horizontalHeaderView, &HorizontalHeaderView::saveTable, this, &TableWidget::saveTableTrigered);
+  connect(horizontalHeaderView, &HorizontalHeaderView::addColumn, this, &TableWidget::addColumnTrigered);
+
+  gridLayout = new QGridLayout;
+  gridLayout->addWidget(tableWidget, 0, 0);
+  gridLayout->setContentsMargins(0, 0, 0, 0);
+
+  setLayout(gridLayout);
+
+  tableWidget->setContextMenuPolicy(Qt::CustomContextMenu);
+  connect(tableWidget, &QTableView::customContextMenuRequested, this, &TableWidget::checkSelectionModel);
+  connect(this, &TableWidget::setEnabledActions, this, &TableWidget::slot_setEnabledActions);
+  connect(tableWidget, &QTableView::customContextMenuRequested, this, &TableWidget::customHeaderMenuRequested);  
+
+  actionPlotGraph = new QAction;
+  actionPlotGraph->setText(tr("Graph"));
+  connect(actionPlotGraph, &QAction::triggered, this, &TableWidget::buildGraphTrigered);
+
+  menuPlot = new QMenu;
+  menuPlot->setTitle(tr("Plot"));
+  menuPlot->addAction(actionPlotGraph);
+
+  actionSaveTable = new QAction;
+  actionSaveTable->setText(tr("Save table"));
+  actionSaveTable->setIcon(QIcon(":/img/save.png"));
+
+  actionSaveSelectedTable = new QAction;
+  actionSaveSelectedTable->setText(tr("Save selected table"));
+  actionSaveSelectedTable->setIcon(QIcon(":/img/save.png"));
+
+  contextMenu = new QMenu;
+  contextMenu->addMenu(menuPlot);
+  contextMenu->addSeparator();
+  contextMenu->addAction(actionSaveSelectedTable);
+  contextMenu->addAction(actionSaveTable);
 }
 
 void TableWidget::setModel(QStandardItemModel *item_model)
 {
-    tableWidget->setModel(item_model);
-    connect(item_model,
-            &QStandardItemModel::itemChanged,
-            this,
-            &TableWidget::slot_Changed);
+  tableWidget->setModel(item_model);
 }
 
-QVector<QVector<double> > TableWidget::getData()
+void TableWidget::customHeaderMenuRequested(const QPoint &pos)
 {
-    QVector<QVector<double> > data;
+  contextMenu->popup(tableWidget->viewport()->mapToGlobal(pos));
+}
 
-    QModelIndexList *selectedIndexes = new QModelIndexList(tableWidget->selectionModel()->selectedIndexes());
+void TableWidget::checkSelectionModel()
+{
+  emit setEnabledActions(tableWidget->selectionModel()->hasSelection());
+}
 
-    if (selectedIndexes->size() > 1)
-    {
-        int *selectedIndexesCount = new int(selectedIndexes->count());
+void TableWidget::slot_setEnabledActions(bool e)
+{
+  menuPlot->setEnabled(e);
+  actionSaveSelectedTable->setEnabled(e);
+}
 
-        QList<int> lst;
-        for (int i = 0; i < *selectedIndexesCount; i++)
-        {
-            int c = selectedIndexes->at(i).column();
-            if (!lst.contains(c))
-            {
-                lst.append(c);
+void TableWidget::buildGraphTrigered()
+{
+  auto selectedIndexes = tableWidget->selectionModel()->selectedIndexes();
+  if (selectedIndexes.size() < 2) {
+      emit error("selectedIndexes.size() < 2");
+      return;
+    }
+
+  auto data = builderData(selectedIndexes);
+
+  emit buildGraph(data);
+}
+
+void TableWidget::saveTableTrigered()
+{
+}
+
+void TableWidget::addColumnTrigered()
+{
+  tableWidget->model()->insertColumn(tableWidget->model()->columnCount());
+}
+
+// !!!
+// Елементи заповнюються по черзі вибору
+// !!!
+QVector<QVector<double> > TableWidget::builderData(QModelIndexList &selectedIndexes)
+{
+  int selectedIndexesCount = selectedIndexes.count();
+  QList<int> lst;
+  for (int i = 0; i < selectedIndexesCount; i++) {
+      int c = selectedIndexes.at(i).column();
+      if (!lst.contains(c))
+        lst.append(c);
+    }
+  int columns = lst.count();
+  lst.clear();
+
+  QVector<QVector<double>> data;
+
+  for (int column = 0; column < columns; column++) {
+      QVector<double> vector;
+      if (selectedIndexes.at(0).column() != selectedIndexes.at(1).column()) {
+          for (int row = column; row < selectedIndexesCount; row += columns) {
+              bool ok;
+              auto d = selectedIndexes.at(row).data().toDouble(&ok);
+              if (ok)
+                vector.push_back(d);
             }
         }
-        int *columns = new int(lst.count());
-        lst.clear();
-
-        for (int column = 0; column < *columns; column++)
-        {
-            QVector<double> vector;
-            if (selectedIndexes->at(0).column() != selectedIndexes->at(1).column())
-            {
-                for (int row = column; row < *selectedIndexesCount; row += *columns)
-                {
-                    bool ok;
-                    double d = selectedIndexes->at(row).data().toDouble(&ok);
-                    if (ok)
-                        vector.push_back(d);
-                }
+      else {
+          for (int row = (selectedIndexesCount / columns * column); row < (selectedIndexesCount / columns * (column + 1)); row++) {
+              bool ok;
+              auto d = selectedIndexes.at(row).data().toDouble(&ok);
+              if (ok)
+                vector.push_back(d);
             }
-            else
-            {
-                for (int row = (*selectedIndexesCount / *columns * column); row < (*selectedIndexesCount / *columns * (column + 1)); row++)
-                {
-                    bool ok;
-                    double d = selectedIndexes->at(row).data().toDouble(&ok);
-                    if (ok)
-                        vector.push_back(d);
-                }
-            }
-            data.push_back(vector);
-            vector.clear();
         }
 
-        delete selectedIndexesCount;
-        delete columns;
+      data.push_back(vector);
+      vector.clear();
     }
-    delete selectedIndexes;
 
-    return data;
+  return data;
 }
 
-void TableWidget::keyPressEvent(QKeyEvent *event)
+//void TableView::keyReleaseEvent(QKeyEvent *event)
+//{
+//  QTableView::keyReleaseEvent(event);
+//}
+
+HorizontalHeaderView::HorizontalHeaderView(QWidget *parent)
+  : QHeaderView(Qt::Horizontal, parent)
 {
-    switch (event->modifiers())
-    {
-    case Qt::CTRL:
-        switch (event->key())
-        {
-        case Qt::Key_V:
-            PasteFromClipboard();
-            break;
-        case Qt::Key_C:
-            CopyToClipboard();
-            break;
+  setContextMenuPolicy(Qt::CustomContextMenu);
+  connect(this, &QHeaderView::customContextMenuRequested, this, &HorizontalHeaderView::customHeaderMenuRequested);
+  setSectionsClickable(true);
+  setSectionResizeMode(QHeaderView::Interactive);
+  setItemDelegate(new TableStyledItemDelegate(this));
+  setHighlightSections(true);
+
+  actionPlotGraph = new QAction;
+  actionPlotGraph->setText(tr("Graph"));
+  connect(actionPlotGraph, &QAction::triggered, this, &HorizontalHeaderView::buildGraphTrigered);
+
+  menuPlot = new QMenu;
+  menuPlot->setTitle(tr("Plot"));
+  menuPlot->addAction(actionPlotGraph);
+
+  actionSaveTable = new QAction;
+  actionSaveTable->setText(tr("Save table"));
+  actionSaveTable->setIcon(QIcon(":/img/save.png"));
+  connect(actionSaveTable, &QAction::triggered, this, &HorizontalHeaderView::saveTableTrigered);
+
+  actionAddColumn = new QAction;
+  actionAddColumn->setText(tr("Add column"));
+  actionAddColumn->setIcon(QIcon(":/img/add_column.png"));
+  connect(actionAddColumn, &QAction::triggered, this, &HorizontalHeaderView::addColumnTrigered);
+
+  hHeaderMenu = new QMenu;
+  hHeaderMenu->addMenu(menuPlot);
+  hHeaderMenu->addSeparator();
+  hHeaderMenu->addAction(actionAddColumn);
+  hHeaderMenu->addSeparator();
+  hHeaderMenu->addAction(actionSaveTable);
+}
+
+HorizontalHeaderView::~HorizontalHeaderView()
+{
+  if (sectionIndicator)
+    delete sectionIndicator;
+
+  if (actionPlotGraph)
+    delete actionPlotGraph;
+  if (menuPlot)
+    delete menuPlot;
+  if (actionSaveTable)
+    delete actionSaveTable;
+  if (actionAddColumn)
+    delete actionAddColumn;
+  if (hHeaderMenu)
+    delete hHeaderMenu;
+}
+
+void HorizontalHeaderView::customHeaderMenuRequested(const QPoint &pos)
+{
+  hHeaderMenu->popup(viewport()->mapToGlobal(pos));
+}
+
+void HorizontalHeaderView::slot_setEnabledActions(bool e)
+{
+  menuPlot->setEnabled(e);
+}
+
+void HorizontalHeaderView::buildGraphTrigered()
+{
+  emit buildGraph();
+}
+
+void HorizontalHeaderView::saveTableTrigered()
+{
+  emit saveTable();
+}
+
+void HorizontalHeaderView::addColumnTrigered()
+{
+  emit addColumn();
+}
+
+void HorizontalHeaderView::mousePressEvent(QMouseEvent *event)
+{
+  if (event->button() == Qt::MiddleButton) {
+      pressMiddleButton = 1;
+      firstPos = event->pos().x();
+      emit sectionPressed(logicalIndexAt(event->pos()));
+
+      if (!sectionIndicator)
+        sectionIndicator = new QLabel(this->viewport());
+
+      int section = logicalIndexAt(firstPos);
+      int w = sectionSize(section);
+      int h = viewport()->height();
+      int p = sectionViewportPosition(section);
+
+      sectionIndicator->resize(w, h);
+
+      const qreal pixmapDevicePixelRatio = this->devicePixelRatio();
+      QPixmap pm(QSize(w, h) * pixmapDevicePixelRatio);
+      pm.setDevicePixelRatio(pixmapDevicePixelRatio);
+      pm.fill(QColor(0, 0, 0, 45));
+      QRect rect(0, 0, w, h);
+      QPainter painter(&pm);
+      const QVariant variant = this->model()->headerData(section, Qt::Horizontal, Qt::FontRole);
+      if (variant.isValid() && variant.canConvert<QFont>()) {
+          const QFont sectionFont = qvariant_cast<QFont>(variant);
+          painter.setFont(sectionFont);
         }
-        break;
-    default:
-        switch (event->key())
-        {
-        case Qt::Key_Delete:
-            DeleteDataKey();
-            break;
+      else {
+          painter.setFont(this->font());
         }
-    }
-}
+      painter.setOpacity(0.8);
+      this->paintSection(&painter, rect, section);
+      painter.end();
 
-void TableWidget::PasteFromClipboard()
-{
-    int *current_row = new int(tableWidget->selectionModel()->currentIndex().row());
-    int *current_column = new int(tableWidget->selectionModel()->currentIndex().column());
-
-    QStringList rows = QApplication::clipboard()->text().split('\n');
-
-    for( int i = 0; i < rows.size(); i++ )
-    {
-        QStringList cols = rows.at(i).split('\t');
-        for( int j = 0; j < cols.size(); j++ )
-        {
-            QStandardItem *item = new QStandardItem(cols.at(j));
-//            item->setTextAlignment(Qt::AlignCenter);
-            qobject_cast<QStandardItemModel *>(tableWidget->model())->setItem(*current_row + i, *current_column + j, item);
-        }
+      sectionIndicator->setPixmap(pm);
+      sectionIndicatorOffset = firstPos - qMax(p, 0);
     }
 
-    delete current_row;
-    delete current_column;
+  QHeaderView::mousePressEvent(event);
 }
 
-void TableWidget::CopyToClipboard()
+void HorizontalHeaderView::mouseMoveEvent(QMouseEvent *event)
 {
-    QString cbStr;
-    QClipboard *cb = QApplication::clipboard();
-    QModelIndexList list =  tableWidget->selectionModel()->selectedIndexes();
+  if (pressMiddleButton) {
+      int pos =  event->pos().x();
+      if (pos < 0)
+        return;
 
-    if( list.isEmpty() ) return;
+      int visual = visualIndexAt(pos);
+      if (visual == -1)
+        return;
 
-    if (list.at(0).column() == list.at(1).column())
-    {
-        int firstRow = list.first().row();
-        int lastRow = list.last().row();
-        int rowCount = lastRow - firstRow + 1;
+      if (!sectionIndicator)
+        return;
+      sectionIndicator->move(pos - sectionIndicatorOffset, 0);
+      sectionIndicator->show();
 
-        for(int i = 0; i < rowCount; ++i, cbStr += '\n')
-            for(int j = i; j < list.count(); j += rowCount, cbStr += '\t')
-                cbStr += tableWidget->model()->data(list[j], Qt::EditRole).toString();
-    }
-    else
-    {
-        int firstColumn = list.first().column();
-        int lastColumn = list.last().column();
-        int columnCount = lastColumn - firstColumn + 1;
-
-        for(int i = 0; i < list.count(); i++)
-        {
-            cbStr += tableWidget->model()->data(list[i], Qt::EditRole).toString();
-            if ((i + 1) % columnCount == 0)
-            {
-                cbStr += "\n";
-            }
-            else
-                cbStr += "\t";
-        }
-    }
-
-    cb->setText(cbStr);
-}
-
-void TableWidget::DeleteDataKey()
-{
-    QModelIndexList *selectedIndexes = new QModelIndexList(tableWidget->selectionModel()->selectedIndexes());
-
-    Changed = false;
-    for (int i = 0; i < selectedIndexes->size(); i++)
-    {
-        int r = selectedIndexes->at(i).row();
-        int c = selectedIndexes->at(i).column();
-        qobject_cast<QStandardItemModel *>(tableWidget->model())->setItem(r, c, new QStandardItem(""));
-    }
-    Changed = true;
-
-    delete selectedIndexes;
-}
-
-void TableWidget::slot_Changed()
-{
-    if (Changed)
-    {
-        QModelIndex *index = new QModelIndex(tableWidget->selectionModel()->currentIndex());
-
-        tableWidget->model()->setData(*index,tableWidget->model()->data(*index).toString().replace(",","."));
-
-        bool ok;
-        tableWidget->model()->data(*index).toDouble(&ok);
-        if (!ok)
-        {
-            tableWidget->model()->setData(*index,QColor(Qt::red),Qt::ForegroundRole);
-        }
-        else
-        {
-            tableWidget->model()->setData(*index,QColor(Qt::black),Qt::ForegroundRole);
-        }
-
-        delete index;
-    }
-}
-
-void TableWidget::slot_NexCellInColumn()
-{
-    QModelIndex *index = new QModelIndex(tableWidget->selectionModel()->currentIndex());
-
-    int *current_row = new int(index->row());
-    int *current_column = new int(index->column());
-
-    if (*current_row == tableWidget->model()->rowCount() - 1)
-    {
-        tableWidget->model()->insertRow(*current_row + 1);
-    }
-
-    *index = tableWidget->model()->index(*current_row + 1,
-                                        tableWidget->horizontalHeader()->logicalIndex(*current_column));
-
-    tableWidget->selectionModel()->setCurrentIndex(*index, QItemSelectionModel::Deselect | QItemSelectionModel::SelectCurrent);
-
-    if (Edited)
-    {
-        tableWidget->edit(*index);
-        Edited = false;
-    }
-
-    delete current_row;
-    delete current_column;
-    delete index;
-}
-
-void TableWidget::slot_NexCellInRow()
-{
-    QModelIndex *index = new QModelIndex(tableWidget->selectionModel()->currentIndex());
-
-    int *current_row = new int(index->row());
-    int *current_column = new int(index->column());
-
-    *current_column = tableWidget->horizontalHeader()->visualIndex(*current_column);
-
-    if (*current_column == tableWidget->model()->columnCount()-1)
-    {
-        *current_column = 0;
-        if (++*current_row == tableWidget->model()->rowCount())
-        {
-            tableWidget->model()->insertRow(*current_row);
-        }
-    }
-    else
-    {
-        ++*current_column;
-    }
-
-    delete current_row;
-    delete current_column;
-
-    delete index;
-}
-
-void TableWidget::slot_AddColumn()
-{
-    tableWidget->model()->insertColumn(tableWidget->model()->columnCount());
-}
-
-void TableWidget::customHeaderMenuRequested_table(const QPoint &pos)
-{
-    tableMenu->popup(tableWidget->viewport()->mapToGlobal(pos));
-}
-
-void TableWidget::customHeaderMenuRequested_header(const QPoint &pos)
-{
-    hHeaderMenu->popup(tableWidget->horizontalHeader()->viewport()->mapToGlobal(pos));
-}
-
-void TableView::keyReleaseEvent(QKeyEvent *event)
-{
-    switch (event->key())
-    {
-    case Qt::Key_Enter:
-    case Qt::Key_Return:
-        emit keyEnterReleased();
-        break;
-    }
-    QTableView::keyReleaseEvent(event);
-}
-
-HeaderView::HeaderView(Qt::Orientation orientation,QWidget *parent) :
-    QHeaderView(orientation,parent)
-//  , ort (orientation)
-{
-    this->setContextMenuPolicy(Qt::CustomContextMenu);
-    this->setSectionsClickable(true);
-    this->setSectionResizeMode(QHeaderView::Interactive);
-}
-
-HeaderView::~HeaderView()
-{}
-
-void HeaderView::mousePressEvent(QMouseEvent *event)
-{
-    if (event->button() == Qt::MiddleButton)
-    {
-        pressMiddleButton = 1;
-        firstPos = event->pos().x();
-        emit sectionPressed(logicalIndexAt(event->pos()));
-//
-        if (!sectionIndicator)
-            sectionIndicator = new QLabel(this->viewport());
-
-        int section = logicalIndexAt(firstPos);
-        int w = sectionSize(section);
-        int h = viewport()->height();
-        int p = sectionViewportPosition(section);
-
-        sectionIndicator->resize(w,h);
-
-        const qreal pixmapDevicePixelRatio = this->devicePixelRatio();
-        QPixmap pm(QSize(w,h) * pixmapDevicePixelRatio);
-        pm.setDevicePixelRatio(pixmapDevicePixelRatio);
-        pm.fill(QColor(0,0,0,45));
-        QRect rect(0,0,w,h);
-        QPainter painter(&pm);
-        const QVariant variant = this->model()->headerData(section,Qt::Horizontal,Qt::FontRole);
-        if (variant.isValid() && variant.canConvert<QFont>())
-        {
-            const QFont sectionFont = qvariant_cast<QFont>(variant);
-            painter.setFont(sectionFont);
-        } else
-        {
-            painter.setFont(this->font());
-        }
-        painter.setOpacity(0.8);
-        this->paintSection(&painter,rect,section);
-        painter.end();
-
-        sectionIndicator->setPixmap(pm);
-        sectionIndicatorOffset = firstPos - qMax(p,0);
-//
-    }
-
-    QHeaderView::mousePressEvent(event);
-}
-
-void HeaderView::mouseMoveEvent(QMouseEvent *event)
-{
-    if (pressMiddleButton)
-    {
-        int pos =  event->pos().x();
-        if (pos < 0)
-            return;
-        int visual = visualIndexAt(pos);
-        if (visual == -1)
-            return;
-
-        if (!sectionIndicator)
-                return;
-        sectionIndicator->move(pos - sectionIndicatorOffset,0);
-        sectionIndicator->show();
-
-        lastPos = pos;
+      lastPos = pos;
     }
 
     QHeaderView::mouseMoveEvent(event);
 }
 
-void HeaderView::mouseReleaseEvent(QMouseEvent *event)
+void HorizontalHeaderView::mouseReleaseEvent(QMouseEvent *event)
 {
-    if (event->button() == Qt::MiddleButton)
-    {
-        int from = visualIndexAt(firstPos);
-        int to = visualIndexAt(lastPos);
-        if (from != -1 && to != -1)
-            this->moveSection(from,to);
+  if (event->button() == Qt::MiddleButton) {
+      int from = visualIndexAt(firstPos);
+      int to = visualIndexAt(lastPos);
+      if (from != -1 && to != -1)
+        this->moveSection(from, to);
 
-        if (!sectionIndicator)
-                return;
-        sectionIndicator->hide();
-        pressMiddleButton = 0;
+      if (!sectionIndicator)
+        return;
+      sectionIndicator->hide();
+      pressMiddleButton = 0;
     }
 
-    QHeaderView::mouseReleaseEvent(event);
-}
-
-void TableLineEdit::keyReleaseEvent(QKeyEvent *event)
-{
-    switch (event->key())
-    {
-    case Qt::Key_Tab:
-        emit keyTabReleased();
-        break;
-    }
+  QHeaderView::mouseReleaseEvent(event);
 }
 
 QWidget *TableStyledItemDelegate::createEditor(QWidget *parent, const QStyleOptionViewItem &, const QModelIndex &) const
 {
-    TableLineEdit *editor = new TableLineEdit(parent);
-    connect(editor,
-            SIGNAL(keyTabReleased()),
-            this,
-            SIGNAL(keyTabReleased()));
-    return editor;
+  TableLineEdit *editor = new TableLineEdit(parent);
+  connect(editor, SIGNAL(keyTabReleased()), this, SIGNAL(keyTabReleased()));
+  return editor;
+}
+
+void TableLineEdit::keyReleaseEvent(QKeyEvent *event)
+{
+  switch (event->key()) {
+    case Qt::Key_Tab:
+      emit keyTabReleased();
+      break;
+    }
 }

@@ -12,6 +12,7 @@
 #include <QDoubleSpinBox>
 
 #include "pushbuttoncolorpicker.h"
+#include "tablewidget.h"
 
 #include "qcustomplot.h"
 
@@ -61,7 +62,7 @@ class myQCustomPlot : public QCustomPlot
 public:
   using QCustomPlot::QCustomPlot;
 
-  QList<QCPAxis * > axes() const;
+  QList<QCPAxis *> axes() const;
 
 //protected:
 //  void mouseReleaseEvent(QMouseEvent *event);
@@ -170,6 +171,8 @@ public slots:
 
 private:
   QWidget *nameBlock();
+  QWidget *propertiesBlock();
+  QWidget *dataBlock();
   QWidget *lineBlock();
   QWidget *scatterBlock();
   QWidget *axesBlock();
@@ -177,6 +180,17 @@ private:
   void setEnabledLineBlock(bool enabled);
   void comboBoxScatterShapeCheckIndex(int index);
   void setEnabledScatterBlock(bool enabled);
+
+  QStandardItemModel *tableModel(QCPGraphDataContainer *data);
+  QStandardItemModel *tableModel(QCPCurveDataContainer *data);
+  QStandardItemModel *tableModel(QCPBarsDataContainer *data);
+  void setChangeDataContainers(QCPGraphDataContainer *data);
+  void setChangeDataContainers(QCPCurveDataContainer *data);
+  void setChangeDataContainers(QCPBarsDataContainer *data);
+  template <class DT>
+  QStandardItemModel *_tableModel_(QCPDataContainer<DT> *data);
+  template <class DT>
+  void _setChangeDataContainers_(QCPDataContainer<DT> *data);
 
 private slots:
   void comboBoxLineStyleCurrentIndexChanged(int index);
@@ -199,6 +213,8 @@ private:
 
   QComboBox *comboBox_xAxis = nullptr;
   QComboBox *comboBox_yAxis = nullptr;
+
+  TableView *table = nullptr;
 };
 
 #endif // CHARTWIDGET_H

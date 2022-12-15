@@ -14,7 +14,7 @@
 #include <QAction>
 
 class TableWidget;
-//class TableView;
+class TableView;
 class HorizontalHeaderView;
 class TableStyledItemDelegate;
 class TableLineEdit;
@@ -28,6 +28,7 @@ public:
 
   void init();
   void setModel(QStandardItemModel *item_model);
+  QAbstractItemModel *model();
 
 public:
   static int SumTables;
@@ -44,7 +45,8 @@ signals:
   void setEnabledActions(bool);
 
 private slots:
-  void customHeaderMenuRequested(const QPoint &pos);
+  void customMenuRequested(const QAbstractItemView *view, const QPoint &pos);
+  void customHeaderMenuRequested(const QAbstractItemView *view, const QPoint &pos);
   void checkSelectionModel();
   void slot_setEnabledActions(bool e);
   void buildGraphTrigered();
@@ -53,13 +55,11 @@ private slots:
   void saveTableTrigered();
   void addColumnTrigered();
 
-private:
   QVector<QVector<double>> builderData(QModelIndexList &selectedIndexes);
   QVector<QVector<double>> builderNumberedData(QModelIndexList &selectedIndexes);
 
 private:
-  QTableView *tableWidget = nullptr;
-  HorizontalHeaderView *horizontalHeaderView = nullptr;
+  TableView *tableWidget = nullptr;
   QGridLayout *gridLayout = nullptr;
   QMenu *contextMenu = nullptr;
   QMenu *menuPlot= nullptr;
@@ -68,64 +68,71 @@ private:
   QAction *actionPlotCurve = nullptr;
   QAction *actionSaveTable = nullptr;
   QAction *actionSaveSelectedTable = nullptr;
+  QMenu *hHeaderContextMenu = nullptr;
+  QAction *actionAddColumn = nullptr;
 };
 
-//class TableView : public QTableView
-//{
-//    Q_OBJECT
-//public:
-//    using QTableView::QTableView;
-
-//signals:
-//    void keyEnterReleased();
-
-//protected:
-//    void keyReleaseEvent(QKeyEvent *event);
-//};
-
-class HorizontalHeaderView : public QHeaderView
+class TableView : public QTableView
 {
     Q_OBJECT
 public:
-    explicit HorizontalHeaderView(QWidget *parent = nullptr);
-    ~HorizontalHeaderView();
+  TableView(QWidget *parent = nullptr);
+  ~TableView();
+
+  void PasteFromClipboard();
+  void CopyToClipboard();
+  void CutToClipboard();
+  void DeleteDataKey();
+  QVector<QVector<double>> builderData(QModelIndexList &selectedIndexes);
+  QVector<QVector<double>> builderNumberedData(QModelIndexList &selectedIndexes);
+
+  HorizontalHeaderView *horizontalHeader();
 
 signals:
-  void buildGraph();
-  void buildBars();
-  void buildCurve();
-  void saveTable();
-  void addColumn();
+//    void keyEnterReleased();
+  void error(QString);
+  void warning(QString);
+  void message(QString);
+  void setEnabledActions(bool);
 
-public slots:
-  void slot_setEnabledActions(bool e);
+  void customContextMenuRequested(const QAbstractItemView *view, const QPoint &pos);
 
 private slots:
   void customHeaderMenuRequested(const QPoint &pos);
-  void buildGraphTrigered();
-  void buildBarsTrigered();
-  void buildCurveTrigered();
-  void saveTableTrigered();
-  void addColumnTrigered();
 
 private:
-    bool pressMiddleButton = 0;
-    int firstPos;
-    int lastPos;
-    QLabel *sectionIndicator = nullptr;
-    int sectionIndicatorOffset;
-    QMenu *hHeaderMenu = nullptr;
-    QMenu *menuPlot= nullptr;
-    QAction *actionPlotGraph = nullptr;
-    QAction *actionPlotBars = nullptr;
-    QAction *actionPlotCurve = nullptr;
-    QAction *actionSaveTable = nullptr;
-    QAction *actionAddColumn = nullptr;
+  void keyPressEvent(QKeyEvent *event);
+//    void keyReleaseEvent(QKeyEvent *event);
+
+private:
+  HorizontalHeaderView *horizontalHeaderView = nullptr;
+};
+
+class HorizontalHeaderView : public QHeaderView
+{
+  Q_OBJECT
+public:
+  explicit HorizontalHeaderView(QWidget *parent = nullptr);
+  ~HorizontalHeaderView();
+
+
+signals:
+  void customContextMenuRequested(const QAbstractItemView *view, const QPoint &pos);
+
+private slots:
+  void customHeaderMenuRequested(const QPoint &pos);
+
+private:
+  bool pressMiddleButton = 0;
+  int firstPos;
+  int lastPos;
+  QLabel *sectionIndicator = nullptr;
+  int sectionIndicatorOffset;
 
 protected:
-    void mousePressEvent(QMouseEvent *event) override;
-    void mouseMoveEvent(QMouseEvent *event) override;
-    void mouseReleaseEvent(QMouseEvent *event) override;
+  void mousePressEvent(QMouseEvent *event) override;
+  void mouseMoveEvent(QMouseEvent *event) override;
+  void mouseReleaseEvent(QMouseEvent *event) override;
 };
 
 class TableStyledItemDelegate: public QStyledItemDelegate

@@ -144,17 +144,19 @@ void MainWindow::initTable()
 
 void MainWindow::tst()
 {
-//  QVector<QVector<double>> data;
-//  for (int i = 0; i < 2; i++) {
-//      QVector<double> vector;
-//      for (int j = 0; j < 3; j++) {
-//          vector.push_back((j + i) * (i + 1));
-//        }
-//      data.push_back(vector);
-//    }
-//  addChart(data);
+  QVector<QVector<double>> data;
+  for (int i = 0; i < 2; i++) {
+      QVector<double> vector;
+      for (int j = 0; j < 6; j++) {
+          vector.push_back((j + i) * (i + 1));
+        }
+      data.push_back(vector);
+    }
+  addChart(data, QCPPlotting::GRAPH);
 
-//  mdiArea->currentSubWindow()->findChild<ChartWidget *>()->tst();
+  qDebug() << data;
+
+  mdiArea->currentSubWindow()->findChild<ChartWidget *>()->tst();
 }
 
 void MainWindow::saveSettings()

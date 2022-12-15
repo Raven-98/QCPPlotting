@@ -131,7 +131,8 @@ void ChartWidget::setBars(QVector<double> &data_x, QVector<double> &data_y)
 {
   customPlot->clearGraphs();
 // * >
-  auto  *newBars = new QCPBars(customPlot->xAxis, customPlot->yAxis);
+  auto newBars = new QCPBars(customPlot->xAxis, customPlot->yAxis);
+  newBars->setName(QString("Bars %1").arg(customPlot->plottableCount()));
   newBars->setData(data_x, data_y);
   newBars->rescaleAxes();
 // * <
@@ -155,6 +156,7 @@ void ChartWidget::setCurve(QVector<double> &data_t, QVector<double> &data_x, QVe
   customPlot->clearGraphs();
 // * >
   auto newCurve = new QCPCurve(customPlot->xAxis, customPlot->yAxis);
+  newCurve->setName(QString("Curve %1").arg(customPlot->plottableCount()));
   newCurve->setData(data_t, data_x, data_y);
   newCurve->rescaleAxes();
 // * <
@@ -191,7 +193,7 @@ void ChartWidget::setCurve(QVector<double> &data_t, QVector<double> &data_x, QVe
 
 void ChartWidget::tst()
 {
-//  emit plottableDoubleClick(customPlot->plottable(0));
+  emit plottableDoubleClick(customPlot->plottable(0));
 
   /*
 
@@ -359,7 +361,7 @@ void ChartSettings::init(myQCustomPlot *qcp)
   auto tabWidget_Plots = new QTabWidget;
   tabWidget_Plots->setTabPosition(QTabWidget::West);
 
-  for (int i = 0; i < qcp->graphCount(); i++) {
+  for (int i = 0; i < qcp->plottableCount(); i++) {
       auto plotSettings = new PlotSettings(qcp->plottable(i));
       plotSettings->init();
       connect(this, &QDialog::accepted, plotSettings, &PlotSettings::setChange);
@@ -387,7 +389,7 @@ void ChartSettings::init(myQCustomPlot *qcp)
 //
   auto tabWidget = new QTabWidget;
   tabWidget->addTab(tab_Axes, tr("Axes"));
-  tabWidget->addTab(tab_Plots, tr("Graph"));
+  tabWidget->addTab(tab_Plots, tr("Plot"));
   tabWidget->addTab(tab_Legend, tr("Legend"));
 
   vBoxLayout->addWidget(tabWidget);
@@ -415,8 +417,8 @@ void ChartSettings::init(QCPAbstractPlottable *plottable)
 {
   baseStartInit();
 
-  resize(600, 600);
-  setWindowTitle(tr("Graph settings"));
+  resize(400, 600);
+  setWindowTitle(tr("Plot settings"));
 
   auto plotSettings = new PlotSettings(plottable);
   plotSettings->init();
@@ -630,6 +632,8 @@ void AxisSettings::setChange()
   minorGridPen.setWidthF(doubleSpinBox_MinorGrid_LineWidth->value());
   minorGridPen.setColor(pushButton_MinorGrid_LineColor->getColor());
   Axis->grid()->setSubGridPen(minorGridPen);
+
+
 }
 
 QWidget *AxisSettings::titleBlock()
@@ -1029,6 +1033,9 @@ PlotSettings::~PlotSettings()
   if (pushButton_ScatterFillColor)
     delete pushButton_ScatterFillColor;
 
+  if (table)
+    delete table;
+
   if (comboBox_xAxis)
     delete comboBox_xAxis;
   if (comboBox_yAxis)
@@ -1037,40 +1044,13 @@ PlotSettings::~PlotSettings()
 
 void PlotSettings::init()
 {
-  auto gridLayout_ScrollArea = new QGridLayout;
-  gridLayout_ScrollArea->setContentsMargins(0, 0, 0, 0);
-
-  gridLayout_ScrollArea->addWidget(nameBlock(), 0, 0);
-  gridLayout_ScrollArea->addWidget(new HLine, 1, 0);
-  gridLayout_ScrollArea->addWidget(lineBlock(), 2, 0);
-  gridLayout_ScrollArea->addWidget(new HLine(), 3, 0);
-
-  if (strcmp(Plottable->metaObject()->className(), "QCPGraph") == 0) {
-      gridLayout_ScrollArea->addWidget(scatterBlock(), 4, 0);
-      gridLayout_ScrollArea->addWidget(new HLine, 5, 0);
-    }
-
-  gridLayout_ScrollArea->addWidget(axesBlock(), 6, 0);
-
-//  gridLayout_ScrollArea->addWidget(nameBlock(), 0, 0, 1, 3);
-//  gridLayout_ScrollArea->addWidget(new HLine, 1, 0, 1, 3);
-//  gridLayout_ScrollArea->addWidget(lineBlock(), 2, 0);
-//  gridLayout_ScrollArea->addWidget(new VLine(0), 2, 1);
-//  gridLayout_ScrollArea->addWidget(scatterBlock(), 2, 2);
-//  gridLayout_ScrollArea->addWidget(new HLine, 3, 0, 1, 3);
-//  gridLayout_ScrollArea->addWidget(axesBlock(), 4, 0, 1, 3);
-
-  auto scrollContainer = new QWidget;
-  scrollContainer->setLayout(gridLayout_ScrollArea);
-
-  auto scrollArea = new QScrollArea;
-  scrollArea->setWidgetResizable(true);
-  scrollArea->setBackgroundRole(QPalette::AlternateBase);
-  scrollArea->setWidget(scrollContainer);
+  auto toolBox = new QToolBox;
+  toolBox->addItem(propertiesBlock(), tr("Plot properties"));
+  toolBox->addItem(dataBlock(), tr("Plot data"));
 
   auto vBoxLayout = new QVBoxLayout;
   vBoxLayout->setContentsMargins(0, 0, 0, 0);
-  vBoxLayout->addWidget(scrollArea);
+  vBoxLayout->addWidget(toolBox);
 
   setLayout(vBoxLayout);
 
@@ -1084,22 +1064,27 @@ void PlotSettings::setChange()
 {
   Plottable->setName(lineEdit_PlotName->text());
 
-  if (strcmp(Plottable->metaObject()->className(), "QCPGraph") == 0) {
+  if (strcmp(Plottable->metaObject()->className(), "QCPGraph") == 0)
       qobject_cast<QCPGraph *>(Plottable)->setLineStyle(static_cast<QCPGraph::LineStyle>(comboBox_LineStyle->currentIndex()));
-    }
+  else if (strcmp(Plottable->metaObject()->className(), "QCPCurve") == 0)
+    qobject_cast<QCPCurve *>(Plottable)->setLineStyle(static_cast<QCPCurve::LineStyle>(comboBox_LineStyle->currentIndex()));
   QPen linePen;
   linePen.setStyle(static_cast<Qt::PenStyle>(comboBox_PenStyle->currentIndex() + 1));
   linePen.setWidthF(doubleSpinBox_LineWidth->value());
   linePen.setColor(pushButton_LineColor->getColor());
   Plottable->setPen(linePen);
 
-  if (strcmp(Plottable->metaObject()->className(), "QCPGraph") == 0) {
+  if (strcmp(Plottable->metaObject()->className(), "QCPGraph") == 0 ||
+      strcmp(Plottable->metaObject()->className(), "QCPCurve") == 0) {
       QCPScatterStyle myScatter;
       myScatter.setShape(static_cast<QCPScatterStyle::ScatterShape>(comboBox_ScatterShape->currentIndex()));
       myScatter.setSize(doubleSpinBox_ScatterSize->value());
       myScatter.setPen(pushButton_ScatterEdgeColor->getColor());
       myScatter.setBrush(pushButton_ScatterFillColor->getColor());
-      qobject_cast<QCPGraph *>(Plottable)->setScatterStyle(myScatter);
+      if (strcmp(Plottable->metaObject()->className(), "QCPGraph") == 0)
+        qobject_cast<QCPGraph *>(Plottable)->setScatterStyle(myScatter);
+      else if (strcmp(Plottable->metaObject()->className(), "QCPCurve") == 0)
+        qobject_cast<QCPCurve *>(Plottable)->setScatterStyle(myScatter);
     }
 
   switch (comboBox_xAxis->currentIndex()) {
@@ -1123,6 +1108,13 @@ void PlotSettings::setChange()
     default:
       break;
     }
+
+  if (strcmp(Plottable->metaObject()->className(), "QCPGraph") == 0)
+      setChangeDataContainers(qobject_cast<QCPGraph *>(Plottable)->data().get());
+  else if (strcmp(Plottable->metaObject()->className(), "QCPCurve") == 0)
+    setChangeDataContainers(qobject_cast<QCPCurve *>(Plottable)->data().get());
+  else if (strcmp(Plottable->metaObject()->className(), "QCPBars") == 0)
+    setChangeDataContainers(qobject_cast<QCPBars *>(Plottable)->data().get());
 }
 
 QWidget *PlotSettings::nameBlock()
@@ -1140,6 +1132,63 @@ QWidget *PlotSettings::nameBlock()
 
   auto widget = new QWidget;
   widget->setLayout(hLayout);
+
+  return widget;
+}
+
+QWidget *PlotSettings::propertiesBlock()
+{
+  auto gridLayout_ScrollArea = new QGridLayout;
+  gridLayout_ScrollArea->setContentsMargins(0, 0, 0, 0);
+
+  gridLayout_ScrollArea->addWidget(nameBlock(), 0 ,0);
+  gridLayout_ScrollArea->addWidget(new HLine(), 1, 0);
+  gridLayout_ScrollArea->addWidget(lineBlock(), 2, 0);
+  gridLayout_ScrollArea->addWidget(new HLine(), 3, 0);
+
+  if (strcmp(Plottable->metaObject()->className(), "QCPGraph") == 0 ||
+      strcmp(Plottable->metaObject()->className(), "QCPCurve") == 0) {
+      gridLayout_ScrollArea->addWidget(scatterBlock(), 4, 0);
+      gridLayout_ScrollArea->addWidget(new HLine, 5, 0);
+    }
+
+  gridLayout_ScrollArea->addWidget(axesBlock(), 6, 0);
+
+  auto scrollContainer = new QWidget;
+  scrollContainer->setLayout(gridLayout_ScrollArea);
+
+  auto scrollArea = new QScrollArea;
+  scrollArea->setWidgetResizable(true);
+  scrollArea->setBackgroundRole(QPalette::AlternateBase);
+  scrollArea->setWidget(scrollContainer);
+
+  auto vBoxLayout = new QVBoxLayout;
+  vBoxLayout->setContentsMargins(0, 0, 0, 0);
+  vBoxLayout->addWidget(scrollArea);
+
+  auto widget = new QWidget;
+  widget->setLayout(vBoxLayout);
+
+  return widget;
+}
+
+QWidget *PlotSettings::dataBlock()
+{
+  table = new TableView;
+  if (strcmp(Plottable->metaObject()->className(), "QCPGraph") == 0) {
+    table->setModel(tableModel(qobject_cast<QCPGraph *>(Plottable)->data().get()));
+    }
+  else if (strcmp(Plottable->metaObject()->className(), "QCPCurve") == 0)
+    table->setModel(tableModel(qobject_cast<QCPCurve *>(Plottable)->data().get()));
+  else if (strcmp(Plottable->metaObject()->className(), "QCPBars") == 0)
+    table->setModel(tableModel(qobject_cast<QCPBars *>(Plottable)->data().get()));
+
+  auto vBoxLayout = new QVBoxLayout;
+  vBoxLayout->setContentsMargins(0, 0, 0, 0);
+  vBoxLayout->addWidget(table);
+
+  auto widget = new QWidget;
+  widget->setLayout(vBoxLayout);
 
   return widget;
 }
@@ -1178,19 +1227,28 @@ QWidget *PlotSettings::lineBlock()
   gridLayout->addWidget(label, 0, 0, 1, 2);
   gridLayout->addItem(new VSpacer, 1, 0);
 
-  if (strcmp(Plottable->metaObject()->className(), "QCPGraph") == 0) {
+  if (strcmp(Plottable->metaObject()->className(), "QCPGraph") == 0 ||
+      strcmp(Plottable->metaObject()->className(), "QCPCurve") == 0) {
       auto label_LineStyle = new QLabel;
       label_LineStyle->setText(tr("Line style"));
 
       comboBox_LineStyle = new QComboBox;
-      comboBox_LineStyle->addItems({tr("None"),
-                                    tr("Line"),
-                                    tr("Step left"),
-                                    tr("Step right"),
-                                    tr("Step center"),
-                                    tr("Impulse")
-                                   });
-      comboBox_LineStyle->setCurrentIndex(qobject_cast<QCPGraph *>(Plottable)->lineStyle());
+      if (strcmp(Plottable->metaObject()->className(), "QCPGraph") == 0) {
+          comboBox_LineStyle->addItems({tr("None"),
+                                        tr("Line"),
+                                        tr("Step left"),
+                                        tr("Step right"),
+                                        tr("Step center"),
+                                        tr("Impulse")
+                                       });
+          comboBox_LineStyle->setCurrentIndex(qobject_cast<QCPGraph *>(Plottable)->lineStyle());
+        }
+      else if (strcmp(Plottable->metaObject()->className(), "QCPCurve") == 0) {
+          comboBox_LineStyle->addItems({tr("None"),
+                                        tr("Line")
+                                       });
+          comboBox_LineStyle->setCurrentIndex(qobject_cast<QCPCurve *>(Plottable)->lineStyle());
+        }
       connect(comboBox_LineStyle, QOverload<int>::of(&QComboBox::currentIndexChanged), this, &PlotSettings::comboBoxLineStyleCurrentIndexChanged);
 
       gridLayout->addWidget(label_LineStyle, 2, 0);
@@ -1243,6 +1301,8 @@ QWidget *PlotSettings::scatterBlock()
                                   });
   if (strcmp(Plottable->metaObject()->className(), "QCPGraph") == 0)
     comboBox_ScatterShape->setCurrentIndex(qobject_cast<QCPGraph *>(Plottable)->scatterStyle().shape());
+  else if (strcmp(Plottable->metaObject()->className(), "QCPCurve") == 0)
+    comboBox_ScatterShape->setCurrentIndex(qobject_cast<QCPCurve *>(Plottable)->scatterStyle().shape());
   connect(comboBox_ScatterShape, QOverload<int>::of(&QComboBox::currentIndexChanged), this, &PlotSettings::comboBoxScatterShapeCurrentIndexChanged);
 
   auto label_ScatterSize = new QLabel;
@@ -1251,6 +1311,8 @@ QWidget *PlotSettings::scatterBlock()
   doubleSpinBox_ScatterSize = new QDoubleSpinBox;
   if (strcmp(Plottable->metaObject()->className(), "QCPGraph") == 0)
     doubleSpinBox_ScatterSize->setValue(qobject_cast<QCPGraph *>(Plottable)->scatterStyle().size());
+  else if (strcmp(Plottable->metaObject()->className(), "QCPCurve") == 0)
+    doubleSpinBox_ScatterSize->setValue(qobject_cast<QCPCurve *>(Plottable)->scatterStyle().size());
 
   auto label_ScatterEdgeColor = new QLabel;
   label_ScatterEdgeColor->setText(tr("Edge color"));
@@ -1258,6 +1320,8 @@ QWidget *PlotSettings::scatterBlock()
   pushButton_ScatterEdgeColor = new PushButtonColorPicker;
   if (strcmp(Plottable->metaObject()->className(), "QCPGraph") == 0)
     pushButton_ScatterEdgeColor->setColor(qobject_cast<QCPGraph *>(Plottable)->scatterStyle().pen().color());
+  else if (strcmp(Plottable->metaObject()->className(), "QCPCurve") == 0)
+    pushButton_ScatterEdgeColor->setColor(qobject_cast<QCPCurve *>(Plottable)->scatterStyle().pen().color());
 
   auto label_ScatterFillColor = new QLabel;
   label_ScatterFillColor->setText(tr("Fill color"));
@@ -1265,6 +1329,8 @@ QWidget *PlotSettings::scatterBlock()
   pushButton_ScatterFillColor = new PushButtonColorPicker;
   if (strcmp(Plottable->metaObject()->className(), "QCPGraph") == 0)
     pushButton_ScatterFillColor->setColor(qobject_cast<QCPGraph *>(Plottable)->scatterStyle().brush().color());
+  else if (strcmp(Plottable->metaObject()->className(), "QCPCurve") == 0)
+    pushButton_ScatterFillColor->setColor(qobject_cast<QCPCurve *>(Plottable)->scatterStyle().brush().color());
 
   auto gridLayout = new QGridLayout;
   gridLayout->addWidget(label, 0, 0, 1, 2);
@@ -1376,3 +1442,89 @@ void PlotSettings::comboBoxScatterShapeCurrentIndexChanged(int index)
 {
   comboBoxScatterShapeCheckIndex(index);
 }
+
+QStandardItemModel *PlotSettings::tableModel(QCPGraphDataContainer *data)
+{
+  return _tableModel_(data);
+}
+
+QStandardItemModel *PlotSettings::tableModel(QCPCurveDataContainer *data)
+{
+  auto model = new QStandardItemModel(data->size(), 2);
+
+  for (auto item : *data) {
+      auto keyItem =  new QStandardItem(QString::number(item.mainKey()));
+      auto valueItem =  new QStandardItem(QString::number(item.mainValue()));
+      auto r = (int)item.sortKey();
+      model->setItem(r, 0, keyItem);
+      model->setItem(r, 1, valueItem);
+    }
+
+   return model;
+}
+
+QStandardItemModel *PlotSettings::tableModel(QCPBarsDataContainer *data)
+{
+  return _tableModel_(data);
+}
+
+void PlotSettings::setChangeDataContainers(QCPGraphDataContainer *data)
+{
+  _setChangeDataContainers_(data);
+}
+
+void PlotSettings::setChangeDataContainers(QCPCurveDataContainer *data)
+{
+  data->clear();
+
+  auto model = table->model();
+
+  for (int i = 0; i < model->rowCount(); ++i) {
+      auto k = model->data(model->index(i, 0), Qt::EditRole).toDouble();
+      auto v = model->data(model->index(i, 1), Qt::EditRole).toDouble();
+
+      QCPCurveData dti(i, k, v);
+
+      data->add(dti);
+    }
+}
+
+void PlotSettings::setChangeDataContainers(QCPBarsDataContainer *data)
+{
+  _setChangeDataContainers_(data);
+}
+
+template<class DT>
+QStandardItemModel *PlotSettings::_tableModel_(QCPDataContainer<DT> *data)
+{
+  auto model = new QStandardItemModel(data->size(), 2);
+
+  for (int i = 0; i < data->size(); ++i) {
+      auto item = data->at(i);
+      auto keyItem =  new QStandardItem(QString::number(item->mainKey()));
+      auto valueItem =  new QStandardItem(QString::number(item->mainValue()));
+      model->setItem(i, 0, keyItem);
+      model->setItem(i, 1, valueItem);
+    }
+
+  return model;
+}
+
+
+template<class DT>
+void PlotSettings::_setChangeDataContainers_(QCPDataContainer<DT> *data)
+{
+  data->clear();
+
+  auto model = table->model();
+
+  for (int i = 0; i < model->rowCount(); ++i) {
+      auto k = model->data(model->index(i, 0), Qt::EditRole).toDouble();
+      auto v = model->data(model->index(i, 1), Qt::EditRole).toDouble();
+
+      DT dti(k, v);
+
+      data->add(dti);
+    }
+}
+

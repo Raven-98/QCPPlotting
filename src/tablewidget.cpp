@@ -1,7 +1,9 @@
 #include "tablewidget.h"
+#include "qclipboard.h"
 
 #include <QIcon>
 #include <QPainter>
+#include <QApplication>
 
 int TableWidget::SumTables = 0;
 int TableWidget::ResTableWidgetID = 0;
@@ -34,6 +36,11 @@ TableWidget::~TableWidget()
   if (contextMenu)
     delete contextMenu;
 
+  if (hHeaderContextMenu)
+    delete hHeaderContextMenu;
+  if (actionAddColumn)
+    delete actionAddColumn;
+
   if (tableWidget) {
       delete tableWidget->model();
       delete tableWidget;
@@ -48,17 +55,7 @@ void TableWidget::init()
   setWindowIcon(QIcon(":/img/table.png"));
   setWindowTitle(tr("Table %1").arg(ResTableWidgetID));
 
-  tableWidget = new QTableView;
-
-  horizontalHeaderView = new HorizontalHeaderView;
-  tableWidget->setHorizontalHeader(horizontalHeaderView);  
-  connect(horizontalHeaderView, &HorizontalHeaderView::customContextMenuRequested, this, &TableWidget::checkSelectionModel);
-  connect(this, &TableWidget::setEnabledActions, horizontalHeaderView, &HorizontalHeaderView::slot_setEnabledActions);
-  connect(horizontalHeaderView, &HorizontalHeaderView::buildGraph, this, &TableWidget::buildGraphTrigered);
-  connect(horizontalHeaderView, &HorizontalHeaderView::buildBars, this, &TableWidget::buildBarsTrigered);
-  connect(horizontalHeaderView, &HorizontalHeaderView::buildCurve, this, &TableWidget::buildCurveTrigered);
-  connect(horizontalHeaderView, &HorizontalHeaderView::saveTable, this, &TableWidget::saveTableTrigered);
-  connect(horizontalHeaderView, &HorizontalHeaderView::addColumn, this, &TableWidget::addColumnTrigered);
+  tableWidget = new TableView;
 
   gridLayout = new QGridLayout;
   gridLayout->addWidget(tableWidget, 0, 0);
@@ -69,7 +66,8 @@ void TableWidget::init()
   tableWidget->setContextMenuPolicy(Qt::CustomContextMenu);
   connect(tableWidget, &QTableView::customContextMenuRequested, this, &TableWidget::checkSelectionModel);
   connect(this, &TableWidget::setEnabledActions, this, &TableWidget::slot_setEnabledActions);
-  connect(tableWidget, &QTableView::customContextMenuRequested, this, &TableWidget::customHeaderMenuRequested);  
+  connect(tableWidget, &TableView::customContextMenuRequested, this, &TableWidget::customMenuRequested);
+  connect(tableWidget->horizontalHeader(), &HorizontalHeaderView::customContextMenuRequested, this, &TableWidget::customHeaderMenuRequested);
 
   actionPlotGraph = new QAction;
   actionPlotGraph->setText(tr("Graph"));
@@ -102,6 +100,18 @@ void TableWidget::init()
   contextMenu->addSeparator();
   contextMenu->addAction(actionSaveSelectedTable);
   contextMenu->addAction(actionSaveTable);
+
+  actionAddColumn = new QAction;
+  actionAddColumn->setText(tr("Add column"));
+  actionAddColumn->setIcon(QIcon(":/img/add_column.png"));
+  connect(actionAddColumn, &QAction::triggered, this, &TableWidget::addColumnTrigered);
+
+  hHeaderContextMenu = new QMenu;
+  hHeaderContextMenu->addMenu(menuPlot);
+  hHeaderContextMenu->addSeparator();
+  hHeaderContextMenu->addAction(actionAddColumn);
+  hHeaderContextMenu->addSeparator();
+  hHeaderContextMenu->addAction(actionSaveTable);
 }
 
 void TableWidget::setModel(QStandardItemModel *item_model)
@@ -109,9 +119,19 @@ void TableWidget::setModel(QStandardItemModel *item_model)
   tableWidget->setModel(item_model);
 }
 
-void TableWidget::customHeaderMenuRequested(const QPoint &pos)
+QAbstractItemModel *TableWidget::model()
 {
-  contextMenu->popup(tableWidget->viewport()->mapToGlobal(pos));
+  return tableWidget->model();
+}
+
+void TableWidget::customMenuRequested(const QAbstractItemView *view, const QPoint &pos)
+{
+  contextMenu->popup(view->viewport()->mapToGlobal(pos));
+}
+
+void TableWidget::customHeaderMenuRequested(const QAbstractItemView *view, const QPoint &pos)
+{
+  hHeaderContextMenu->popup(view->viewport()->mapToGlobal(pos));
 }
 
 void TableWidget::checkSelectionModel()
@@ -173,10 +193,119 @@ void TableWidget::addColumnTrigered()
   tableWidget->model()->insertColumn(tableWidget->model()->columnCount());
 }
 
-// !!!
-// Елементи заповнюються по черзі вибору
-// !!!
+/* ******************************************************************************** *
+ * !!!
+ * Елементи заповнюються по черзі вибору.                                           *
+ * !!!
+ *                                                                                  *
+ * Тобто якщо вибирати елементи у таблиці з парва на ліво то вони так і занесуться  *
+ * до вектора.                                                                      *
+ *                                                                                  *
+ * Причиною є використання QModelIndexList.                                         *
+ * ******************************************************************************** */
 QVector<QVector<double> > TableWidget::builderData(QModelIndexList &selectedIndexes)
+{
+  return tableWidget->builderData(selectedIndexes);
+}
+
+QVector<QVector<double>> TableWidget::builderNumberedData(QModelIndexList &selectedIndexes)
+{
+  return tableWidget->builderNumberedData(selectedIndexes);
+}
+
+
+TableView::TableView(QWidget *parent)
+  : QTableView(parent)
+{
+  horizontalHeaderView = new HorizontalHeaderView;
+  setHorizontalHeader(horizontalHeaderView);
+  connect(this, &QTableView::customContextMenuRequested, this, &TableView::customHeaderMenuRequested);
+}
+
+TableView::~TableView()
+{
+  if (horizontalHeaderView)
+    delete horizontalHeaderView;
+}
+
+void TableView::PasteFromClipboard()
+{
+  auto current_row = selectionModel()->currentIndex().row();
+  auto current_column = selectionModel()->currentIndex().column();
+
+  auto rows = QApplication::clipboard()->text().split('\n');
+
+   for( int i = 0; i < rows.size(); i++ ) {
+       auto cols = rows.at(i).split('\t');
+       for( int j = 0; j < cols.size(); j++ ) {
+           auto item = new QStandardItem(cols.at(j));
+           qobject_cast<QStandardItemModel *>(model())->setItem(current_row + i, current_column + j, item);
+         }
+     }
+}
+
+void TableView::CopyToClipboard()
+{
+  QString cbStr;
+  auto cb = QApplication::clipboard();
+  auto list =  selectionModel()->selectedIndexes();
+
+   if(list.isEmpty())
+     return;
+
+   if (list.at(0).column() == list.at(1).column()) {
+       auto firstRow = list.first().row();
+       auto lastRow = list.last().row();
+       auto rowCount = lastRow - firstRow + 1;
+
+       for(int i = 0; i < rowCount; ++i, cbStr += '\n') {
+           for(int j = i; j < list.count(); j += rowCount, cbStr += '\t') {
+               cbStr += model()->data(list[j], Qt::EditRole).toString();
+             }
+         }
+     }
+   else {
+       auto firstColumn = list.first().column();
+       auto lastColumn = list.last().column();
+       auto columnCount = lastColumn - firstColumn + 1;
+
+       for(int i = 0; i < list.count(); i++) {
+           cbStr += model()->data(list[i], Qt::EditRole).toString();
+           cbStr += ((i + 1) % columnCount == 0) ? "\n" : "\t";
+         }
+     }
+
+   cb->setText(cbStr);
+}
+
+void TableView::CutToClipboard()
+{
+  CopyToClipboard();
+  DeleteDataKey();
+}
+
+void TableView::DeleteDataKey()
+{
+  auto selectedIndexes = selectionModel()->selectedIndexes();
+
+  for (int i = 0; i < selectedIndexes.size(); i++) {
+      auto r = selectedIndexes.at(i).row();
+      auto c = selectedIndexes.at(i).column();
+      qobject_cast<QStandardItemModel *>(model())->setItem(r, c, new QStandardItem(""));
+    }
+}
+
+/* ******************************************************************************** *
+ * !!!
+ * Елементи заповнюються по черзі вибору.                                           *
+ * !!!
+ *                                                                                  *
+ * Тобто якщо вибирати елементи у таблиці з парва на ліво то вони так і занесуться  *
+ * до вектора.                                                                      *
+ *                                                                                  *
+ * Причиною є використання QModelIndexList.                                         *
+ * ******************************************************************************** */
+QVector<QVector<double>> TableView::builderData(QModelIndexList &selectedIndexes)
 {
   int selectedIndexesCount = selectedIndexes.count();
   QList<int> lst;
@@ -216,7 +345,7 @@ QVector<QVector<double> > TableWidget::builderData(QModelIndexList &selectedInde
   return data;
 }
 
-QVector<QVector<double>> TableWidget::builderNumberedData(QModelIndexList &selectedIndexes)
+QVector<QVector<double>> TableView::builderNumberedData(QModelIndexList &selectedIndexes)
 {
   auto data = builderData(selectedIndexes);
 
@@ -229,10 +358,45 @@ QVector<QVector<double>> TableWidget::builderNumberedData(QModelIndexList &selec
   return data;
 }
 
+HorizontalHeaderView *TableView::horizontalHeader()
+{
+  return horizontalHeaderView;
+}
+
+void TableView::customHeaderMenuRequested(const QPoint &pos) {
+  emit customContextMenuRequested(this, pos);
+}
+
+void TableView::keyPressEvent(QKeyEvent *event)
+{
+  switch (event->modifiers()) {
+    case Qt::CTRL:
+      switch (event->key()) {
+        case Qt::Key_V:
+          PasteFromClipboard();
+          break;
+        case Qt::Key_C:
+          CopyToClipboard();
+          break;
+        case Qt::Key_X:
+          CutToClipboard();
+          break;
+        }
+      break;
+    default:
+      switch (event->key()) {
+        case Qt::Key_Delete:
+          DeleteDataKey();
+          break;
+        }
+    }
+}
+
 //void TableView::keyReleaseEvent(QKeyEvent *event)
 //{
 //  QTableView::keyReleaseEvent(event);
 //}
+
 
 HorizontalHeaderView::HorizontalHeaderView(QWidget *parent)
   : QHeaderView(Qt::Horizontal, parent)
@@ -243,97 +407,17 @@ HorizontalHeaderView::HorizontalHeaderView(QWidget *parent)
   setSectionResizeMode(QHeaderView::Interactive);
   setItemDelegate(new TableStyledItemDelegate(this));
   setHighlightSections(true);
-
-  actionPlotGraph = new QAction;
-  actionPlotGraph->setText(tr("Graph"));
-  connect(actionPlotGraph, &QAction::triggered, this, &HorizontalHeaderView::buildGraphTrigered);
-
-  actionPlotBars = new QAction;
-  actionPlotBars->setText(tr("Bars"));
-  connect(actionPlotBars, &QAction::triggered, this, &HorizontalHeaderView::buildBarsTrigered);
-
-  actionPlotCurve = new QAction;
-  actionPlotCurve->setText(tr("Curve"));
-  connect(actionPlotCurve, &QAction::triggered, this, &HorizontalHeaderView::buildCurveTrigered);
-
-  menuPlot = new QMenu;
-  menuPlot->setTitle(tr("Plot"));
-  menuPlot->addAction(actionPlotBars);
-  menuPlot->addAction(actionPlotCurve);
-  menuPlot->addAction(actionPlotGraph);
-
-  actionSaveTable = new QAction;
-  actionSaveTable->setText(tr("Save table"));
-  actionSaveTable->setIcon(QIcon(":/img/save.png"));
-  connect(actionSaveTable, &QAction::triggered, this, &HorizontalHeaderView::saveTableTrigered);
-
-  actionAddColumn = new QAction;
-  actionAddColumn->setText(tr("Add column"));
-  actionAddColumn->setIcon(QIcon(":/img/add_column.png"));
-  connect(actionAddColumn, &QAction::triggered, this, &HorizontalHeaderView::addColumnTrigered);
-
-  hHeaderMenu = new QMenu;
-  hHeaderMenu->addMenu(menuPlot);
-  hHeaderMenu->addSeparator();
-  hHeaderMenu->addAction(actionAddColumn);
-  hHeaderMenu->addSeparator();
-  hHeaderMenu->addAction(actionSaveTable);
 }
 
 HorizontalHeaderView::~HorizontalHeaderView()
 {
   if (sectionIndicator)
     delete sectionIndicator;
-
-  if (actionPlotGraph)
-    delete actionPlotGraph;
-  if (actionPlotBars)
-    delete actionPlotBars;
-  if (actionPlotCurve)
-    delete actionPlotCurve;
-  if (menuPlot)
-    delete menuPlot;
-  if (actionSaveTable)
-    delete actionSaveTable;
-  if (actionAddColumn)
-    delete actionAddColumn;
-  if (hHeaderMenu)
-    delete hHeaderMenu;
 }
 
 void HorizontalHeaderView::customHeaderMenuRequested(const QPoint &pos)
 {
-  hHeaderMenu->popup(viewport()->mapToGlobal(pos));
-}
-
-void HorizontalHeaderView::slot_setEnabledActions(bool e)
-{
-  menuPlot->setEnabled(e);
-}
-
-void HorizontalHeaderView::buildGraphTrigered()
-{
-  emit buildGraph();
-}
-
-void HorizontalHeaderView::buildBarsTrigered()
-{
-  emit buildBars();
-}
-
-void HorizontalHeaderView::buildCurveTrigered()
-{
-  emit buildCurve();
-}
-
-void HorizontalHeaderView::saveTableTrigered()
-{
-  emit saveTable();
-}
-
-void HorizontalHeaderView::addColumnTrigered()
-{
-  emit addColumn();
+  emit customContextMenuRequested(this, pos);
 }
 
 void HorizontalHeaderView::mousePressEvent(QMouseEvent *event)

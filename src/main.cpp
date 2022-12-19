@@ -19,7 +19,9 @@ int main(int argc, char *argv[])
   win.show();
   win.initTable();
 
-//  win.tst();
+#ifdef QT_DEBUG
+  win.tst();
+#endif
 
   return app.exec();
 }

@@ -191,14 +191,12 @@ void ChartWidget::setCurve(QVector<double> &data_t, QVector<double> &data_x, QVe
 //  customPlot->yAxis->setLabel("Y");
 //}
 
+#ifdef QT_DEBUG
 void ChartWidget::tst()
 {
   emit plottableDoubleClick(customPlot->plottable(0));
-
-  /*
-
-*/
 }
+#endif
 
 void ChartWidget::axisClick(QCPAxis *axis, QCPAxis::SelectablePart  part)
 {
@@ -316,6 +314,16 @@ void ChartSettings::init(myQCustomPlot *qcp)
   resize(800, 600);
   setWindowTitle(tr("Chart settings"));
 
+// Layer
+  auto layerSettings = new LayerSettings;
+
+  auto gridLayout_Layer = new QGridLayout;
+  gridLayout_Layer->setContentsMargins(0, 0, 0, 0);
+  gridLayout_Layer->addWidget(layerSettings);
+
+  auto tab_Layer = new QWidget;
+  tab_Layer->setLayout(gridLayout_Layer);
+
 // Axes
   auto tabWidget_Axes = new QTabWidget;
   tabWidget_Axes->setTabPosition(QTabWidget::West);
@@ -383,11 +391,19 @@ void ChartSettings::init(myQCustomPlot *qcp)
   auto tab_Plots = new QWidget;
   tab_Plots->setLayout(gridLayout_Plots);
 
-// Legend
+// Legend  
+  auto legendSettings = new LegendSettings;
+
+  auto gridLayout_Legend = new QGridLayout;
+  gridLayout_Legend->setContentsMargins(0, 0, 0, 0);
+  gridLayout_Legend->addWidget(layerSettings);
+
   auto tab_Legend = new QWidget;
+  tab_Legend->setLayout(gridLayout_Legend);
 
 //
   auto tabWidget = new QTabWidget;
+  tabWidget->addTab(tab_Layer, tr("Layer"));
   tabWidget->addTab(tab_Axes, tr("Axes"));
   tabWidget->addTab(tab_Plots, tr("Plot"));
   tabWidget->addTab(tab_Legend, tr("Legend"));
@@ -1024,6 +1040,11 @@ PlotSettings::~PlotSettings()
   if (pushButton_LineColor)
     delete pushButton_LineColor;
 
+  if (comboBox_FillStyle)
+    delete comboBox_FillStyle;
+  if (pushButton_FillColor)
+    delete pushButton_FillColor;
+
   if (comboBox_ScatterShape)
     delete comboBox_ScatterShape;
   if (doubleSpinBox_ScatterSize)
@@ -1073,6 +1094,11 @@ void PlotSettings::setChange()
   linePen.setWidthF(doubleSpinBox_LineWidth->value());
   linePen.setColor(pushButton_LineColor->getColor());
   Plottable->setPen(linePen);
+
+  QBrush brush;
+  brush.setStyle(static_cast<Qt::BrushStyle>(comboBox_FillStyle->currentIndex()));
+  brush.setColor(pushButton_FillColor->getColor());
+  Plottable->setBrush(brush);
 
   if (strcmp(Plottable->metaObject()->className(), "QCPGraph") == 0 ||
       strcmp(Plottable->metaObject()->className(), "QCPCurve") == 0) {
@@ -1152,7 +1178,9 @@ QWidget *PlotSettings::propertiesBlock()
       gridLayout_ScrollArea->addWidget(new HLine, 5, 0);
     }
 
-  gridLayout_ScrollArea->addWidget(axesBlock(), 6, 0);
+  gridLayout_ScrollArea->addWidget(fillBlock(), 6, 0);
+  gridLayout_ScrollArea->addWidget(new HLine, 7, 0);
+  gridLayout_ScrollArea->addWidget(axesBlock(), 8, 0);
 
   auto scrollContainer = new QWidget;
   scrollContainer->setLayout(gridLayout_ScrollArea);
@@ -1265,6 +1293,56 @@ QWidget *PlotSettings::lineBlock()
   gridLayout->addWidget(label_LineColor, 8, 0);
   gridLayout->addWidget(pushButton_LineColor, 8, 1);
   gridLayout->addItem(new Spacer, 9, 1);
+
+  auto widget = new QWidget;
+  widget->setLayout(gridLayout);
+
+  return widget;
+}
+
+QWidget *PlotSettings::fillBlock()
+{
+  auto label = new QLabel;
+  label->setText(tr("Fill"));
+  label->setStyleSheet("font: bold");
+
+  auto label_Style = new QLabel;
+  label_Style->setText(tr("Style"));
+
+  comboBox_FillStyle = new QComboBox;
+  comboBox_FillStyle->addItems({tr("None"),
+                                tr("Uniform color"),
+                                tr("Extremely dense"),
+                                tr("Very dense"),
+                                tr("Somewhat dense"),
+                                tr("Half dense"),
+                                tr("Somewhat sparse"),
+                                tr("Very sparse"),
+                                tr("Extremely sparse"),
+                                tr("Horizontal lines"),
+                                tr("Vertical lines"),
+                                tr("Crossing lines"),
+                                tr("Backward diagonal lines"),
+                                tr("Forward diagonal lines"),
+                                tr("Crossing diagonal lines"),
+                               });
+  comboBox_FillStyle->setCurrentIndex(Plottable->brush().style());
+
+  auto label_Color = new QLabel;
+  label_Color->setText(tr("Color"));
+
+  pushButton_FillColor = new PushButtonColorPicker;
+  pushButton_FillColor->setColor(Plottable->brush().color());
+
+  auto gridLayout = new QGridLayout;
+  gridLayout->addWidget(label, 0, 0, 1, 2);
+  gridLayout->addItem(new VSpacer, 1, 0);
+  gridLayout->addWidget(label_Style, 2, 0);
+  gridLayout->addWidget(comboBox_FillStyle, 2, 1);
+  gridLayout->addItem(new VSpacer, 3, 0);
+  gridLayout->addWidget(label_Color, 4, 0);
+  gridLayout->addWidget(pushButton_FillColor, 4, 1);
+  gridLayout->addItem(new Spacer, 5, 1);
 
   auto widget = new QWidget;
   widget->setLayout(gridLayout);
@@ -1528,3 +1606,25 @@ void PlotSettings::_setChangeDataContainers_(QCPDataContainer<DT> *data)
     }
 }
 
+
+LayerSettings::LayerSettings(QWidget *parent)
+  : QWidget(parent)
+{
+
+}
+
+LayerSettings::~LayerSettings()
+{
+
+}
+
+LegendSettings::LegendSettings(QWidget *parent)
+  : QWidget(parent)
+{
+
+}
+
+LegendSettings::~LegendSettings()
+{
+
+}

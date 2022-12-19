@@ -1,6 +1,8 @@
 #include "dialogs.h"
 
+#ifdef QT_DEBUG
 #include <QDebug>
+#endif
 
 Dialogs::Dialogs(QWidget *parent)
   : QDialog{parent}

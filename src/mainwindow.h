@@ -22,7 +22,9 @@ public:
   void loadSettings();
   void initTable();
 
+#ifdef QT_DEBUG
   void tst();
+#endif
 
 private slots:
   void slot_FullScreen();

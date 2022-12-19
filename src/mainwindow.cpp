@@ -8,7 +8,9 @@
 #include <QFileDialog>
 #include <QMessageBox>
 
+#ifdef QT_DEBUG
 #include <QDebug>
+#endif
 
 MainWindow::MainWindow(QWidget *parent)
   : QMainWindow(parent)
@@ -142,22 +144,30 @@ void MainWindow::initTable()
   addTable(new QStandardItemModel(15,2));
 }
 
+#ifdef QT_DEBUG
 void MainWindow::tst()
 {
+  auto rs{6}, cs{2};
+  auto model = new QStandardItemModel(rs, cs);
   QVector<QVector<double>> data;
-  for (int i = 0; i < 2; i++) {
+  for (int i = 0; i < cs; i++) {
       QVector<double> vector;
-      for (int j = 0; j < 6; j++) {
-          vector.push_back((j + i) * (i + 1));
+      for (int j = 0; j < rs; j++) {
+          auto num{(j + i) * (i + 1)};
+          auto item = new QStandardItem(QString::number(num));
+          model->setItem(j, i, item);
+          vector.push_back(num);
         }
       data.push_back(vector);
     }
-  addChart(data, QCPPlotting::GRAPH);
 
-  qDebug() << data;
+  mdiArea->currentSubWindow()->findChild<TableWidget *>()->setModel(model);
+
+  addChart(data, QCPPlotting::GRAPH);
 
   mdiArea->currentSubWindow()->findChild<ChartWidget *>()->tst();
 }
+#endif
 
 void MainWindow::saveSettings()
 {

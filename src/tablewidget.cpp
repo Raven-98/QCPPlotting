@@ -213,6 +213,7 @@ QVector<QVector<double>> TableWidget::builderNumberedData(QModelIndexList &selec
   return tableWidget->builderNumberedData(selectedIndexes);
 }
 
+#include <QDebug>
 
 TableView::TableView(QWidget *parent)
   : QTableView(parent)
@@ -220,6 +221,11 @@ TableView::TableView(QWidget *parent)
   horizontalHeaderView = new HorizontalHeaderView;
   setHorizontalHeader(horizontalHeaderView);
   connect(this, &QTableView::customContextMenuRequested, this, &TableView::customHeaderMenuRequested);
+//  setEditTriggers(editTriggers() | QAbstractItemView::AnyKeyPressed);
+  setEditTriggers(QAbstractItemView::DoubleClicked |
+                  QAbstractItemView::SelectedClicked |
+                  QAbstractItemView::EditKeyPressed |
+                  QAbstractItemView::AnyKeyPressed);
 }
 
 TableView::~TableView()

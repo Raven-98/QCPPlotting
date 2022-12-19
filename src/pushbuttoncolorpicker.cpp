@@ -26,6 +26,7 @@ QColor PushButtonColorPicker::getColor()
 void PushButtonColorPicker::buttonClicked()
 {
   QColorDialog colorDialog(QColor(text()), this);
+  colorDialog.setOption(QColorDialog::ShowAlphaChannel);
   switch (colorDialog.exec()) {
     case QDialog::Accepted:
       setButtonStyle(colorDialog.currentColor());
@@ -38,7 +39,7 @@ void PushButtonColorPicker::buttonClicked()
 
 void PushButtonColorPicker::setButtonStyle(QColor color)
 {
-  setText(color.name(QColor::HexRgb));
+  setText(color.name(QColor::HexArgb));
 
   QPixmap image(32, 32);
   image.fill(color);

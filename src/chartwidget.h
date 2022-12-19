@@ -21,6 +21,8 @@ class myQCustomPlot;
 class ChartSettings;
 class AxisSettings;
 class PlotSettings;
+class LayerSettings;
+class LegendSettings;
 
 class ChartWidget : public QWidget
 {
@@ -36,7 +38,9 @@ public:
 //  void setFinancial(QVector<double> &keys, QVector<double> &open, QVector<double> &high, QVector<double> &low, QVector<double> &close);
 //  void setStatisticalBox();
 
+#ifdef QT_DEBUG
   void tst();
+#endif
 
 private slots:
   void axisClick(QCPAxis *axis, QCPAxis::SelectablePart part);
@@ -174,6 +178,7 @@ private:
   QWidget *propertiesBlock();
   QWidget *dataBlock();
   QWidget *lineBlock();
+  QWidget *fillBlock();
   QWidget *scatterBlock();
   QWidget *axesBlock();
   void comboBoxLineStyleCheckIndex(int index);
@@ -206,6 +211,9 @@ private:
   QDoubleSpinBox *doubleSpinBox_LineWidth = nullptr;
   PushButtonColorPicker *pushButton_LineColor = nullptr;
 
+  QComboBox *comboBox_FillStyle = nullptr;
+  PushButtonColorPicker *pushButton_FillColor = nullptr;
+
   QComboBox *comboBox_ScatterShape = nullptr;
   QDoubleSpinBox *doubleSpinBox_ScatterSize = nullptr;
   PushButtonColorPicker *pushButton_ScatterEdgeColor = nullptr;
@@ -215,6 +223,23 @@ private:
   QComboBox *comboBox_yAxis = nullptr;
 
   TableView *table = nullptr;
+};
+
+
+class LayerSettings : public QWidget
+{
+  Q_OBJECT
+public:
+  LayerSettings(QWidget *parent = nullptr);
+  ~LayerSettings();
+};
+
+class LegendSettings : public QWidget
+{
+  Q_OBJECT
+public:
+  LegendSettings(QWidget *parent = nullptr);
+  ~LegendSettings();
 };
 
 #endif // CHARTWIDGET_H

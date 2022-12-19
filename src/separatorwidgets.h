@@ -26,14 +26,14 @@ class VLine : public QFrame
 {
   Q_OBJECT
 public:
-  VLine(int margin = 10, QWidget* parent = nullptr);
+  VLine(int margin = 5, QWidget* parent = nullptr);
 };
 
 class HLine : public QFrame
 {
   Q_OBJECT
 public:
-  HLine(int margin = 10, QWidget* parent = nullptr);
+  HLine(int margin = 5, QWidget* parent = nullptr);
 };
 
 #endif // SEPARATORWIDGETS_H

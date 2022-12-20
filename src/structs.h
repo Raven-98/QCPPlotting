@@ -10,6 +10,8 @@ namespace QCPPlotting {
   struct SpreadSheet;
   struct Sheet;
   struct Row;
+  struct NumSheet;
+  struct NumRow;
 
   enum CSVParameters {
     READ_ZERO_ROW = 0x01,
@@ -106,6 +108,15 @@ namespace QCPPlotting {
 
   struct Row : public QStringList {
     using QStringList::QStringList;
+  };
+
+  struct NumSheet : public QList<NumRow> {
+    using QList<NumRow>::QList;
+    QStringList HorizontalHeader;
+  };
+
+  struct NumRow : public QList<double> {
+    using QList<double>::QList;
   };
 }
 

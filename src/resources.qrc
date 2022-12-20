@@ -9,5 +9,10 @@
         <file>img/icon.png</file>
         <file>img/save.png</file>
         <file>img/add_column.png</file>
+        <file>img/remove_column.png</file>
+        <file>img/cut.png</file>
+        <file>img/copy.png</file>
+        <file>img/paste.png</file>
+        <file>img/remove.png</file>
     </qresource>
 </RCC>

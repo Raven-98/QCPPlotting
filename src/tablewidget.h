@@ -13,6 +13,8 @@
 #include <QMenu>
 #include <QAction>
 
+#include "structs.h"
+
 class TableWidget;
 class TableView;
 class HorizontalHeaderView;
@@ -38,38 +40,51 @@ signals:
   void error(QString);
   void warning(QString);
   void message(QString);
-  void buildGraph(QVector<QVector<double>>);
-  void buildBars(QVector<QVector<double>>);
-  void buildCurve(QVector<QVector<double>>);
+//  void buildGraph(QVector<QVector<double>>);
+  void buildGraph(QCPPlotting::NumSheet);
+//  void buildBars(QVector<QVector<double>>);
+  void buildBars(QCPPlotting::NumSheet);
+//  void buildCurve(QVector<QVector<double>>);
+  void buildCurve(QCPPlotting::NumSheet);
   void saveTable();
-  void setEnabledActions(bool);
 
 private slots:
   void customMenuRequested(const QAbstractItemView *view, const QPoint &pos);
   void customHeaderMenuRequested(const QAbstractItemView *view, const QPoint &pos);
-  void checkSelectionModel();
-  void slot_setEnabledActions(bool e);
   void buildGraphTrigered();
   void buildBarsTrigered();
   void buildCurveTrigered();
   void saveTableTrigered();
+  void saveTrigered();
   void addColumnTrigered();
+  void removeColumnTrigered();
+  void cutTrigered();
+  void copyTrigered();
+  void pasteTrigered();
+  void deleteTrigered();
 
-  QVector<QVector<double>> builderData(QModelIndexList &selectedIndexes);
-  QVector<QVector<double>> builderNumberedData(QModelIndexList &selectedIndexes);
+//  QVector<QVector<double>> builderData(QModelIndexList &selectedIndexes);
+  QCPPlotting::NumSheet builderData(QModelIndexList &selectedIndexes);
+//  QVector<QVector<double>> builderNumberedData(QModelIndexList &selectedIndexes);
+  QCPPlotting::NumSheet builderNumberedData(QModelIndexList &selectedIndexes);
 
 private:
-  TableView *tableWidget = nullptr;
-  QGridLayout *gridLayout = nullptr;
-  QMenu *contextMenu = nullptr;
-  QMenu *menuPlot= nullptr;
-  QAction *actionPlotGraph = nullptr;
-  QAction *actionPlotBars = nullptr;
-  QAction *actionPlotCurve = nullptr;
-  QAction *actionSaveTable = nullptr;
-  QAction *actionSaveSelectedTable = nullptr;
-  QMenu *hHeaderContextMenu = nullptr;
-  QAction *actionAddColumn = nullptr;
+  TableView *tableWidget{nullptr};
+  QGridLayout *gridLayout{nullptr};
+  QMenu *contextMenu{nullptr};
+  QMenu *menuPlot{nullptr};
+  QAction *actionPlotGraph{nullptr};
+  QAction *actionPlotBars{nullptr};
+  QAction *actionPlotCurve{nullptr};
+  QAction *actionSaveTable{nullptr};
+  QAction *actionSaveSelectedTable{nullptr};
+  QMenu *hHeaderContextMenu{nullptr};
+  QAction *actionAddColumn{nullptr};
+  QAction *actionRemoveColumn{nullptr};
+  QAction *actionCut{nullptr};
+  QAction *actionCopy{nullptr};
+  QAction *actionPaste{nullptr};
+  QAction *actionDelete{nullptr};
 };
 
 class TableView : public QTableView
@@ -83,10 +98,16 @@ public:
   void CopyToClipboard();
   void CutToClipboard();
   void DeleteDataKey();
-  QVector<QVector<double>> builderData(QModelIndexList &selectedIndexes);
-  QVector<QVector<double>> builderNumberedData(QModelIndexList &selectedIndexes);
+//  QVector<QVector<double>> builderData(QModelIndexList &selectedIndexes);
+  QCPPlotting::NumSheet builderData(QModelIndexList &selectedIndexes);
+//  QVector<QVector<double>> builderNumberedData(QModelIndexList &selectedIndexes);
+  QCPPlotting::NumSheet builderNumberedData(QModelIndexList &selectedIndexes);
 
   HorizontalHeaderView *horizontalHeader();
+
+  QList<int> selectedRanges();
+  bool hasSelection();
+  bool hasSelectedColumn();
 
 signals:
 //    void keyEnterReleased();
@@ -105,7 +126,7 @@ private:
 //    void keyReleaseEvent(QKeyEvent *event);
 
 private:
-  HorizontalHeaderView *horizontalHeaderView = nullptr;
+  HorizontalHeaderView *horizontalHeaderView{nullptr};
 };
 
 class HorizontalHeaderView : public QHeaderView
@@ -123,10 +144,10 @@ private slots:
   void customHeaderMenuRequested(const QPoint &pos);
 
 private:
-  bool pressMiddleButton = 0;
+  bool pressMiddleButton{false};
   int firstPos;
   int lastPos;
-  QLabel *sectionIndicator = nullptr;
+  QLabel *sectionIndicator{nullptr};
   int sectionIndicatorOffset;
 
 protected:

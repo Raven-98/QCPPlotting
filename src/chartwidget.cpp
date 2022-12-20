@@ -101,16 +101,7 @@ void ChartWidget::init()
   customContexMenu->addAction(action_Properties);
 }
 
-/* ****************************************************************************** *
- * Графіки використовуються для відображення однозначних даних.                   *
- *                                                                                *
- * Однозначний означає, що для кожної унікальної ключової координати має бути     *
- * лише одна точка даних.                                                         *
- *                                                                                *
- * Іншими словами, у графі не може бути петель.                                   *
- *                                                                                *
- * Якщо ви хочете побудувати неоднозначні криві, скористайтеся таблицею QCPCurve. *
- * ****************************************************************************** */
+/*
 void ChartWidget::setGraph(QVector<double> &data_x, QVector<double> &data_y)
 {
   customPlot->clearGraphs();
@@ -122,11 +113,9 @@ void ChartWidget::setGraph(QVector<double> &data_x, QVector<double> &data_y)
   customPlot->replot();
   customPlot->xAxis->setLabel("X");
   customPlot->yAxis->setLabel("Y");
-}
+*/
 
-/* ****************************************************************************** *
- * Таблиця, що представляє гістограму на графіку.                                 *
- * ****************************************************************************** */
+/*
 void ChartWidget::setBars(QVector<double> &data_x, QVector<double> &data_y)
 {
   customPlot->clearGraphs();
@@ -139,18 +128,9 @@ void ChartWidget::setBars(QVector<double> &data_x, QVector<double> &data_y)
   customPlot->replot();
   customPlot->xAxis->setLabel("X");
   customPlot->yAxis->setLabel("Y");
-}
+*/
 
-/* ****************************************************************************** *
- * Таблиця, що представляє параметричну криву на графіку.                         *
- *                                                                                *
- * На відміну від QCPGraph, таблиці графіків цього типу можуть мати кілька точок  *
- * з однаковою ключовою координатою, тому їх візуальне представлення може мати    *
- * петлі.                                                                         *
- *                                                                                *
- * Це реалізується шляхом введення третьої координати t, яка визначає порядок     *
- * точок, описаних двома іншими координатами x і y.                               *
- * ****************************************************************************** */
+/*
 void ChartWidget::setCurve(QVector<double> &data_t, QVector<double> &data_x, QVector<double> &data_y)
 {
   customPlot->clearGraphs();
@@ -164,32 +144,109 @@ void ChartWidget::setCurve(QVector<double> &data_t, QVector<double> &data_x, QVe
   customPlot->xAxis->setLabel("X");
   customPlot->yAxis->setLabel("Y");
 }
+*/
+
 /* ****************************************************************************** *
  * Ця таблиця графіків представляє дані часових рядів, згруповані за певними      *
  * інтервалами, які в основному використовуються для біржових діаграм.            *
  * ****************************************************************************** */
-//void ChartWidget::setFinancial(QVector<double> &keys, QVector<double> &open, QVector<double> &high, QVector<double> &low, QVector<double> &close)
-//{
-//  customPlot->clearGraphs();
-//// * >
-//// * <
-//  customPlot->replot();
-//  customPlot->xAxis->setLabel("X");
-//  customPlot->yAxis->setLabel("Y");
-//}
+/*
+void ChartWidget::setFinancial(QVector<double> &keys, QVector<double> &open, QVector<double> &high, QVector<double> &low, QVector<double> &close)
+{
+  customPlot->clearGraphs();
+// * >
+// * <
+  customPlot->replot();
+  customPlot->xAxis->setLabel("X");
+  customPlot->yAxis->setLabel("Y");
+}
+*/
 
 /* ****************************************************************************** *
  * Таблиця, що представляє один статистичний блок на графіку.                     *
  * ****************************************************************************** */
-//void ChartWidget::setStatisticalBox()
-//{
-//  customPlot->clearGraphs();
-//// * >
-//// * <
-//  customPlot->replot();
-//  customPlot->xAxis->setLabel("X");
-//  customPlot->yAxis->setLabel("Y");
-//}
+/*
+void ChartWidget::setStatisticalBox()
+{
+  customPlot->clearGraphs();
+// * >
+// * <
+  customPlot->replot();
+  customPlot->xAxis->setLabel("X");
+  customPlot->yAxis->setLabel("Y");
+}
+*/
+
+void ChartWidget::setPlot(QCPPlotting::NumSheet &data, QCPPlotting::ChartType &chartType)
+{
+  customPlot->clearGraphs();
+
+  switch (chartType) {
+    case QCPPlotting::GRAPH:
+      setGraph(data);
+      break;
+    case QCPPlotting::BARS:
+      setBars(data);
+      break;
+    case QCPPlotting::CURVE:
+      setCurve(data);
+      break;
+    default:
+      break;
+    }
+
+  auto headerList = data.HorizontalHeader;
+  customPlot->xAxis->setLabel(headerList.at(0));
+  customPlot->yAxis->setLabel(headerList.at(1));
+
+  customPlot->replot();
+}
+
+/* ****************************************************************************** *
+ * Графіки використовуються для відображення однозначних даних.                   *
+ *                                                                                *
+ * Однозначний означає, що для кожної унікальної ключової координати має бути     *
+ * лише одна точка даних.                                                         *
+ *                                                                                *
+ * Іншими словами, у графі не може бути петель.                                   *
+ *                                                                                *
+ * Якщо ви хочете побудувати неоднозначні криві, скористайтеся таблицею QCPCurve. *
+ * ****************************************************************************** */
+void ChartWidget::setGraph(QCPPlotting::NumSheet &data)
+{
+  customPlot->addGraph();
+  customPlot->graph()->setData(data.at(0).toVector(), data.at(1).toVector());
+  customPlot->graph()->rescaleAxes();
+}
+
+/* ****************************************************************************** *
+ * Таблиця, що представляє гістограму на графіку.                                 *
+ * ****************************************************************************** */
+void ChartWidget::setBars(QCPPlotting::NumSheet &data)
+{
+  auto newBars = new QCPBars(customPlot->xAxis, customPlot->yAxis);
+  newBars->setName(QString("Bars %1").arg(customPlot->plottableCount()));
+  newBars->setData(data.at(0).toVector(), data.at(1).toVector());
+  newBars->rescaleAxes();
+}
+
+/* ****************************************************************************** *
+ * Таблиця, що представляє параметричну криву на графіку.                         *
+ *                                                                                *
+ * На відміну від QCPGraph, таблиці графіків цього типу можуть мати кілька точок  *
+ * з однаковою ключовою координатою, тому їх візуальне представлення може мати    *
+ * петлі.                                                                         *
+ *                                                                                *
+ * Це реалізується шляхом введення третьої координати t, яка визначає порядок     *
+ * точок, описаних двома іншими координатами x і y.                               *
+ * ****************************************************************************** */
+void ChartWidget::setCurve(QCPPlotting::NumSheet &data)
+{
+  auto newCurve = new QCPCurve(customPlot->xAxis, customPlot->yAxis);
+  newCurve->setName(QString("Curve %1").arg(customPlot->plottableCount()));
+  newCurve->setData(data.at(0).toVector(), data.at(1).toVector(), data.at(2).toVector());
+  newCurve->rescaleAxes();
+}
 
 #ifdef QT_DEBUG
 void ChartWidget::tst()
@@ -1203,13 +1260,12 @@ QWidget *PlotSettings::propertiesBlock()
 QWidget *PlotSettings::dataBlock()
 {
   table = new TableView;
-  if (strcmp(Plottable->metaObject()->className(), "QCPGraph") == 0) {
-    table->setModel(tableModel(qobject_cast<QCPGraph *>(Plottable)->data().get()));
-    }
+  if (strcmp(Plottable->metaObject()->className(), "QCPGraph") == 0)
+    table->setModel(tableModel(qobject_cast<QCPGraph *>(Plottable)->data().get(), Plottable->keyAxis(), Plottable->valueAxis()));
   else if (strcmp(Plottable->metaObject()->className(), "QCPCurve") == 0)
-    table->setModel(tableModel(qobject_cast<QCPCurve *>(Plottable)->data().get()));
+    table->setModel(tableModel(qobject_cast<QCPCurve *>(Plottable)->data().get(), Plottable->keyAxis(), Plottable->valueAxis()));
   else if (strcmp(Plottable->metaObject()->className(), "QCPBars") == 0)
-    table->setModel(tableModel(qobject_cast<QCPBars *>(Plottable)->data().get()));
+    table->setModel(tableModel(qobject_cast<QCPBars *>(Plottable)->data().get(), Plottable->keyAxis(), Plottable->valueAxis()));
 
   auto vBoxLayout = new QVBoxLayout;
   vBoxLayout->setContentsMargins(0, 0, 0, 0);
@@ -1521,14 +1577,15 @@ void PlotSettings::comboBoxScatterShapeCurrentIndexChanged(int index)
   comboBoxScatterShapeCheckIndex(index);
 }
 
-QStandardItemModel *PlotSettings::tableModel(QCPGraphDataContainer *data)
+QStandardItemModel *PlotSettings::tableModel(QCPGraphDataContainer *data, QCPAxis *keyAxis, QCPAxis *valueAxis)
 {
-  return _tableModel_(data);
+  return _tableModel_(data, keyAxis, valueAxis);
 }
 
-QStandardItemModel *PlotSettings::tableModel(QCPCurveDataContainer *data)
+QStandardItemModel *PlotSettings::tableModel(QCPCurveDataContainer *data, QCPAxis *keyAxis, QCPAxis *valueAxis)
 {
   auto model = new QStandardItemModel(data->size(), 2);
+  model->setHorizontalHeaderLabels({keyAxis->label(), valueAxis->label()});
 
   for (auto item : *data) {
       auto keyItem =  new QStandardItem(QString::number(item.mainKey()));
@@ -1541,9 +1598,9 @@ QStandardItemModel *PlotSettings::tableModel(QCPCurveDataContainer *data)
    return model;
 }
 
-QStandardItemModel *PlotSettings::tableModel(QCPBarsDataContainer *data)
+QStandardItemModel *PlotSettings::tableModel(QCPBarsDataContainer *data, QCPAxis *keyAxis, QCPAxis *valueAxis)
 {
-  return _tableModel_(data);
+  return _tableModel_(data, keyAxis, valueAxis);
 }
 
 void PlotSettings::setChangeDataContainers(QCPGraphDataContainer *data)
@@ -1573,14 +1630,15 @@ void PlotSettings::setChangeDataContainers(QCPBarsDataContainer *data)
 }
 
 template<class DT>
-QStandardItemModel *PlotSettings::_tableModel_(QCPDataContainer<DT> *data)
+QStandardItemModel *PlotSettings::_tableModel_(QCPDataContainer<DT> *data, QCPAxis *keyAxis, QCPAxis *valueAxis)
 {
   auto model = new QStandardItemModel(data->size(), 2);
+  model->setHorizontalHeaderLabels({keyAxis->label(), valueAxis->label()});
 
   for (int i = 0; i < data->size(); ++i) {
       auto item = data->at(i);
-      auto keyItem =  new QStandardItem(QString::number(item->mainKey()));
-      auto valueItem =  new QStandardItem(QString::number(item->mainValue()));
+      auto keyItem = new QStandardItem(QString::number(item->mainKey()));
+      auto valueItem = new QStandardItem(QString::number(item->mainValue()));
       model->setItem(i, 0, keyItem);
       model->setItem(i, 1, valueItem);
     }

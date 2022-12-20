@@ -149,9 +149,10 @@ void MainWindow::tst()
 {
   auto rs{6}, cs{2};
   auto model = new QStandardItemModel(rs, cs);
-  QVector<QVector<double>> data;
+  QCPPlotting::NumSheet data;
+  data.HorizontalHeader = QStringList({"X", "Y"});
   for (int i = 0; i < cs; i++) {
-      QVector<double> vector;
+      QCPPlotting::NumRow vector;
       for (int j = 0; j < rs; j++) {
           auto num{(j + i) * (i + 1)};
           auto item = new QStandardItem(QString::number(num));
@@ -165,7 +166,7 @@ void MainWindow::tst()
 
   addChart(data, QCPPlotting::GRAPH);
 
-  mdiArea->currentSubWindow()->findChild<ChartWidget *>()->tst();
+//  mdiArea->currentSubWindow()->findChild<ChartWidget *>()->tst();
 }
 #endif
 
@@ -229,17 +230,20 @@ void MainWindow::slot_AboutProgram()
 
 }
 
-void MainWindow::buildGraphTrigered(QVector<QVector<double>> data)
+//void MainWindow::buildGraphTrigered(QVector<QVector<double>> data)
+void MainWindow::buildGraphTrigered(QCPPlotting::NumSheet data)
 {
   addChart(data, QCPPlotting::GRAPH);
 }
 
-void MainWindow::buildBarsTrigered(QVector<QVector<double> > data)
+//void MainWindow::buildBarsTrigered(QVector<QVector<double>> data)
+void MainWindow::buildBarsTrigered(QCPPlotting::NumSheet data)
 {
   addChart(data, QCPPlotting::BARS);
 }
 
-void MainWindow::buildCurveTrigered(QVector<QVector<double> > data)
+//void MainWindow::buildCurveTrigered(QVector<QVector<double> > data)
+void MainWindow::buildCurveTrigered(QCPPlotting::NumSheet data)
 {
   addChart(data, QCPPlotting::CURVE);
 }
@@ -312,26 +316,31 @@ void MainWindow::addTables(QCPPlotting::SpreadSheet &spreadSheet)
     }
 }
 
-void MainWindow::addChart(QVector<QVector<double>> &data, QCPPlotting::ChartType chartType)
+//void MainWindow::addChart(QVector<QVector<double>> &data, QCPPlotting::ChartType chartType)
+void MainWindow::addChart(QCPPlotting::NumSheet &data, QCPPlotting::ChartType chartType)
 {
   auto chartWidget = new ChartWidget;
   if (!chartWidget)
     return;
 
   chartWidget->init();
+  chartWidget->setPlot(data, chartType);
 
-  switch (chartType) {
-    case QCPPlotting::GRAPH:
-      chartWidget->setGraph(data[0], data[1]);
-      break;
-    case QCPPlotting::BARS:
-      chartWidget->setBars(data[0], data[1]);
-      break;
-    case QCPPlotting::CURVE:
-      chartWidget->setCurve(data[0], data[1], data[2]);
-    default:
-      break;
-    }
+//  switch (chartType) {
+//    case QCPPlotting::GRAPH:
+////      chartWidget->setGraph(data[0], data[1]);
+//      chartWidget->setGraph(data);
+//      break;
+//    case QCPPlotting::BARS:
+////      chartWidget->setBars(data[0], data[1]);
+//      chartWidget->setBars(data);
+//      break;
+//    case QCPPlotting::CURVE:
+////      chartWidget->setCurve(data[0], data[1], data[2]);
+//      chartWidget->setCurve(data);
+//    default:
+//      break;
+//    }
 
   loadSubWindow(chartWidget);
 }

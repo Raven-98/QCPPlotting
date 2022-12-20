@@ -5,6 +5,10 @@
 #include <QPainter>
 #include <QApplication>
 
+#ifdef QT_DEBUG
+#include <QDebug>
+#endif
+
 int TableWidget::SumTables = 0;
 int TableWidget::ResTableWidgetID = 0;
 
@@ -33,13 +37,25 @@ TableWidget::~TableWidget()
     delete actionSaveTable;
   if (actionSaveSelectedTable)
     delete actionSaveSelectedTable;
-  if (contextMenu)
-    delete contextMenu;
 
-  if (hHeaderContextMenu)
-    delete hHeaderContextMenu;
   if (actionAddColumn)
     delete actionAddColumn;
+  if (actionRemoveColumn)
+    delete actionRemoveColumn;
+
+  if (actionCut)
+    delete actionCut;
+  if (actionCopy)
+    delete actionCopy;
+  if (actionPaste)
+    delete actionPaste;
+  if (actionDelete)
+    delete actionDelete;
+
+  if (contextMenu)
+    delete contextMenu;
+  if (hHeaderContextMenu)
+    delete hHeaderContextMenu;
 
   if (tableWidget) {
       delete tableWidget->model();
@@ -64,8 +80,6 @@ void TableWidget::init()
   setLayout(gridLayout);
 
   tableWidget->setContextMenuPolicy(Qt::CustomContextMenu);
-  connect(tableWidget, &QTableView::customContextMenuRequested, this, &TableWidget::checkSelectionModel);
-  connect(this, &TableWidget::setEnabledActions, this, &TableWidget::slot_setEnabledActions);
   connect(tableWidget, &TableView::customContextMenuRequested, this, &TableWidget::customMenuRequested);
   connect(tableWidget->horizontalHeader(), &HorizontalHeaderView::customContextMenuRequested, this, &TableWidget::customHeaderMenuRequested);
 
@@ -90,13 +104,40 @@ void TableWidget::init()
   actionSaveTable = new QAction;
   actionSaveTable->setText(tr("Save table"));
   actionSaveTable->setIcon(QIcon(":/img/save.png"));
+  connect(actionSaveTable, &QAction::triggered, this, &TableWidget::saveTrigered);
 
   actionSaveSelectedTable = new QAction;
   actionSaveSelectedTable->setText(tr("Save selected table"));
   actionSaveSelectedTable->setIcon(QIcon(":/img/save.png"));
+  connect(actionSaveSelectedTable, &QAction::triggered, this, &TableWidget::saveTableTrigered);
+
+  actionCut = new QAction;
+  actionCut->setText(tr("Cut"));
+  actionCut->setIcon(QIcon(":/img/cut.png"));
+  connect(actionCut, &QAction::triggered, this, &TableWidget::cutTrigered);
+
+  actionCopy = new QAction;
+  actionCopy->setText(tr("Copy"));
+  actionCopy->setIcon(QIcon(":/img/copy.png"));
+  connect(actionCopy, &QAction::triggered, this, &TableWidget::copyTrigered);
+
+  actionPaste = new QAction;
+  actionPaste->setText(tr("Paste"));
+  actionPaste->setIcon(QIcon(":/img/paste.png"));
+  connect(actionPaste, &QAction::triggered, this, &TableWidget::pasteTrigered);
+
+  actionDelete = new QAction;
+  actionDelete->setText(tr("Delete"));
+  actionDelete->setIcon(QIcon(":/img/remove.png"));
+  connect(actionDelete, &QAction::triggered, this, &TableWidget::deleteTrigered);
 
   contextMenu = new QMenu;
   contextMenu->addMenu(menuPlot);
+  contextMenu->addSeparator();
+  contextMenu->addAction(actionCut);
+  contextMenu->addAction(actionCopy);
+  contextMenu->addAction(actionPaste);
+  contextMenu->addAction(actionDelete);
   contextMenu->addSeparator();
   contextMenu->addAction(actionSaveSelectedTable);
   contextMenu->addAction(actionSaveTable);
@@ -106,10 +147,21 @@ void TableWidget::init()
   actionAddColumn->setIcon(QIcon(":/img/add_column.png"));
   connect(actionAddColumn, &QAction::triggered, this, &TableWidget::addColumnTrigered);
 
+  actionRemoveColumn = new QAction;
+  actionRemoveColumn->setText(tr("Remove column"));
+  actionRemoveColumn->setIcon(QIcon(":/img/remove_column.png"));
+  connect(actionRemoveColumn, &QAction::triggered, this, &TableWidget::removeColumnTrigered);
+
   hHeaderContextMenu = new QMenu;
   hHeaderContextMenu->addMenu(menuPlot);
   hHeaderContextMenu->addSeparator();
-  hHeaderContextMenu->addAction(actionAddColumn);
+  hHeaderContextMenu->addAction(actionCut);
+  hHeaderContextMenu->addAction(actionCopy);
+  hHeaderContextMenu->addAction(actionPaste);
+  hHeaderContextMenu->addAction(actionDelete);
+  hHeaderContextMenu->addSeparator();
+  hHeaderContextMenu->addAction(actionAddColumn);  
+  hHeaderContextMenu->addAction(actionRemoveColumn);
   hHeaderContextMenu->addSeparator();
   hHeaderContextMenu->addAction(actionSaveTable);
 }
@@ -126,23 +178,49 @@ QAbstractItemModel *TableWidget::model()
 
 void TableWidget::customMenuRequested(const QAbstractItemView *view, const QPoint &pos)
 {
+  if (tableWidget->hasSelection()) {
+      menuPlot->setEnabled(true);
+      actionCut->setEnabled(true);
+      actionCopy->setEnabled(true);
+      actionPaste->setEnabled(true);
+      actionDelete->setEnabled(true);
+    }
+  else {
+      menuPlot->setEnabled(false);
+      actionCut->setEnabled(false);
+      actionCopy->setEnabled(false);
+      actionPaste->setEnabled(false);
+      actionDelete->setEnabled(false);
+    }
+
   contextMenu->popup(view->viewport()->mapToGlobal(pos));
 }
 
 void TableWidget::customHeaderMenuRequested(const QAbstractItemView *view, const QPoint &pos)
 {
+  if (tableWidget->hasSelection()) {
+      menuPlot->setEnabled(true);
+    }
+  else {
+      menuPlot->setEnabled(false);
+    }
+
+  if (tableWidget->hasSelectedColumn()) {
+      actionCut->setEnabled(true);
+      actionCopy->setEnabled(true);
+      actionPaste->setEnabled(true);
+      actionDelete->setEnabled(true);
+      actionRemoveColumn->setEnabled(true);
+    }
+  else {
+      actionCut->setEnabled(false);
+      actionCopy->setEnabled(false);
+      actionPaste->setEnabled(false);
+      actionDelete->setEnabled(false);
+      actionRemoveColumn->setEnabled(false);
+    }
+
   hHeaderContextMenu->popup(view->viewport()->mapToGlobal(pos));
-}
-
-void TableWidget::checkSelectionModel()
-{
-  emit setEnabledActions(tableWidget->selectionModel()->hasSelection());
-}
-
-void TableWidget::slot_setEnabledActions(bool e)
-{
-  menuPlot->setEnabled(e);
-  actionSaveSelectedTable->setEnabled(e);
 }
 
 void TableWidget::buildGraphTrigered()
@@ -188,35 +266,56 @@ void TableWidget::saveTableTrigered()
 {
 }
 
+void TableWidget::saveTrigered()
+{
+
+}
+
 void TableWidget::addColumnTrigered()
 {
   tableWidget->model()->insertColumn(tableWidget->model()->columnCount());
 }
 
-/* ******************************************************************************** *
- * !!!
- * Елементи заповнюються по черзі вибору.                                           *
- * !!!
- *                                                                                  *
- * Тобто якщо вибирати елементи у таблиці з парва на ліво то вони так і занесуться  *
- * до вектора.                                                                      *
- *                                                                                  *
- * Причиною є використання QModelIndexList.                                         *
- * ******************************************************************************** */
-QVector<QVector<double> > TableWidget::builderData(QModelIndexList &selectedIndexes)
+void TableWidget::removeColumnTrigered()
+{
+  //  tableWidget->model()->removeColumn();
+}
+
+void TableWidget::cutTrigered()
+{
+  tableWidget->CutToClipboard();
+}
+
+void TableWidget::copyTrigered()
+{
+  tableWidget->CopyToClipboard();
+}
+
+void TableWidget::pasteTrigered()
+{
+  tableWidget->PasteFromClipboard();
+}
+
+void TableWidget::deleteTrigered()
+{
+  tableWidget->DeleteDataKey();
+}
+
+//QVector<QVector<double>> TableWidget::builderData(QModelIndexList &selectedIndexes)
+QCPPlotting::NumSheet TableWidget::builderData(QModelIndexList &selectedIndexes)
 {
   return tableWidget->builderData(selectedIndexes);
 }
 
-QVector<QVector<double>> TableWidget::builderNumberedData(QModelIndexList &selectedIndexes)
+//QVector<QVector<double>> TableWidget::builderNumberedData(QModelIndexList &selectedIndexes)
+QCPPlotting::NumSheet TableWidget::builderNumberedData(QModelIndexList &selectedIndexes)
 {
   return tableWidget->builderNumberedData(selectedIndexes);
 }
 
-#include <QDebug>
 
 TableView::TableView(QWidget *parent)
-  : QTableView(parent)
+  : QTableView{parent}
 {
   horizontalHeaderView = new HorizontalHeaderView;
   setHorizontalHeader(horizontalHeaderView);
@@ -236,14 +335,14 @@ TableView::~TableView()
 
 void TableView::PasteFromClipboard()
 {
-  auto current_row = selectionModel()->currentIndex().row();
-  auto current_column = selectionModel()->currentIndex().column();
+  auto current_row{selectionModel()->currentIndex().row()};
+  auto current_column{selectionModel()->currentIndex().column()};
 
-  auto rows = QApplication::clipboard()->text().split('\n');
+  auto rows{QApplication::clipboard()->text().split('\n')};
 
-   for( int i = 0; i < rows.size(); i++ ) {
-       auto cols = rows.at(i).split('\t');
-       for( int j = 0; j < cols.size(); j++ ) {
+   for( int i{0}; i < rows.size(); i++) {
+       auto cols{rows.at(i).split('\t')};
+       for( int j{0}; j < cols.size(); j++ ) {
            auto item = new QStandardItem(cols.at(j));
            qobject_cast<QStandardItemModel *>(model())->setItem(current_row + i, current_column + j, item);
          }
@@ -253,29 +352,29 @@ void TableView::PasteFromClipboard()
 void TableView::CopyToClipboard()
 {
   QString cbStr;
-  auto cb = QApplication::clipboard();
-  auto list =  selectionModel()->selectedIndexes();
+  auto cb{QApplication::clipboard()};
+  auto list{selectionModel()->selectedIndexes()};
 
    if(list.isEmpty())
      return;
 
    if (list.at(0).column() == list.at(1).column()) {
-       auto firstRow = list.first().row();
-       auto lastRow = list.last().row();
-       auto rowCount = lastRow - firstRow + 1;
+       auto firstRow{list.first().row()};
+       auto lastRow{list.last().row()};
+       auto rowCount{lastRow - firstRow + 1};
 
-       for(int i = 0; i < rowCount; ++i, cbStr += '\n') {
-           for(int j = i; j < list.count(); j += rowCount, cbStr += '\t') {
+       for(int i{0}; i < rowCount; ++i, cbStr += '\n') {
+           for(int j{i}; j < list.count(); j += rowCount, cbStr += '\t') {
                cbStr += model()->data(list[j], Qt::EditRole).toString();
              }
          }
      }
    else {
-       auto firstColumn = list.first().column();
-       auto lastColumn = list.last().column();
-       auto columnCount = lastColumn - firstColumn + 1;
+       auto firstColumn{list.first().column()};
+       auto lastColumn{list.last().column()};
+       auto columnCount{lastColumn - firstColumn + 1};
 
-       for(int i = 0; i < list.count(); i++) {
+       for(int i{0}; i < list.count(); i++) {
            cbStr += model()->data(list[i], Qt::EditRole).toString();
            cbStr += ((i + 1) % columnCount == 0) ? "\n" : "\t";
          }
@@ -294,79 +393,126 @@ void TableView::DeleteDataKey()
 {
   auto selectedIndexes = selectionModel()->selectedIndexes();
 
-  for (int i = 0; i < selectedIndexes.size(); i++) {
-      auto r = selectedIndexes.at(i).row();
-      auto c = selectedIndexes.at(i).column();
+  for (int i{0}; i < selectedIndexes.size(); i++) {
+      auto r{selectedIndexes.at(i).row()};
+      auto c{selectedIndexes.at(i).column()};
       qobject_cast<QStandardItemModel *>(model())->setItem(r, c, new QStandardItem(""));
     }
 }
 
-/* ******************************************************************************** *
- * !!!
- * Елементи заповнюються по черзі вибору.                                           *
- * !!!
- *                                                                                  *
- * Тобто якщо вибирати елементи у таблиці з парва на ліво то вони так і занесуться  *
- * до вектора.                                                                      *
- *                                                                                  *
- * Причиною є використання QModelIndexList.                                         *
- * ******************************************************************************** */
-QVector<QVector<double>> TableView::builderData(QModelIndexList &selectedIndexes)
+//QVector<QVector<double>> TableView::builderData(QModelIndexList &selectedIndexes)
+QCPPlotting::NumSheet TableView::builderData(QModelIndexList &selectedIndexes)
 {
-  int selectedIndexesCount = selectedIndexes.count();
+  auto selectedIndexesCount{selectedIndexes.count()};
   QList<int> lst;
-  for (int i = 0; i < selectedIndexesCount; i++) {
-      int c = selectedIndexes.at(i).column();
+  for (int i{0}; i < selectedIndexesCount; i++) {
+      auto c{selectedIndexes.at(i).column()};
       if (!lst.contains(c))
         lst.append(c);
     }
-  int columns = lst.count();
+  auto columns{lst.count()};
+//  lst.clear();
+
+//  QVector<QVector<double>> data;
+  QCPPlotting::NumSheet sheet;
+
+  QStringList headerList;
+  for (auto i : lst) {
+      headerList << model()->headerData(i, Qt::Horizontal).toString();
+    }
   lst.clear();
+  sheet.HorizontalHeader = headerList;
 
-  QVector<QVector<double>> data;
-
-  for (int column = 0; column < columns; column++) {
-      QVector<double> vector;
+  for (int c = 0; c < columns; c++) {
+//      QVector<double> vector;
+      QCPPlotting::NumRow row;
       if (selectedIndexes.at(0).column() != selectedIndexes.at(1).column()) {
-          for (int row = column; row < selectedIndexesCount; row += columns) {
+          for (int r{c}; r < selectedIndexesCount; r += columns) {
               bool ok;
-              auto d = selectedIndexes.at(row).data().toDouble(&ok);
-              if (ok)
-                vector.push_back(d);
+              auto d{selectedIndexes.at(r).data().toDouble(&ok)};
+              if (ok) {
+//                vector.push_back(d);
+                  row.append(d);
+                }
             }
         }
       else {
-          for (int row = (selectedIndexesCount / columns * column); row < (selectedIndexesCount / columns * (column + 1)); row++) {
+          for (int r{selectedIndexesCount / columns * c}; r < (selectedIndexesCount / columns * (c + 1)); r++) {
               bool ok;
-              auto d = selectedIndexes.at(row).data().toDouble(&ok);
-              if (ok)
-                vector.push_back(d);
+              auto d{selectedIndexes.at(r).data().toDouble(&ok)};
+              if (ok) {
+//                vector.push_back(d);
+                  row.append(d);
+                }
             }
         }
-
-      data.push_back(vector);
-      vector.clear();
+//      data.push_back(vector);
+      sheet.append(row);
     }
 
-  return data;
+//  return data;
+  return sheet;
 }
 
-QVector<QVector<double>> TableView::builderNumberedData(QModelIndexList &selectedIndexes)
+//QVector<QVector<double>> TableView::builderNumberedData(QModelIndexList &selectedIndexes)
+QCPPlotting::NumSheet TableView::builderNumberedData(QModelIndexList &selectedIndexes)
 {
-  auto data = builderData(selectedIndexes);
+//  auto data = builderData(selectedIndexes);
+  auto sheet{builderData(selectedIndexes)};
 
-  QVector<double> vector;
-  for (int i = 0; i < data.at(0).count(); i++) {
-      vector.push_back(i);
+//  QVector<double> vector;
+  QCPPlotting::NumRow row;
+//  for (int i = 0; i < data.at(0).count(); i++) {
+  for (int i{0}; i < sheet.at(0).count(); i++) {
+//      vector.push_back(i);
+      row.append(i);
     }
-  data.push_front(vector);
+//  data.push_front(vector);
+  sheet.prepend(row);
 
-  return data;
+//  return data;
+  return sheet;
 }
 
 HorizontalHeaderView *TableView::horizontalHeader()
 {
   return horizontalHeaderView;
+}
+
+QList<int> TableView::selectedRanges()
+{
+  auto ranges{selectionModel()->selection()};
+  auto rangesCount{ranges.size()};
+  QList<int> result;
+  for (int i{0}; i < rangesCount; ++i) {
+      result.append({ranges.at(i).top(),
+                     ranges.at(i).left(),
+                     ranges.at(i).bottom(),
+                     ranges.at(i).right()
+                    });
+    }
+  return result;
+}
+
+bool TableView::hasSelection()
+{
+  return selectionModel()->hasSelection();
+}
+
+bool TableView::hasSelectedColumn()
+{
+  auto rc{model()->rowCount()};
+  auto ranges{selectedRanges()};
+
+  if (ranges.isEmpty())
+    return false;
+
+  auto s{ranges.size() / 4};
+
+  if (ranges.at(2) - ranges.at(0) != rc - 1)
+    return false;
+
+  return true;
 }
 
 void TableView::customHeaderMenuRequested(const QPoint &pos) {
@@ -405,7 +551,7 @@ void TableView::keyPressEvent(QKeyEvent *event)
 
 
 HorizontalHeaderView::HorizontalHeaderView(QWidget *parent)
-  : QHeaderView(Qt::Horizontal, parent)
+  : QHeaderView{Qt::Horizontal, parent}
 {
   setContextMenuPolicy(Qt::CustomContextMenu);
   connect(this, &QHeaderView::customContextMenuRequested, this, &HorizontalHeaderView::customHeaderMenuRequested);
@@ -436,29 +582,29 @@ void HorizontalHeaderView::mousePressEvent(QMouseEvent *event)
       if (!sectionIndicator)
         sectionIndicator = new QLabel(this->viewport());
 
-      int section = logicalIndexAt(firstPos);
-      int w = sectionSize(section);
-      int h = viewport()->height();
-      int p = sectionViewportPosition(section);
+      int section{logicalIndexAt(firstPos)};
+      int w{sectionSize(section)};
+      int h{viewport()->height()};
+      int p{sectionViewportPosition(section)};
 
       sectionIndicator->resize(w, h);
 
-      const qreal pixmapDevicePixelRatio = this->devicePixelRatio();
-      QPixmap pm(QSize(w, h) * pixmapDevicePixelRatio);
+      const qreal pixmapDevicePixelRatio = static_cast<qreal>(devicePixelRatio());
+      QPixmap pm{QSize(w, h) * pixmapDevicePixelRatio};
       pm.setDevicePixelRatio(pixmapDevicePixelRatio);
       pm.fill(QColor(0, 0, 0, 45));
-      QRect rect(0, 0, w, h);
-      QPainter painter(&pm);
-      const QVariant variant = this->model()->headerData(section, Qt::Horizontal, Qt::FontRole);
+      QRect rect{0, 0, w, h};
+      QPainter painter{&pm};
+      const QVariant variant{model()->headerData(section, Qt::Horizontal, Qt::FontRole)};
       if (variant.isValid() && variant.canConvert<QFont>()) {
           const QFont sectionFont = qvariant_cast<QFont>(variant);
           painter.setFont(sectionFont);
         }
       else {
-          painter.setFont(this->font());
+          painter.setFont(font());
         }
       painter.setOpacity(0.8);
-      this->paintSection(&painter, rect, section);
+      paintSection(&painter, rect, section);
       painter.end();
 
       sectionIndicator->setPixmap(pm);
@@ -471,11 +617,11 @@ void HorizontalHeaderView::mousePressEvent(QMouseEvent *event)
 void HorizontalHeaderView::mouseMoveEvent(QMouseEvent *event)
 {
   if (pressMiddleButton) {
-      int pos =  event->pos().x();
+      int pos{event->pos().x()};
       if (pos < 0)
         return;
 
-      int visual = visualIndexAt(pos);
+      int visual{visualIndexAt(pos)};
       if (visual == -1)
         return;
 
@@ -493,10 +639,10 @@ void HorizontalHeaderView::mouseMoveEvent(QMouseEvent *event)
 void HorizontalHeaderView::mouseReleaseEvent(QMouseEvent *event)
 {
   if (event->button() == Qt::MiddleButton) {
-      int from = visualIndexAt(firstPos);
-      int to = visualIndexAt(lastPos);
+      int from{visualIndexAt(firstPos)};
+      int to{visualIndexAt(lastPos)};
       if (from != -1 && to != -1)
-        this->moveSection(from, to);
+        moveSection(from, to);
 
       if (!sectionIndicator)
         return;

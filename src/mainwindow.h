@@ -31,9 +31,12 @@ private slots:
   void slot_ImportCSV();
   void slot_newTable();
   void slot_AboutProgram();
-  void buildGraphTrigered(QVector<QVector<double> > data);
-  void buildBarsTrigered(QVector<QVector<double> > data);
-  void buildCurveTrigered(QVector<QVector<double> > data);
+//  void buildGraphTrigered(QVector<QVector<double>> data);
+  void buildGraphTrigered(QCPPlotting::NumSheet data);
+//  void buildBarsTrigered(QVector<QVector<double>> data);
+  void buildBarsTrigered(QCPPlotting::NumSheet data);
+//  void buildCurveTrigered(QVector<QVector<double>> data);
+  void buildCurveTrigered(QCPPlotting::NumSheet data);
 
 private:
   void saveSettings();
@@ -43,7 +46,8 @@ private:
   void showMessage(QString mess);
   void addTable(QStandardItemModel *item_model, QString *title = nullptr);
   void addTables(QCPPlotting::SpreadSheet &spreadSheet);
-  void addChart(QVector<QVector<double>> &data, QCPPlotting::ChartType chartType);
+//  void addChart(QVector<QVector<double>> &data, QCPPlotting::ChartType chartType);
+  void addChart(QCPPlotting::NumSheet &data, QCPPlotting::ChartType chartType);
   void readCSV(const QStringList files, QCPPlotting::FileDialogSetDetails::Data *data);
 
 private:

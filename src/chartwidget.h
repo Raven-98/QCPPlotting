@@ -13,6 +13,7 @@
 
 #include "pushbuttoncolorpicker.h"
 #include "tablewidget.h"
+#include "structs.h"
 
 #include "qcustomplot.h"
 
@@ -32,11 +33,17 @@ public:
   ~ChartWidget();
 
   void init();
-  void setGraph(QVector<double> &data_x, QVector<double> &data_y);
-  void setBars(QVector<double> &data_x, QVector<double> &data_y);
-  void setCurve(QVector<double> &data_t, QVector<double> &data_x, QVector<double> &data_y);
+//  void setGraph(QVector<double> &data_x, QVector<double> &data_y);
+//  void setBars(QVector<double> &data_x, QVector<double> &data_y);
+//  void setCurve(QVector<double> &data_t, QVector<double> &data_x, QVector<double> &data_y);
 //  void setFinancial(QVector<double> &keys, QVector<double> &open, QVector<double> &high, QVector<double> &low, QVector<double> &close);
 //  void setStatisticalBox();
+  void setPlot(QCPPlotting::NumSheet &data, QCPPlotting::ChartType &chartType);
+
+private:
+  void setGraph(QCPPlotting::NumSheet &data);
+  void setBars(QCPPlotting::NumSheet &data);
+  void setCurve(QCPPlotting::NumSheet &data);
 
 #ifdef QT_DEBUG
   void tst();
@@ -186,14 +193,14 @@ private:
   void comboBoxScatterShapeCheckIndex(int index);
   void setEnabledScatterBlock(bool enabled);
 
-  QStandardItemModel *tableModel(QCPGraphDataContainer *data);
-  QStandardItemModel *tableModel(QCPCurveDataContainer *data);
-  QStandardItemModel *tableModel(QCPBarsDataContainer *data);
+  QStandardItemModel *tableModel(QCPGraphDataContainer *data, QCPAxis *keyAxis, QCPAxis *valueAxis);
+  QStandardItemModel *tableModel(QCPCurveDataContainer *data, QCPAxis *keyAxis, QCPAxis *valueAxis);
+  QStandardItemModel *tableModel(QCPBarsDataContainer *data, QCPAxis *keyAxis, QCPAxis *valueAxis);
   void setChangeDataContainers(QCPGraphDataContainer *data);
   void setChangeDataContainers(QCPCurveDataContainer *data);
   void setChangeDataContainers(QCPBarsDataContainer *data);
   template <class DT>
-  QStandardItemModel *_tableModel_(QCPDataContainer<DT> *data);
+  QStandardItemModel *_tableModel_(QCPDataContainer<DT> *data, QCPAxis *keyAxis, QCPAxis *valueAxis);
   template <class DT>
   void _setChangeDataContainers_(QCPDataContainer<DT> *data);
 

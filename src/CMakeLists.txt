@@ -28,6 +28,7 @@ set(PROJECT_SOURCES
         dialogs.h dialogs.cpp
         separatorwidgets.h separatorwidgets.cpp
         pushbuttoncolorpicker.h pushbuttoncolorpicker.cpp
+        fontwidget.h fontwidget.cpp
 )
 
 if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)

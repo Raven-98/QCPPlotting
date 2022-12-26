@@ -195,7 +195,7 @@ void ChartWidget::setPlot(QCPPlotting::NumSheet &data, QCPPlotting::ChartType &c
       break;
     }
 
-  auto headerList = data.HorizontalHeader;
+  auto headerList{data.HorizontalHeader};
   customPlot->xAxis->setLabel(headerList.at(0));
   customPlot->yAxis->setLabel(headerList.at(1));
 
@@ -388,7 +388,7 @@ void ChartSettings::init(myQCustomPlot *qcp)
   for (auto Axis : qcp->axes()) {
       auto axisSettings = new AxisSettings(Axis);
       axisSettings->init();
-       connect(this, &QDialog::accepted, axisSettings, &AxisSettings::setChange);
+      connect(this, &QDialog::accepted, axisSettings, &AxisSettings::setChange);
 
       auto gridLayout = new QGridLayout;
       gridLayout->setContentsMargins(0, 0, 0, 0);
@@ -426,7 +426,7 @@ void ChartSettings::init(myQCustomPlot *qcp)
   auto tabWidget_Plots = new QTabWidget;
   tabWidget_Plots->setTabPosition(QTabWidget::West);
 
-  for (int i = 0; i < qcp->plottableCount(); i++) {
+  for (int i{0}; i < qcp->plottableCount(); i++) {
       auto plotSettings = new PlotSettings(qcp->plottable(i));
       plotSettings->init();
       connect(this, &QDialog::accepted, plotSettings, &PlotSettings::setChange);
@@ -527,8 +527,8 @@ AxisSettings::~AxisSettings()
 {
   if (lineEdit_Title)
     delete lineEdit_Title;
-  if (fontComboBox_TitleFont)
-    delete fontComboBox_TitleFont;
+  if (fontWidget_Title)
+    delete fontWidget_Title;
   if (pushButton_TitleColor)
     delete pushButton_TitleColor;
 
@@ -555,6 +555,8 @@ AxisSettings::~AxisSettings()
     delete checkBox_TicksLabel;
   if (comboBox_TicksLabelSide)
     delete comboBox_TicksLabelSide;
+  if (fontWidget_TicksLabel)
+    delete fontWidget_TicksLabel;
   if (pushButton_TicksLabelColor)
     delete pushButton_TicksLabelColor;
 
@@ -651,7 +653,8 @@ void AxisSettings::setChange()
 
   // title block
   Axis->setLabel(lineEdit_Title->text());
-  Axis->setLabelFont(fontComboBox_TitleFont->currentFont());
+  QFont axisLabelFont;
+  Axis->setLabelFont(fontWidget_Title->get());
   Axis->setLabelColor(pushButton_TitleColor->getColor());
 
   // axis block
@@ -689,6 +692,7 @@ void AxisSettings::setChange()
 
   Axis->setTickLabels(checkBox_TicksLabel->isChecked());
   Axis->setTickLabelSide(static_cast<QCPAxis::LabelSide>(comboBox_TicksLabelSide->currentIndex()));
+  Axis->setTickLabelFont(fontWidget_TicksLabel->get());
   Axis->setTickLabelColor(pushButton_TicksLabelColor->getColor());
 
   // grid block
@@ -722,8 +726,8 @@ QWidget *AxisSettings::titleBlock()
   auto label_Font = new QLabel;
   label_Font->setText(tr("Font"));
 
-  fontComboBox_TitleFont = new QFontComboBox;
-  fontComboBox_TitleFont->setFont(Axis->labelFont());
+  fontWidget_Title = new FontWidget;
+  fontWidget_Title->set((Axis->labelFont()));
 
   auto label_Color = new QLabel;
   label_Color->setText(tr("Color"));
@@ -737,7 +741,7 @@ QWidget *AxisSettings::titleBlock()
   gridLayout->addWidget(lineEdit_Title, 2, 0, 1, 2);
   gridLayout->addItem(new VSpacer, 3, 0);
   gridLayout->addWidget(label_Font, 4, 0);
-  gridLayout->addWidget(fontComboBox_TitleFont, 4, 1);
+  gridLayout->addWidget(fontWidget_Title, 4, 1);
   gridLayout->addItem(new Spacer, 5, 1);
   gridLayout->addWidget(label_Color, 6, 0);
   gridLayout->addWidget(pushButton_TitleColor, 6, 1);
@@ -854,28 +858,50 @@ QWidget *AxisSettings::ticksBlock()
   checkBox_TicksLabel->setChecked(Axis->tickLabels());
   connect(checkBox_TicksLabel, &QCheckBox::stateChanged, this, &AxisSettings::checkBoxTicksLabelChecked);
 
+  auto label_SideTicksLabel = new QLabel;
+  label_SideTicksLabel->setText(tr("Side"));
+
   comboBox_TicksLabelSide = new QComboBox;
   comboBox_TicksLabelSide->addItems({tr("Inside"),
                                      tr("Outside")
                                     });
   comboBox_TicksLabelSide->setCurrentIndex(Axis->tickLabelSide());
 
+  auto label_FontTicksLabel = new QLabel;
+  label_FontTicksLabel->setText(tr("Font"));
+
+  fontWidget_TicksLabel = new FontWidget;
+  fontWidget_TicksLabel->set(Axis->tickLabelFont());
+
+  auto label_ColorTicksLabel = new QLabel;
+  label_ColorTicksLabel->setText(tr("Color"));
+
   pushButton_TicksLabelColor = new PushButtonColorPicker;
   pushButton_TicksLabelColor->setColor(Axis->tickLabelColor());
 
   auto gridLayout = new QGridLayout;
-  gridLayout->addWidget(label, 0, 0, 1, 6);
+  gridLayout->addWidget(label, 0, 0, 1, 4);
   // column 0
   gridLayout->addItem(new VSpacer, 1, 0);
   gridLayout->addItem(new VSpacer, 3, 0);
   gridLayout->addWidget(label_Side, 4, 0);
   gridLayout->addItem(new VSpacer, 5, 0);
   gridLayout->addWidget(label_Color, 6, 0);
+  gridLayout->addWidget(label_SideTicksLabel, 10, 0);
+  gridLayout->addItem(new VSpacer, 11, 0);
+  gridLayout->addWidget(label_FontTicksLabel, 12, 0);
+  gridLayout->addItem(new VSpacer, 13, 0);
+  gridLayout->addWidget(label_ColorTicksLabel, 14, 0);
   // column 1
   gridLayout->addWidget(checkBox_MajorTicks, 2, 1);
   gridLayout->addWidget(comboBox_MajorTicksSide, 4, 1);
   gridLayout->addWidget(pushButton_MajorTicksColor, 6, 1);
   gridLayout->addItem(new Spacer, 7, 1);
+  gridLayout->addWidget(new HLine, 8, 1, 1, 4);
+  gridLayout->addWidget(checkBox_TicksLabel, 9, 1, 1, 4);
+  gridLayout->addWidget(comboBox_TicksLabelSide, 10, 1, 1, 4);
+  gridLayout->addWidget(fontWidget_TicksLabel, 12, 1, 1, 4);
+  gridLayout->addWidget(pushButton_TicksLabelColor, 14, 1, 1, 4);
   // column 2
   gridLayout->addWidget(new VLine(0), 1, 2, 6, 1);
   // column 3
@@ -883,13 +909,6 @@ QWidget *AxisSettings::ticksBlock()
   gridLayout->addWidget(comboBox_MinorTicksSide, 4, 3);
   gridLayout->addWidget(pushButton_MinorTicksColor, 6, 3);
   gridLayout->addItem(new Spacer, 7, 3);
-  // column 4
-  gridLayout->addWidget(new VLine(0), 1, 4, 6, 1);
-  // column 5
-  gridLayout->addWidget(checkBox_TicksLabel, 2, 5);
-  gridLayout->addWidget(comboBox_TicksLabelSide, 4, 5);
-  gridLayout->addWidget(pushButton_TicksLabelColor, 6, 5);
-  gridLayout->addItem(new Spacer, 7, 5);
 
 
   auto widget = new QWidget;
@@ -989,7 +1008,7 @@ void AxisSettings::setWidgetEnabled(bool enabled)
 
 void AxisSettings::setEnabledTitleBlock(bool enabled)
 {
-  fontComboBox_TitleFont->setEnabled(enabled);
+  fontWidget_Title->setEnabled(enabled);
   pushButton_TitleColor->setEnabled(enabled);
 }
 
@@ -1000,13 +1019,9 @@ void AxisSettings::setEnabledMajorTicksBlock(bool enabled)
 
   checkBox_MinorTicks->setEnabled(enabled);
   setEnabledMinorTicksBlock(enabled);
-//  comboBox_MinorTicksSide->setEnabled(enabled);
-//  pushButton_MinorTicksColor->setEnabled(enabled);
 
   checkBox_TicksLabel->setEnabled(enabled);
   setEnabledTicksLabelBlock(enabled);
-//  comboBox_TicksLabelSide->setEnabled(enabled);
-//  pushButton_TicksLabelColor->setEnabled(enabled);
 }
 
 void AxisSettings::setEnabledMinorTicksBlock(bool enabled)
@@ -1078,7 +1093,7 @@ void AxisSettings::checkBoxMinorGridChecked(int state)
 }
 
 PlotSettings::PlotSettings(QCPAbstractPlottable *plottable, QWidget *parent)
-  : QWidget(parent)
+  : QWidget{parent}
 {
   Plottable = plottable;
 }
@@ -1590,7 +1605,7 @@ QStandardItemModel *PlotSettings::tableModel(QCPCurveDataContainer *data, QCPAxi
   for (auto item : *data) {
       auto keyItem =  new QStandardItem(QString::number(item.mainKey()));
       auto valueItem =  new QStandardItem(QString::number(item.mainValue()));
-      auto r = (int)item.sortKey();
+      auto r{(int)item.sortKey()};
       model->setItem(r, 0, keyItem);
       model->setItem(r, 1, valueItem);
     }
@@ -1612,11 +1627,11 @@ void PlotSettings::setChangeDataContainers(QCPCurveDataContainer *data)
 {
   data->clear();
 
-  auto model = table->model();
+  auto model{table->model()};
 
-  for (int i = 0; i < model->rowCount(); ++i) {
-      auto k = model->data(model->index(i, 0), Qt::EditRole).toDouble();
-      auto v = model->data(model->index(i, 1), Qt::EditRole).toDouble();
+  for (int i{0}; i < model->rowCount(); ++i) {
+      auto k{model->data(model->index(i, 0), Qt::EditRole).toDouble()};
+      auto v{model->data(model->index(i, 1), Qt::EditRole).toDouble()};
 
       QCPCurveData dti(i, k, v);
 
@@ -1635,8 +1650,8 @@ QStandardItemModel *PlotSettings::_tableModel_(QCPDataContainer<DT> *data, QCPAx
   auto model = new QStandardItemModel(data->size(), 2);
   model->setHorizontalHeaderLabels({keyAxis->label(), valueAxis->label()});
 
-  for (int i = 0; i < data->size(); ++i) {
-      auto item = data->at(i);
+  for (int i{0}; i < data->size(); ++i) {
+      auto item{data->at(i)};
       auto keyItem = new QStandardItem(QString::number(item->mainKey()));
       auto valueItem = new QStandardItem(QString::number(item->mainValue()));
       model->setItem(i, 0, keyItem);
@@ -1652,11 +1667,11 @@ void PlotSettings::_setChangeDataContainers_(QCPDataContainer<DT> *data)
 {
   data->clear();
 
-  auto model = table->model();
+  auto model{table->model()};
 
-  for (int i = 0; i < model->rowCount(); ++i) {
-      auto k = model->data(model->index(i, 0), Qt::EditRole).toDouble();
-      auto v = model->data(model->index(i, 1), Qt::EditRole).toDouble();
+  for (int i{0}; i < model->rowCount(); ++i) {
+      auto k{model->data(model->index(i, 0), Qt::EditRole).toDouble()};
+      auto v{model->data(model->index(i, 1), Qt::EditRole).toDouble()};
 
       DT dti(k, v);
 
@@ -1666,7 +1681,7 @@ void PlotSettings::_setChangeDataContainers_(QCPDataContainer<DT> *data)
 
 
 LayerSettings::LayerSettings(QWidget *parent)
-  : QWidget(parent)
+  : QWidget{parent}
 {
 
 }
@@ -1677,7 +1692,7 @@ LayerSettings::~LayerSettings()
 }
 
 LegendSettings::LegendSettings(QWidget *parent)
-  : QWidget(parent)
+  : QWidget{parent}
 {
 
 }

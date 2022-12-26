@@ -14,6 +14,7 @@
 #include "pushbuttoncolorpicker.h"
 #include "tablewidget.h"
 #include "structs.h"
+#include "fontwidget.h"
 
 #include "qcustomplot.h"
 
@@ -62,9 +63,9 @@ private slots:
 private:
   static int SumCharts;
   static int ResChartWidgetID;
-  myQCustomPlot *customPlot = nullptr;
-  QGridLayout *gridLayout = nullptr;
-  QMenu *customContexMenu = nullptr;
+  myQCustomPlot *customPlot{nullptr};
+  QGridLayout *gridLayout{nullptr};
+  QMenu *customContexMenu{nullptr};
 };
 
 class myQCustomPlot : public QCustomPlot
@@ -96,8 +97,8 @@ private:
   void baseEndInit();
 
 private:
-  QVBoxLayout *vBoxLayout = nullptr;
-  QDialogButtonBox *dialogButtonBox = nullptr;
+  QVBoxLayout *vBoxLayout{nullptr};
+  QDialogButtonBox *dialogButtonBox{nullptr};
 };
 
 class AxisSettings : public QWidget
@@ -135,37 +136,38 @@ private slots:
   void checkBoxMinorGridChecked(int state);
 
 private:
-  QCPAxis *Axis = nullptr;
-  QVBoxLayout *vBoxLayout = nullptr;
-  QCheckBox *checkBox_AxisTitle = nullptr;
-  QScrollArea *scrollArea = nullptr;
+  QCPAxis *Axis{nullptr};
+  QVBoxLayout *vBoxLayout{nullptr};
+  QCheckBox *checkBox_AxisTitle{nullptr};
+  QScrollArea *scrollArea{nullptr};
 
-  QLineEdit *lineEdit_Title = nullptr;
-  QFontComboBox *fontComboBox_TitleFont = nullptr;
-  PushButtonColorPicker *pushButton_TitleColor = nullptr;
+  QLineEdit *lineEdit_Title{nullptr};
+  FontWidget *fontWidget_Title{nullptr};
+  PushButtonColorPicker *pushButton_TitleColor{nullptr};
 
-  QDoubleSpinBox *doubleSpinBox_RangeAxisFrom = nullptr;
-  QDoubleSpinBox *doubleSpinBox_RangeAxisTo = nullptr;
-  PushButtonColorPicker *pushButton_AxiColor = nullptr;
+  QDoubleSpinBox *doubleSpinBox_RangeAxisFrom{nullptr};
+  QDoubleSpinBox *doubleSpinBox_RangeAxisTo{nullptr};
+  PushButtonColorPicker *pushButton_AxiColor{nullptr};
 
-  QCheckBox *checkBox_MajorTicks = nullptr;
-  QComboBox *comboBox_MajorTicksSide = nullptr;
-  PushButtonColorPicker *pushButton_MajorTicksColor = nullptr;
-  QCheckBox *checkBox_MinorTicks = nullptr;
-  QComboBox *comboBox_MinorTicksSide = nullptr;
-  PushButtonColorPicker *pushButton_MinorTicksColor = nullptr;
-  QCheckBox *checkBox_TicksLabel = nullptr;
-  QComboBox *comboBox_TicksLabelSide = nullptr;
-  PushButtonColorPicker *pushButton_TicksLabelColor = nullptr;
+  QCheckBox *checkBox_MajorTicks{nullptr};
+  QComboBox *comboBox_MajorTicksSide{nullptr};
+  PushButtonColorPicker *pushButton_MajorTicksColor{nullptr};
+  QCheckBox *checkBox_MinorTicks{nullptr};
+  QComboBox *comboBox_MinorTicksSide{nullptr};
+  PushButtonColorPicker *pushButton_MinorTicksColor{nullptr};
+  QCheckBox *checkBox_TicksLabel{nullptr};
+  QComboBox *comboBox_TicksLabelSide{nullptr};
+  FontWidget *fontWidget_TicksLabel{nullptr};
+  PushButtonColorPicker *pushButton_TicksLabelColor{nullptr};
 
-  QCheckBox *checkBox_MajorGrid = nullptr;
-  QComboBox *comboBox_MajorGrid_LineStyle = nullptr;
-  QDoubleSpinBox *doubleSpinBox_MajorGrid_LineWidth = nullptr;
-  PushButtonColorPicker *pushButton_MajorGrid_LineColor = nullptr;
-  QCheckBox *checkBox_MinorGrid = nullptr;
-  QComboBox *comboBox_MinorGrid_LineStyle = nullptr;
+  QCheckBox *checkBox_MajorGrid{nullptr};
+  QComboBox *comboBox_MajorGrid_LineStyle{nullptr};
+  QDoubleSpinBox *doubleSpinBox_MajorGrid_LineWidth{nullptr};
+  PushButtonColorPicker *pushButton_MajorGrid_LineColor{nullptr};
+  QCheckBox *checkBox_MinorGrid{nullptr};
+  QComboBox *comboBox_MinorGrid_LineStyle{nullptr};
   QDoubleSpinBox *doubleSpinBox_MinorGrid_LineWidth;
-  PushButtonColorPicker *pushButton_MinorGrid_LineColor = nullptr;
+  PushButtonColorPicker *pushButton_MinorGrid_LineColor{nullptr};
 };
 
 class PlotSettings : public QWidget
@@ -209,27 +211,27 @@ private slots:
   void comboBoxScatterShapeCurrentIndexChanged(int index);
 
 private:
-  QCPAbstractPlottable *Plottable = nullptr;
+  QCPAbstractPlottable *Plottable{nullptr};
 
-  QLineEdit *lineEdit_PlotName = nullptr;
+  QLineEdit *lineEdit_PlotName{nullptr};
 
-  QComboBox *comboBox_LineStyle = nullptr;
-  QComboBox *comboBox_PenStyle = nullptr;
-  QDoubleSpinBox *doubleSpinBox_LineWidth = nullptr;
-  PushButtonColorPicker *pushButton_LineColor = nullptr;
+  QComboBox *comboBox_LineStyle{nullptr};
+  QComboBox *comboBox_PenStyle{nullptr};
+  QDoubleSpinBox *doubleSpinBox_LineWidth{nullptr};
+  PushButtonColorPicker *pushButton_LineColor{nullptr};
 
-  QComboBox *comboBox_FillStyle = nullptr;
-  PushButtonColorPicker *pushButton_FillColor = nullptr;
+  QComboBox *comboBox_FillStyle{nullptr};
+  PushButtonColorPicker *pushButton_FillColor{nullptr};
 
-  QComboBox *comboBox_ScatterShape = nullptr;
-  QDoubleSpinBox *doubleSpinBox_ScatterSize = nullptr;
-  PushButtonColorPicker *pushButton_ScatterEdgeColor = nullptr;
-  PushButtonColorPicker *pushButton_ScatterFillColor = nullptr;
+  QComboBox *comboBox_ScatterShape{nullptr};
+  QDoubleSpinBox *doubleSpinBox_ScatterSize{nullptr};
+  PushButtonColorPicker *pushButton_ScatterEdgeColor{nullptr};
+  PushButtonColorPicker *pushButton_ScatterFillColor{nullptr};
 
-  QComboBox *comboBox_xAxis = nullptr;
-  QComboBox *comboBox_yAxis = nullptr;
+  QComboBox *comboBox_xAxis{nullptr};
+  QComboBox *comboBox_yAxis{nullptr};
 
-  TableView *table = nullptr;
+  TableView *table{nullptr};
 };
 
 

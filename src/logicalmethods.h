@@ -14,6 +14,7 @@ public:
   using QObject::QObject;
 
   bool readCSV(QCPPlotting::SpreadSheet &spreadSheet, const QString &file, const char &delimiter, const unsigned char &parameters);
+  bool writeCSV(const QCPPlotting::Sheet &sheet, const QString &file, const char &delimiter, const unsigned char &parameters);
 
 signals:
   void error(QString);

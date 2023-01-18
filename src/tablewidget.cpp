@@ -33,29 +33,29 @@ TableWidget::~TableWidget()
     delete actionPlotCurve;
   if (menuPlot)
     delete menuPlot;
-  if (actionSaveTable)
-    delete actionSaveTable;
-  if (actionSaveSelectedTable)
-    delete actionSaveSelectedTable;
+//  if (actionSaveTable)
+//    delete actionSaveTable;
+//  if (actionSaveSelectedTable)
+//    delete actionSaveSelectedTable;
 
   if (actionAddColumn)
     delete actionAddColumn;
   if (actionRemoveColumn)
     delete actionRemoveColumn;
 
-  if (actionCut)
-    delete actionCut;
-  if (actionCopy)
-    delete actionCopy;
-  if (actionPaste)
-    delete actionPaste;
-  if (actionDelete)
-    delete actionDelete;
+//  if (actionCut)
+//    delete actionCut;
+//  if (actionCopy)
+//    delete actionCopy;
+//  if (actionPaste)
+//    delete actionPaste;
+//  if (actionDelete)
+//    delete actionDelete;
 
-  if (contextMenu)
-    delete contextMenu;
-  if (hHeaderContextMenu)
-    delete hHeaderContextMenu;
+//  if (contextMenu)
+//    delete contextMenu;
+//  if (hHeaderContextMenu)
+//    delete hHeaderContextMenu;
 
   if (tableWidget) {
       delete tableWidget->model();
@@ -79,7 +79,6 @@ void TableWidget::init()
 
   setLayout(gridLayout);
 
-  tableWidget->setContextMenuPolicy(Qt::CustomContextMenu);
   connect(tableWidget, &TableView::customContextMenuRequested, this, &TableWidget::customMenuRequested);
   connect(tableWidget->horizontalHeader(), &HorizontalHeaderView::customContextMenuRequested, this, &TableWidget::customHeaderMenuRequested);
 
@@ -101,46 +100,50 @@ void TableWidget::init()
   menuPlot->addAction(actionPlotCurve);
   menuPlot->addAction(actionPlotGraph);
 
-  actionSaveTable = new QAction;
-  actionSaveTable->setText(tr("Save table"));
-  actionSaveTable->setIcon(QIcon(":/img/save.png"));
-  connect(actionSaveTable, &QAction::triggered, this, &TableWidget::saveTrigered);
+//  actionSaveTable = new QAction;
+//  actionSaveTable->setText(tr("Save table"));
+//  actionSaveTable->setIcon(QIcon(":/img/save.png"));
+//  connect(actionSaveTable, &QAction::triggered, this, &TableWidget::saveTrigered);
 
-  actionSaveSelectedTable = new QAction;
-  actionSaveSelectedTable->setText(tr("Save selected table"));
-  actionSaveSelectedTable->setIcon(QIcon(":/img/save.png"));
-  connect(actionSaveSelectedTable, &QAction::triggered, this, &TableWidget::saveTableTrigered);
+//  actionSaveSelectedTable = new QAction;
+//  actionSaveSelectedTable->setText(tr("Save selected table"));
+//  actionSaveSelectedTable->setIcon(QIcon(":/img/save.png"));
+//  connect(actionSaveSelectedTable, &QAction::triggered, this, &TableWidget::saveTableTrigered);
 
-  actionCut = new QAction;
-  actionCut->setText(tr("Cut"));
-  actionCut->setIcon(QIcon(":/img/cut.png"));
-  connect(actionCut, &QAction::triggered, this, &TableWidget::cutTrigered);
+//  actionCut = new QAction;
+//  actionCut->setText(tr("Cut"));
+//  actionCut->setIcon(QIcon(":/img/cut.png"));
+//  connect(actionCut, &QAction::triggered, this, &TableWidget::cutTrigered);
 
-  actionCopy = new QAction;
-  actionCopy->setText(tr("Copy"));
-  actionCopy->setIcon(QIcon(":/img/copy.png"));
-  connect(actionCopy, &QAction::triggered, this, &TableWidget::copyTrigered);
+//  actionCopy = new QAction;
+//  actionCopy->setText(tr("Copy"));
+//  actionCopy->setIcon(QIcon(":/img/copy.png"));
+//  connect(actionCopy, &QAction::triggered, this, &TableWidget::copyTrigered);
 
-  actionPaste = new QAction;
-  actionPaste->setText(tr("Paste"));
-  actionPaste->setIcon(QIcon(":/img/paste.png"));
-  connect(actionPaste, &QAction::triggered, this, &TableWidget::pasteTrigered);
+//  actionPaste = new QAction;
+//  actionPaste->setText(tr("Paste"));
+//  actionPaste->setIcon(QIcon(":/img/paste.png"));
+//  connect(actionPaste, &QAction::triggered, this, &TableWidget::pasteTrigered);
 
-  actionDelete = new QAction;
-  actionDelete->setText(tr("Delete"));
-  actionDelete->setIcon(QIcon(":/img/remove.png"));
-  connect(actionDelete, &QAction::triggered, this, &TableWidget::deleteTrigered);
+//  actionDelete = new QAction;
+//  actionDelete->setText(tr("Delete"));
+//  actionDelete->setIcon(QIcon(":/img/remove.png"));
+//  connect(actionDelete, &QAction::triggered, this, &TableWidget::deleteTrigered);
 
-  contextMenu = new QMenu;
-  contextMenu->addMenu(menuPlot);
-  contextMenu->addSeparator();
-  contextMenu->addAction(actionCut);
-  contextMenu->addAction(actionCopy);
-  contextMenu->addAction(actionPaste);
-  contextMenu->addAction(actionDelete);
-  contextMenu->addSeparator();
-  contextMenu->addAction(actionSaveSelectedTable);
-  contextMenu->addAction(actionSaveTable);
+//  contextMenu = new QMenu;
+//  contextMenu->addMenu(menuPlot);
+//  contextMenu->addSeparator();
+//  contextMenu->addAction(actionCut);
+//  contextMenu->addAction(actionCopy);
+//  contextMenu->addAction(actionPaste);
+//  contextMenu->addAction(actionDelete);
+//  contextMenu->addSeparator();
+//  contextMenu->addAction(actionSaveSelectedTable);
+//  contextMenu->addAction(actionSaveTable);
+
+  auto action{tableWidget->tableContextMenu()->actions().at(0)};
+  tableWidget->tableContextMenu()->insertMenu(action, menuPlot);
+  tableWidget->tableContextMenu()->insertSeparator(action);
 
   actionAddColumn = new QAction;
   actionAddColumn->setText(tr("Add column"));
@@ -152,18 +155,27 @@ void TableWidget::init()
   actionRemoveColumn->setIcon(QIcon(":/img/remove_column.png"));
   connect(actionRemoveColumn, &QAction::triggered, this, &TableWidget::removeColumnTrigered);
 
-  hHeaderContextMenu = new QMenu;
-  hHeaderContextMenu->addMenu(menuPlot);
-  hHeaderContextMenu->addSeparator();
-  hHeaderContextMenu->addAction(actionCut);
-  hHeaderContextMenu->addAction(actionCopy);
-  hHeaderContextMenu->addAction(actionPaste);
-  hHeaderContextMenu->addAction(actionDelete);
-  hHeaderContextMenu->addSeparator();
-  hHeaderContextMenu->addAction(actionAddColumn);  
-  hHeaderContextMenu->addAction(actionRemoveColumn);
-  hHeaderContextMenu->addSeparator();
-  hHeaderContextMenu->addAction(actionSaveTable);
+//  hHeaderContextMenu = new QMenu;
+//  hHeaderContextMenu->addMenu(menuPlot);
+//  hHeaderContextMenu->addSeparator();
+//  hHeaderContextMenu->addAction(actionCut);
+//  hHeaderContextMenu->addAction(actionCopy);
+//  hHeaderContextMenu->addAction(actionPaste);
+//  hHeaderContextMenu->addAction(actionDelete);
+//  hHeaderContextMenu->addSeparator();
+//  hHeaderContextMenu->addAction(actionAddColumn);
+//  hHeaderContextMenu->addAction(actionRemoveColumn);
+//  hHeaderContextMenu->addSeparator();
+//  hHeaderContextMenu->addAction(actionSaveTable);
+
+  action = tableWidget->headerContextMenu()->actions().at(0);
+  tableWidget->headerContextMenu()->insertMenu(action, menuPlot);
+  tableWidget->headerContextMenu()->insertSeparator(action);
+
+  action = tableWidget->headerContextMenu()->actions().at(6);
+  tableWidget->headerContextMenu()->insertSeparator(action);
+  tableWidget->headerContextMenu()->insertActions(action, {actionAddColumn,
+                                                           actionRemoveColumn});
 }
 
 void TableWidget::setModel(QStandardItemModel *item_model)
@@ -180,20 +192,21 @@ void TableWidget::customMenuRequested(const QAbstractItemView *view, const QPoin
 {
   if (tableWidget->hasSelection()) {
       menuPlot->setEnabled(true);
-      actionCut->setEnabled(true);
-      actionCopy->setEnabled(true);
-      actionPaste->setEnabled(true);
-      actionDelete->setEnabled(true);
+//      actionCut->setEnabled(true);
+//      actionCopy->setEnabled(true);
+//      actionPaste->setEnabled(true);
+//      actionDelete->setEnabled(true);
     }
   else {
       menuPlot->setEnabled(false);
-      actionCut->setEnabled(false);
-      actionCopy->setEnabled(false);
-      actionPaste->setEnabled(false);
-      actionDelete->setEnabled(false);
+//      actionCut->setEnabled(false);
+//      actionCopy->setEnabled(false);
+//      actionPaste->setEnabled(false);
+//      actionDelete->setEnabled(false);
     }
 
-  contextMenu->popup(view->viewport()->mapToGlobal(pos));
+//  contextMenu->popup(view->viewport()->mapToGlobal(pos));
+//  tableWidget->tableContextMenu()->popup(view->viewport()->mapToGlobal(pos));
 }
 
 void TableWidget::customHeaderMenuRequested(const QAbstractItemView *view, const QPoint &pos)
@@ -206,21 +219,22 @@ void TableWidget::customHeaderMenuRequested(const QAbstractItemView *view, const
     }
 
   if (tableWidget->hasSelectedColumn()) {
-      actionCut->setEnabled(true);
-      actionCopy->setEnabled(true);
-      actionPaste->setEnabled(true);
-      actionDelete->setEnabled(true);
+//      actionCut->setEnabled(true);
+//      actionCopy->setEnabled(true);
+//      actionPaste->setEnabled(true);
+//      actionDelete->setEnabled(true);
       actionRemoveColumn->setEnabled(true);
     }
   else {
-      actionCut->setEnabled(false);
-      actionCopy->setEnabled(false);
-      actionPaste->setEnabled(false);
-      actionDelete->setEnabled(false);
+//      actionCut->setEnabled(false);
+//      actionCopy->setEnabled(false);
+//      actionPaste->setEnabled(false);
+//      actionDelete->setEnabled(false);
       actionRemoveColumn->setEnabled(false);
     }
 
-  hHeaderContextMenu->popup(view->viewport()->mapToGlobal(pos));
+//  hHeaderContextMenu->popup(view->viewport()->mapToGlobal(pos));
+//  tableWidget->headerContextMenu()->popup(view->viewport()->mapToGlobal(pos));
 }
 
 void TableWidget::buildGraphTrigered()
@@ -262,14 +276,14 @@ void TableWidget::buildCurveTrigered()
   emit buildCurve(data);
 }
 
-void TableWidget::saveTableTrigered()
-{
-}
+//void TableWidget::saveTableTrigered()
+//{
+//}
 
-void TableWidget::saveTrigered()
-{
+//void TableWidget::saveTrigered()
+//{
 
-}
+//}
 
 void TableWidget::addColumnTrigered()
 {
@@ -281,25 +295,25 @@ void TableWidget::removeColumnTrigered()
   //  tableWidget->model()->removeColumn();
 }
 
-void TableWidget::cutTrigered()
-{
-  tableWidget->CutToClipboard();
-}
+//void TableWidget::cutTrigered()
+//{
+//  tableWidget->CutToClipboard();
+//}
 
-void TableWidget::copyTrigered()
-{
-  tableWidget->CopyToClipboard();
-}
+//void TableWidget::copyTrigered()
+//{
+//  tableWidget->CopyToClipboard();
+//}
 
-void TableWidget::pasteTrigered()
-{
-  tableWidget->PasteFromClipboard();
-}
+//void TableWidget::pasteTrigered()
+//{
+//  tableWidget->PasteFromClipboard();
+//}
 
-void TableWidget::deleteTrigered()
-{
-  tableWidget->DeleteDataKey();
-}
+//void TableWidget::deleteTrigered()
+//{
+//  tableWidget->DeleteDataKey();
+//}
 
 //QVector<QVector<double>> TableWidget::builderData(QModelIndexList &selectedIndexes)
 QCPPlotting::NumSheet TableWidget::builderData(QModelIndexList &selectedIndexes)
@@ -319,16 +333,86 @@ TableView::TableView(QWidget *parent)
 {
   horizontalHeaderView = new HorizontalHeaderView;
   setHorizontalHeader(horizontalHeaderView);
-  connect(this, &QTableView::customContextMenuRequested, this, &TableView::customHeaderMenuRequested);
+  connect(horizontalHeaderView, &HorizontalHeaderView::customContextMenuRequested, this, &TableView::customHeaderMenuRequested);
 //  setEditTriggers(editTriggers() | QAbstractItemView::AnyKeyPressed);
+
   setEditTriggers(QAbstractItemView::DoubleClicked |
                   QAbstractItemView::SelectedClicked |
                   QAbstractItemView::EditKeyPressed |
                   QAbstractItemView::AnyKeyPressed);
+
+  setContextMenuPolicy(Qt::CustomContextMenu);
+  connect(this, &QTableView::customContextMenuRequested, this, &TableView::customMenuRequested);
+
+  actionSaveTable = new QAction;
+  actionSaveTable->setText(tr("Save table"));
+  actionSaveTable->setIcon(QIcon(":/img/save.png"));
+  connect(actionSaveTable, &QAction::triggered, this, &TableView::saveTrigered);
+
+  actionSaveSelectedTable = new QAction;
+  actionSaveSelectedTable->setText(tr("Save selected table"));
+  actionSaveSelectedTable->setIcon(QIcon(":/img/save.png"));
+  connect(actionSaveSelectedTable, &QAction::triggered, this, &TableView::saveTableTrigered);
+
+  actionCut = new QAction;
+  actionCut->setText(tr("Cut"));
+  actionCut->setIcon(QIcon(":/img/cut.png"));
+  connect(actionCut, &QAction::triggered, this, &TableView::cutTrigered);
+
+  actionCopy = new QAction;
+  actionCopy->setText(tr("Copy"));
+  actionCopy->setIcon(QIcon(":/img/copy.png"));
+  connect(actionCopy, &QAction::triggered, this, &TableView::copyTrigered);
+
+  actionPaste = new QAction;
+  actionPaste->setText(tr("Paste"));
+  actionPaste->setIcon(QIcon(":/img/paste.png"));
+  connect(actionPaste, &QAction::triggered, this, &TableView::pasteTrigered);
+
+  actionDelete = new QAction;
+  actionDelete->setText(tr("Delete"));
+  actionDelete->setIcon(QIcon(":/img/remove.png"));
+  connect(actionDelete, &QAction::triggered, this, &TableView::deleteTrigered);
+
+  contextMenu = new QMenu;
+  contextMenu->addAction(actionCut);
+  contextMenu->addAction(actionCopy);
+  contextMenu->addAction(actionPaste);
+  contextMenu->addAction(actionDelete);
+  contextMenu->addSeparator();
+  contextMenu->addAction(actionSaveSelectedTable);
+  contextMenu->addAction(actionSaveTable);
+
+  hHeaderContextMenu = new QMenu;
+  hHeaderContextMenu->addAction(actionCut);
+  hHeaderContextMenu->addAction(actionCopy);
+  hHeaderContextMenu->addAction(actionPaste);
+  hHeaderContextMenu->addAction(actionDelete);
+  hHeaderContextMenu->addSeparator();
+  hHeaderContextMenu->addAction(actionSaveTable);
 }
 
 TableView::~TableView()
 {
+  if (actionSaveTable)
+    delete actionSaveTable;
+  if (actionSaveSelectedTable)
+    delete actionSaveSelectedTable;
+
+  if (actionCut)
+    delete actionCut;
+  if (actionCopy)
+    delete actionCopy;
+  if (actionPaste)
+    delete actionPaste;
+  if (actionDelete)
+    delete actionDelete;
+
+  if (contextMenu)
+    delete contextMenu;
+  if (hHeaderContextMenu)
+    delete hHeaderContextMenu;
+
   if (horizontalHeaderView)
     delete horizontalHeaderView;
 }
@@ -515,8 +599,79 @@ bool TableView::hasSelectedColumn()
   return true;
 }
 
-void TableView::customHeaderMenuRequested(const QPoint &pos) {
+QMenu *TableView::tableContextMenu()
+{
+  return contextMenu;
+}
+
+QMenu *TableView::headerContextMenu()
+{
+  return hHeaderContextMenu;
+}
+
+void TableView::customMenuRequested(const QPoint &pos) {
+  if (hasSelection()) {
+      actionCut->setEnabled(true);
+      actionCopy->setEnabled(true);
+      actionPaste->setEnabled(true);
+      actionDelete->setEnabled(true);
+    }
+  else {
+      actionCut->setEnabled(false);
+      actionCopy->setEnabled(false);
+      actionPaste->setEnabled(false);
+      actionDelete->setEnabled(false);
+    }
+
   emit customContextMenuRequested(this, pos);
+
+  contextMenu->popup(viewport()->mapToGlobal(pos));
+}
+
+void TableView::customHeaderMenuRequested(const QAbstractItemView *view, const QPoint &pos)
+{
+  if (hasSelectedColumn()) {
+      actionCut->setEnabled(true);
+      actionCopy->setEnabled(true);
+      actionPaste->setEnabled(true);
+      actionDelete->setEnabled(true);
+    }
+  else {
+      actionCut->setEnabled(false);
+      actionCopy->setEnabled(false);
+      actionPaste->setEnabled(false);
+      actionDelete->setEnabled(false);
+    }
+
+  hHeaderContextMenu->popup(view->viewport()->mapToGlobal(pos));
+}
+
+void TableView::saveTableTrigered()
+{
+}
+
+void TableView::saveTrigered()
+{
+}
+
+void TableView::cutTrigered()
+{
+  CutToClipboard();
+}
+
+void TableView::copyTrigered()
+{
+  CopyToClipboard();
+}
+
+void TableView::pasteTrigered()
+{
+  PasteFromClipboard();
+}
+
+void TableView::deleteTrigered()
+{
+  DeleteDataKey();
 }
 
 void TableView::keyPressEvent(QKeyEvent *event)

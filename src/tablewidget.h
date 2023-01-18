@@ -54,14 +54,14 @@ private slots:
   void buildGraphTrigered();
   void buildBarsTrigered();
   void buildCurveTrigered();
-  void saveTableTrigered();
-  void saveTrigered();
+//  void saveTableTrigered();
+//  void saveTrigered();
   void addColumnTrigered();
   void removeColumnTrigered();
-  void cutTrigered();
-  void copyTrigered();
-  void pasteTrigered();
-  void deleteTrigered();
+//  void cutTrigered();
+//  void copyTrigered();
+//  void pasteTrigered();
+//  void deleteTrigered();
 
 //  QVector<QVector<double>> builderData(QModelIndexList &selectedIndexes);
   QCPPlotting::NumSheet builderData(QModelIndexList &selectedIndexes);
@@ -71,20 +71,20 @@ private slots:
 private:
   TableView *tableWidget{nullptr};
   QGridLayout *gridLayout{nullptr};
-  QMenu *contextMenu{nullptr};
+//  QMenu *contextMenu{nullptr};
   QMenu *menuPlot{nullptr};
   QAction *actionPlotGraph{nullptr};
   QAction *actionPlotBars{nullptr};
   QAction *actionPlotCurve{nullptr};
-  QAction *actionSaveTable{nullptr};
-  QAction *actionSaveSelectedTable{nullptr};
-  QMenu *hHeaderContextMenu{nullptr};
+//  QAction *actionSaveTable{nullptr};
+//  QAction *actionSaveSelectedTable{nullptr};
+//  QMenu *hHeaderContextMenu{nullptr};
   QAction *actionAddColumn{nullptr};
   QAction *actionRemoveColumn{nullptr};
-  QAction *actionCut{nullptr};
-  QAction *actionCopy{nullptr};
-  QAction *actionPaste{nullptr};
-  QAction *actionDelete{nullptr};
+//  QAction *actionCut{nullptr};
+//  QAction *actionCopy{nullptr};
+//  QAction *actionPaste{nullptr};
+//  QAction *actionDelete{nullptr};
 };
 
 class TableView : public QTableView
@@ -109,17 +109,26 @@ public:
   bool hasSelection();
   bool hasSelectedColumn();
 
+  QMenu *tableContextMenu();
+  QMenu *headerContextMenu();
+
 signals:
 //    void keyEnterReleased();
   void error(QString);
   void warning(QString);
   void message(QString);
   void setEnabledActions(bool);
-
   void customContextMenuRequested(const QAbstractItemView *view, const QPoint &pos);
 
 private slots:
-  void customHeaderMenuRequested(const QPoint &pos);
+  void customMenuRequested(const QPoint &pos);
+  void customHeaderMenuRequested(const QAbstractItemView *view, const QPoint &pos);
+  void saveTableTrigered();
+  void saveTrigered();
+  void cutTrigered();
+  void copyTrigered();
+  void pasteTrigered();
+  void deleteTrigered();
 
 private:
   void keyPressEvent(QKeyEvent *event);
@@ -127,6 +136,14 @@ private:
 
 private:
   HorizontalHeaderView *horizontalHeaderView{nullptr};
+  QMenu *contextMenu{nullptr};
+  QAction *actionSaveTable{nullptr};
+  QAction *actionSaveSelectedTable{nullptr};
+  QMenu *hHeaderContextMenu{nullptr};
+  QAction *actionCut{nullptr};
+  QAction *actionCopy{nullptr};
+  QAction *actionPaste{nullptr};
+  QAction *actionDelete{nullptr};
 };
 
 class HorizontalHeaderView : public QHeaderView

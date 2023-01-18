@@ -4,8 +4,10 @@
 #include <QWidget>
 #include <QFontComboBox>
 #include <QSpinBox>
-#include <QPushButton>
+//#include <QPushButton>
+#include <QToolButton>
 #include <QHBoxLayout>
+
 
 class FontWidget : public QWidget
 {
@@ -24,10 +26,14 @@ private:
 private:
   QFontComboBox *comboBox_FontName{nullptr};
   QSpinBox *spinBox_FontSize{nullptr};
-  QPushButton *button_FontBold{nullptr};
-  QPushButton *button_FontItalic{nullptr};
-  QPushButton *button_FontUnderline{nullptr};
-  QPushButton *button_FontStrikeOut{nullptr};
+//  QPushButton *button_FontBold{nullptr};
+//  QPushButton *button_FontItalic{nullptr};
+//  QPushButton *button_FontUnderline{nullptr};
+//  QPushButton *button_FontStrikeOut{nullptr};
+  QToolButton *button_FontBold{nullptr};
+  QToolButton *button_FontItalic{nullptr};
+  QToolButton *button_FontUnderline{nullptr};
+  QToolButton *button_FontStrikeOut{nullptr};
   QHBoxLayout *hLayout{nullptr};
 };
 

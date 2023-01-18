@@ -49,25 +49,30 @@ QFont FontWidget::get()
 void FontWidget::init()
 {
   comboBox_FontName = new QFontComboBox;
+  comboBox_FontName->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Preferred);
 
   spinBox_FontSize = new QSpinBox;
 
-  button_FontBold = new QPushButton;
+//  button_FontBold = new QPushButton;
+  button_FontBold = new QToolButton;
   button_FontBold->setCheckable(true);
   button_FontBold->setText("B");
   button_FontBold->setStyleSheet("font: bold");
 
-  button_FontItalic = new QPushButton;
+//  button_FontItalic = new QPushButton;
+  button_FontItalic = new QToolButton;
   button_FontItalic->setCheckable(true);
   button_FontItalic->setText("I");
   button_FontItalic->setStyleSheet("font: italic");
 
-  button_FontUnderline = new QPushButton;
+//  button_FontUnderline = new QPushButton;
+  button_FontUnderline = new QToolButton;
   button_FontUnderline->setCheckable(true);
   button_FontUnderline->setText("U");
   button_FontUnderline->setStyleSheet("text-decoration: underline");
 
-  button_FontStrikeOut = new QPushButton;
+//  button_FontStrikeOut = new QPushButton;
+  button_FontStrikeOut = new QToolButton;
   button_FontStrikeOut->setCheckable(true);
   button_FontStrikeOut->setText("S");
   button_FontStrikeOut->setStyleSheet("text-decoration: line-through");

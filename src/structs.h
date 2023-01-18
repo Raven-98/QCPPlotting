@@ -4,6 +4,7 @@
 #include <QSettings>
 #include <QMap>
 #include <QStringList>
+#include <QAbstractItemModel>
 
 namespace QCPPlotting {
   struct Settings;
@@ -11,7 +12,7 @@ namespace QCPPlotting {
   struct Sheet;
   struct Row;
   struct NumSheet;
-  struct NumRow;
+  struct NumColumn;
 
   enum CSVParameters {
     READ_ZERO_ROW = 0x01,
@@ -104,18 +105,24 @@ namespace QCPPlotting {
   struct Sheet : public QList<Row> {
     using QList<Row>::QList;
     QStringList HorizontalHeader;
+
+    static Sheet fromModel(QAbstractItemModel *model) {
+      Sheet sheet;
+
+      return sheet;
+    }
   };
 
   struct Row : public QStringList {
     using QStringList::QStringList;
   };
 
-  struct NumSheet : public QList<NumRow> {
-    using QList<NumRow>::QList;
+  struct NumSheet : public QList<NumColumn> {
+    using QList<NumColumn>::QList;
     QStringList HorizontalHeader;
   };
 
-  struct NumRow : public QList<double> {
+  struct NumColumn : public QList<double> {
     using QList<double>::QList;
   };
 }

@@ -2,7 +2,7 @@
 #define LOGICALMETHODS_H
 
 #include <QObject>
-#include <QStandardItemModel>
+#include <QAbstractItemModel>
 
 #include "structs.h"
 

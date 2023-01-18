@@ -138,7 +138,7 @@ void FileDialogSetDetails::slot_accepted()
       data->useZeroRow = checkBox_useZeroRow->isChecked();
     }
   else if (type == QCPPlotting::FileDialogSetDetails::Save) {
-      data->writeHHeader = checkBox_writeHHeader->isCheckable();
+      data->writeHHeader = checkBox_writeHHeader->isChecked();
     }
   data->delimiter = comboBox_Delimiter->currentIndex();
 }

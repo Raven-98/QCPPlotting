@@ -152,7 +152,7 @@ void MainWindow::tst()
   QCPPlotting::NumSheet data;
   data.HorizontalHeader = QStringList({"X", "Y"});
   for (int i = 0; i < cs; i++) {
-      QCPPlotting::NumRow vector;
+      QCPPlotting::NumColumn vector;
       for (int j = 0; j < rs; j++) {
           auto num{(j + i) * (i + 1)};
           auto item = new QStandardItem(QString::number(num));
@@ -218,6 +218,40 @@ void MainWindow::slot_ImportCSV()
       showError(tr("QDialog: Unexpected result"));
     }
   delete fileDialog;
+}
+
+void MainWindow::exportCSVTrigered(QCPPlotting::SpreadSheet spreadSheet)
+{
+  FileDialogSetDetails *fpd = new FileDialogSetDetails(QCPPlotting::FileDialogSetDetails::Save, this);
+  fpd->setSettings(settings);
+  switch(fpd->exec()) {
+    case QDialog::Accepted:
+      {
+        fpd->getSettings(settings);
+        auto key{spreadSheet.keys().at(0)};
+        QFileDialog *fileDialog = new QFileDialog(this);
+        fileDialog->setAcceptMode(QFileDialog::AcceptSave);
+        fileDialog->setMimeTypeFilters({"text/csv", "application/octet-stream"});
+//        fileDialog->selectFile(QString("%1/%2").arg(QDir::homePath(), key));
+        fileDialog->selectFile(key);
+        switch (fileDialog->exec()) {
+          case QDialog::Accepted:
+            writeCSV(spreadSheet.value(key), fileDialog->selectedFiles().at(0), fpd->getData());
+            break;
+          case QDialog::Rejected:
+            break;
+          default:
+            showError(tr("QDialog: Unexpected result"));
+          }
+        delete fileDialog;
+        break;
+      }
+    case QDialog::Rejected:
+      break;
+    default:
+      showError(tr("QDialog: Unexpected result"));
+    }
+  delete fpd;
 }
 
 void MainWindow::slot_newTable()
@@ -292,6 +326,7 @@ void MainWindow::addTable(QStandardItemModel *item_model, QString *title)
   connect(tableWidget, &TableWidget::buildGraph, this, &MainWindow::buildGraphTrigered);
   connect(tableWidget, &TableWidget::buildBars, this, &MainWindow::buildBarsTrigered);
   connect(tableWidget, &TableWidget::buildCurve, this, &MainWindow::buildCurveTrigered);
+  connect(tableWidget, &TableWidget::saveTable, this, &MainWindow::exportCSVTrigered);
 
   loadSubWindow(tableWidget);
 }
@@ -349,29 +384,14 @@ void MainWindow::readCSV(const QStringList files, QCPPlotting::FileDialogSetDeta
 {
   QCPPlotting::SpreadSheet spreadSheet;
 
-  char delimiter;
-  switch (data->delimiter) {
-    case QCPPlotting::COMMA:
-      delimiter = ',';
-      break;
-    case QCPPlotting::TAB_STEP:
-      delimiter = '\t';
-      break;
-    case QCPPlotting::SEMICOLON:
-      delimiter = ';';
-      break;
-    case QCPPlotting::SPACE:
-      delimiter = ' ';
-    default:
-      delimiter = ',';
-    }
+  auto delimiter{charDelimiter(data->delimiter)};
 
-  unsigned char parameters = 0;
+  unsigned char parameters{0};
   if (data->readZeroRow)
     parameters |= QCPPlotting::READ_ZERO_ROW;
   if (data->readZeroColumn)
     parameters |= QCPPlotting::READ_ZERO_COLUMN;
-  if (data->useZeroRow || data->writeHHeader)
+  if (data->useZeroRow)
     parameters |= QCPPlotting::USE_ZERO_ROW;
 
   delete data;
@@ -387,4 +407,41 @@ void MainWindow::readCSV(const QStringList files, QCPPlotting::FileDialogSetDeta
     }
 
   addTables(spreadSheet);
+}
+
+void MainWindow::writeCSV(QCPPlotting::Sheet sheet, const QString file, QCPPlotting::FileDialogSetDetails::Data *data)
+{
+  auto delimiter{charDelimiter(data->delimiter)};
+
+  unsigned char parameters{0};
+  if (data->writeHHeader)
+    parameters |= QCPPlotting::USE_ZERO_ROW;
+
+  delete data;
+
+  LogicalMethods logicalMethods;
+  connect(&logicalMethods, &LogicalMethods::error, this, &MainWindow::showError);
+  connect(&logicalMethods, &LogicalMethods::warning, this, &MainWindow::showWarning);
+  connect(&logicalMethods, &LogicalMethods::message, this, &MainWindow::showMessage);
+
+  if (!logicalMethods.writeCSV(sheet, file, delimiter, parameters))
+    return;
+  else
+    emit showMessage(tr("'%1' is saved").arg(file));
+}
+
+char MainWindow::charDelimiter(short &delimiter)
+{
+  switch (delimiter) {
+    case QCPPlotting::COMMA:
+      return ',';
+    case QCPPlotting::TAB_STEP:
+      return'\t';
+    case QCPPlotting::SEMICOLON:
+      return ';';
+    case QCPPlotting::SPACE:
+      return' ';
+    default:
+      return ',';
+    }
 }

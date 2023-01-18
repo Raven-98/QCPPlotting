@@ -46,7 +46,7 @@ signals:
   void buildBars(QCPPlotting::NumSheet);
 //  void buildCurve(QVector<QVector<double>>);
   void buildCurve(QCPPlotting::NumSheet);
-  void saveTable();
+  void saveTable(QCPPlotting::SpreadSheet);
 
 private slots:
   void customMenuRequested(const QAbstractItemView *view, const QPoint &pos);
@@ -54,8 +54,7 @@ private slots:
   void buildGraphTrigered();
   void buildBarsTrigered();
   void buildCurveTrigered();
-//  void saveTableTrigered();
-//  void saveTrigered();
+  void saveTableTrigered(QCPPlotting::Sheet sheet);
   void addColumnTrigered();
   void removeColumnTrigered();
 //  void cutTrigered();
@@ -119,6 +118,7 @@ signals:
   void message(QString);
   void setEnabledActions(bool);
   void customContextMenuRequested(const QAbstractItemView *view, const QPoint &pos);
+  void saveTable(QCPPlotting::Sheet);
 
 private slots:
   void customMenuRequested(const QPoint &pos);

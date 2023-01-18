@@ -81,6 +81,7 @@ void TableWidget::init()
 
   connect(tableWidget, &TableView::customContextMenuRequested, this, &TableWidget::customMenuRequested);
   connect(tableWidget->horizontalHeader(), &HorizontalHeaderView::customContextMenuRequested, this, &TableWidget::customHeaderMenuRequested);
+  connect(tableWidget, &TableView::saveTable, this, &TableWidget::saveTableTrigered);
 
   actionPlotGraph = new QAction;
   actionPlotGraph->setText(tr("Graph"));
@@ -276,14 +277,14 @@ void TableWidget::buildCurveTrigered()
   emit buildCurve(data);
 }
 
-//void TableWidget::saveTableTrigered()
-//{
-//}
+void TableWidget::saveTableTrigered(QCPPlotting::Sheet sheet)
+{
 
-//void TableWidget::saveTrigered()
-//{
+  QCPPlotting::SpreadSheet spreadSheet;
+  spreadSheet.insert(windowTitle(), sheet);
 
-//}
+  emit saveTable(spreadSheet);
+}
 
 void TableWidget::addColumnTrigered()
 {
@@ -347,12 +348,12 @@ TableView::TableView(QWidget *parent)
   actionSaveTable = new QAction;
   actionSaveTable->setText(tr("Save table"));
   actionSaveTable->setIcon(QIcon(":/img/save.png"));
-  connect(actionSaveTable, &QAction::triggered, this, &TableView::saveTrigered);
+  connect(actionSaveTable, &QAction::triggered, this, &TableView::saveTableTrigered);
 
   actionSaveSelectedTable = new QAction;
   actionSaveSelectedTable->setText(tr("Save selected table"));
   actionSaveSelectedTable->setIcon(QIcon(":/img/save.png"));
-  connect(actionSaveSelectedTable, &QAction::triggered, this, &TableView::saveTableTrigered);
+  connect(actionSaveSelectedTable, &QAction::triggered, this, &TableView::saveTrigered);
 
   actionCut = new QAction;
   actionCut->setText(tr("Cut"));
@@ -509,14 +510,14 @@ QCPPlotting::NumSheet TableView::builderData(QModelIndexList &selectedIndexes)
 
   for (int c = 0; c < columns; c++) {
 //      QVector<double> vector;
-      QCPPlotting::NumRow row;
+      QCPPlotting::NumColumn column;
       if (selectedIndexes.at(0).column() != selectedIndexes.at(1).column()) {
           for (int r{c}; r < selectedIndexesCount; r += columns) {
               bool ok;
               auto d{selectedIndexes.at(r).data().toDouble(&ok)};
               if (ok) {
 //                vector.push_back(d);
-                  row.append(d);
+                  column.append(d);
                 }
             }
         }
@@ -526,12 +527,12 @@ QCPPlotting::NumSheet TableView::builderData(QModelIndexList &selectedIndexes)
               auto d{selectedIndexes.at(r).data().toDouble(&ok)};
               if (ok) {
 //                vector.push_back(d);
-                  row.append(d);
+                  column.append(d);
                 }
             }
         }
 //      data.push_back(vector);
-      sheet.append(row);
+      sheet.append(column);
     }
 
 //  return data;
@@ -545,7 +546,7 @@ QCPPlotting::NumSheet TableView::builderNumberedData(QModelIndexList &selectedIn
   auto sheet{builderData(selectedIndexes)};
 
 //  QVector<double> vector;
-  QCPPlotting::NumRow row;
+  QCPPlotting::NumColumn row;
 //  for (int i = 0; i < data.at(0).count(); i++) {
   for (int i{0}; i < sheet.at(0).count(); i++) {
 //      vector.push_back(i);
@@ -648,10 +649,67 @@ void TableView::customHeaderMenuRequested(const QAbstractItemView *view, const Q
 
 void TableView::saveTableTrigered()
 {
+  QCPPlotting::Sheet sheet;
+
+  QStringList headerList;
+  for (int c = 0; c < model()->columnCount(); c++) {
+      headerList << model()->headerData(c, Qt::Horizontal).toString();
+    }
+  sheet.HorizontalHeader = headerList;
+
+  for (int r = 0; r < model()->rowCount(); r++) {
+      QCPPlotting::Row row;
+      for (int c = 0; c < model()->columnCount(); c++) {
+          row.append(model()->data(model()->index(r, c)).toString());
+        }
+      sheet.append(row);
+    }
+
+  emit saveTable(sheet);
 }
 
 void TableView::saveTrigered()
 {
+  auto selectedIndexesCount{selectionModel()->selectedIndexes().count()};
+  QList<int> lst;
+  for (int i{0}; i < selectedIndexesCount; i++) {
+      auto c{selectionModel()->selectedIndexes().at(i).column()};
+      if (!lst.contains(c))
+        lst.append(c);
+    }
+  auto columns{lst.count()};
+
+  QCPPlotting::Sheet sheet;
+
+  QStringList headerList;
+  for (auto i : lst) {
+      headerList << model()->headerData(i, Qt::Horizontal).toString();
+    }
+  lst.clear();
+  sheet.HorizontalHeader = headerList;
+
+  auto rows = selectedIndexesCount / columns;
+
+  if (selectionModel()->selectedIndexes().at(0).column() != selectionModel()->selectedIndexes().at(1).column()) {
+      for (int r = 0; r < rows; r++) {
+          QCPPlotting::Row row;
+          for (int c{columns * r}; c < (columns * (r + 1)); c++) {
+              row.append(selectionModel()->selectedIndexes().at(c).data().toString());
+            }
+          sheet.append(row);
+        }
+    }
+  else {
+      for (int r = 0; r < rows; r++) {
+          QCPPlotting::Row row;
+          for (int c{r}; c < selectedIndexesCount; c += rows) {
+              row.append(selectionModel()->selectedIndexes().at(c).data().toString());
+            }
+          sheet.append(row);
+        }
+    }
+
+  emit saveTable(sheet);
 }
 
 void TableView::cutTrigered()

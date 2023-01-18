@@ -29,6 +29,7 @@ public:
 private slots:
   void slot_FullScreen();
   void slot_ImportCSV();
+  void exportCSVTrigered(QCPPlotting::SpreadSheet spreadSheet);
   void slot_newTable();
   void slot_AboutProgram();
 //  void buildGraphTrigered(QVector<QVector<double>> data);
@@ -49,6 +50,9 @@ private:
 //  void addChart(QVector<QVector<double>> &data, QCPPlotting::ChartType chartType);
   void addChart(QCPPlotting::NumSheet &data, QCPPlotting::ChartType chartType);
   void readCSV(const QStringList files, QCPPlotting::FileDialogSetDetails::Data *data);
+  void writeCSV(QCPPlotting::Sheet sheet, const QString file, QCPPlotting::FileDialogSetDetails::Data *data);
+
+  char charDelimiter(short &delimiter);
 
 private:
   QMdiArea *mdiArea = nullptr;
